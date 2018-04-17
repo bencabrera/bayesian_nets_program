@@ -1,0 +1,1 @@
+/usr/bin/c++  -g  -rdynamic CMakeFiles/runner.dir/src/main_runner.cpp.o  -o runner -Wl,-rpath,/usr/local/lib libcore_lib.a /usr/local/lib/libboost_regex.so 
