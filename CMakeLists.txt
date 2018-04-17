@@ -13,6 +13,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 set(FILES
 	src/io.cpp
 	src/operations.cpp
+	src/deterministic_operations.cpp
 )
 
 set(TEST_FILES
