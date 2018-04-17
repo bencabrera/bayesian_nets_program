@@ -11,7 +11,8 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 # files
 set(FILES
-	src/cnu.cpp
+	src/io.cpp
+	src/operations.cpp
 )
 
 set(TEST_FILES
@@ -22,5 +23,8 @@ add_library(core_lib STATIC ${FILES})
 add_executable(runner src/main_runner.cpp)
 target_link_libraries(runner core_lib)
 target_link_libraries(runner Boost::regex)
-# add_executable(tests src/tests/main_tests.cpp ${TEST_FILES})
-# target_link_libraries(tests core_lib)
+
+add_executable(tests src/main_tests.cpp ${TEST_FILES})
+target_link_libraries(tests core_lib)
+target_link_libraries(tests Boost::regex)
+target_compile_definitions(tests PRIVATE FOO="${CMAKE_CURRENT_SOURCE_DIR}/src/tests/instances/")

@@ -60,13 +60,50 @@ CMAKE_SOURCE_DIR = /home/ace7k3/bayesian_nets_program
 CMAKE_BINARY_DIR = /home/ace7k3/bayesian_nets_program/bin_debug
 
 #=============================================================================
+# Target rules for target CMakeFiles/tests.dir
+
+# All Build rule for target.
+CMakeFiles/tests.dir/all: CMakeFiles/core_lib.dir/all
+	$(MAKE) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/depend
+	$(MAKE) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ace7k3/bayesian_nets_program/bin_debug/CMakeFiles --progress-num=6,7 "Built target tests"
+.PHONY : CMakeFiles/tests.dir/all
+
+# Include target in all.
+all: CMakeFiles/tests.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/tests.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ace7k3/bayesian_nets_program/bin_debug/CMakeFiles 5
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/tests.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ace7k3/bayesian_nets_program/bin_debug/CMakeFiles 0
+.PHONY : CMakeFiles/tests.dir/rule
+
+# Convenience name for target.
+tests: CMakeFiles/tests.dir/rule
+
+.PHONY : tests
+
+# clean rule for target.
+CMakeFiles/tests.dir/clean:
+	$(MAKE) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/clean
+.PHONY : CMakeFiles/tests.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/tests.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/core_lib.dir
 
 # All Build rule for target.
 CMakeFiles/core_lib.dir/all:
 	$(MAKE) -f CMakeFiles/core_lib.dir/build.make CMakeFiles/core_lib.dir/depend
 	$(MAKE) -f CMakeFiles/core_lib.dir/build.make CMakeFiles/core_lib.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ace7k3/bayesian_nets_program/bin_debug/CMakeFiles --progress-num=1,2 "Built target core_lib"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ace7k3/bayesian_nets_program/bin_debug/CMakeFiles --progress-num=1,2,3 "Built target core_lib"
 .PHONY : CMakeFiles/core_lib.dir/all
 
 # Include target in all.
@@ -76,7 +113,7 @@ all: CMakeFiles/core_lib.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/core_lib.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ace7k3/bayesian_nets_program/bin_debug/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ace7k3/bayesian_nets_program/bin_debug/CMakeFiles 3
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/core_lib.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/ace7k3/bayesian_nets_program/bin_debug/CMakeFiles 0
 .PHONY : CMakeFiles/core_lib.dir/rule
@@ -103,7 +140,7 @@ clean: CMakeFiles/core_lib.dir/clean
 CMakeFiles/runner.dir/all: CMakeFiles/core_lib.dir/all
 	$(MAKE) -f CMakeFiles/runner.dir/build.make CMakeFiles/runner.dir/depend
 	$(MAKE) -f CMakeFiles/runner.dir/build.make CMakeFiles/runner.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ace7k3/bayesian_nets_program/bin_debug/CMakeFiles --progress-num=3,4 "Built target runner"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ace7k3/bayesian_nets_program/bin_debug/CMakeFiles --progress-num=4,5 "Built target runner"
 .PHONY : CMakeFiles/runner.dir/all
 
 # Include target in all.
@@ -113,7 +150,7 @@ all: CMakeFiles/runner.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/runner.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ace7k3/bayesian_nets_program/bin_debug/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ace7k3/bayesian_nets_program/bin_debug/CMakeFiles 5
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/runner.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/ace7k3/bayesian_nets_program/bin_debug/CMakeFiles 0
 .PHONY : CMakeFiles/runner.dir/rule

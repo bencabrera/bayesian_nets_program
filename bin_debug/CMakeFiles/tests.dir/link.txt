@@ -1,0 +1,1 @@
+/usr/bin/c++  -g  -rdynamic CMakeFiles/tests.dir/src/main_tests.cpp.o  -o tests -Wl,-rpath,/usr/local/lib libcore_lib.a /usr/local/lib/libboost_regex.so 

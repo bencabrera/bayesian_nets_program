@@ -111,6 +111,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named tests
+
+# Build rule for target.
+tests: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 tests
+.PHONY : tests
+
+# fast build rule for target.
+tests/fast:
+	$(MAKE) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/build
+.PHONY : tests/fast
+
+#=============================================================================
 # Target rules for targets named core_lib
 
 # Build rule for target.
@@ -136,32 +149,32 @@ runner/fast:
 	$(MAKE) -f CMakeFiles/runner.dir/build.make CMakeFiles/runner.dir/build
 .PHONY : runner/fast
 
-src/cnu.o: src/cnu.cpp.o
+src/io.o: src/io.cpp.o
 
-.PHONY : src/cnu.o
+.PHONY : src/io.o
 
 # target to build an object file
-src/cnu.cpp.o:
-	$(MAKE) -f CMakeFiles/core_lib.dir/build.make CMakeFiles/core_lib.dir/src/cnu.cpp.o
-.PHONY : src/cnu.cpp.o
+src/io.cpp.o:
+	$(MAKE) -f CMakeFiles/core_lib.dir/build.make CMakeFiles/core_lib.dir/src/io.cpp.o
+.PHONY : src/io.cpp.o
 
-src/cnu.i: src/cnu.cpp.i
+src/io.i: src/io.cpp.i
 
-.PHONY : src/cnu.i
+.PHONY : src/io.i
 
 # target to preprocess a source file
-src/cnu.cpp.i:
-	$(MAKE) -f CMakeFiles/core_lib.dir/build.make CMakeFiles/core_lib.dir/src/cnu.cpp.i
-.PHONY : src/cnu.cpp.i
+src/io.cpp.i:
+	$(MAKE) -f CMakeFiles/core_lib.dir/build.make CMakeFiles/core_lib.dir/src/io.cpp.i
+.PHONY : src/io.cpp.i
 
-src/cnu.s: src/cnu.cpp.s
+src/io.s: src/io.cpp.s
 
-.PHONY : src/cnu.s
+.PHONY : src/io.s
 
 # target to generate assembly for a file
-src/cnu.cpp.s:
-	$(MAKE) -f CMakeFiles/core_lib.dir/build.make CMakeFiles/core_lib.dir/src/cnu.cpp.s
-.PHONY : src/cnu.cpp.s
+src/io.cpp.s:
+	$(MAKE) -f CMakeFiles/core_lib.dir/build.make CMakeFiles/core_lib.dir/src/io.cpp.s
+.PHONY : src/io.cpp.s
 
 src/main_runner.o: src/main_runner.cpp.o
 
@@ -190,6 +203,60 @@ src/main_runner.cpp.s:
 	$(MAKE) -f CMakeFiles/runner.dir/build.make CMakeFiles/runner.dir/src/main_runner.cpp.s
 .PHONY : src/main_runner.cpp.s
 
+src/main_tests.o: src/main_tests.cpp.o
+
+.PHONY : src/main_tests.o
+
+# target to build an object file
+src/main_tests.cpp.o:
+	$(MAKE) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/src/main_tests.cpp.o
+.PHONY : src/main_tests.cpp.o
+
+src/main_tests.i: src/main_tests.cpp.i
+
+.PHONY : src/main_tests.i
+
+# target to preprocess a source file
+src/main_tests.cpp.i:
+	$(MAKE) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/src/main_tests.cpp.i
+.PHONY : src/main_tests.cpp.i
+
+src/main_tests.s: src/main_tests.cpp.s
+
+.PHONY : src/main_tests.s
+
+# target to generate assembly for a file
+src/main_tests.cpp.s:
+	$(MAKE) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/src/main_tests.cpp.s
+.PHONY : src/main_tests.cpp.s
+
+src/operations.o: src/operations.cpp.o
+
+.PHONY : src/operations.o
+
+# target to build an object file
+src/operations.cpp.o:
+	$(MAKE) -f CMakeFiles/core_lib.dir/build.make CMakeFiles/core_lib.dir/src/operations.cpp.o
+.PHONY : src/operations.cpp.o
+
+src/operations.i: src/operations.cpp.i
+
+.PHONY : src/operations.i
+
+# target to preprocess a source file
+src/operations.cpp.i:
+	$(MAKE) -f CMakeFiles/core_lib.dir/build.make CMakeFiles/core_lib.dir/src/operations.cpp.i
+.PHONY : src/operations.cpp.i
+
+src/operations.s: src/operations.cpp.s
+
+.PHONY : src/operations.s
+
+# target to generate assembly for a file
+src/operations.cpp.s:
+	$(MAKE) -f CMakeFiles/core_lib.dir/build.make CMakeFiles/core_lib.dir/src/operations.cpp.s
+.PHONY : src/operations.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -197,15 +264,22 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
+	@echo "... tests"
 	@echo "... core_lib"
 	@echo "... edit_cache"
 	@echo "... runner"
-	@echo "... src/cnu.o"
-	@echo "... src/cnu.i"
-	@echo "... src/cnu.s"
+	@echo "... src/io.o"
+	@echo "... src/io.i"
+	@echo "... src/io.s"
 	@echo "... src/main_runner.o"
 	@echo "... src/main_runner.i"
 	@echo "... src/main_runner.s"
+	@echo "... src/main_tests.o"
+	@echo "... src/main_tests.i"
+	@echo "... src/main_tests.s"
+	@echo "... src/operations.o"
+	@echo "... src/operations.i"
+	@echo "... src/operations.s"
 .PHONY : help
 
 
