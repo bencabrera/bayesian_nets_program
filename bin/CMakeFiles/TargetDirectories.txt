@@ -1,4 +1,0 @@
-/home/ace7k3/bayesian_nets_program/bin/CMakeFiles/rebuild_cache.dir
-/home/ace7k3/bayesian_nets_program/bin/CMakeFiles/core_lib.dir
-/home/ace7k3/bayesian_nets_program/bin/CMakeFiles/edit_cache.dir
-/home/ace7k3/bayesian_nets_program/bin/CMakeFiles/runner.dir
