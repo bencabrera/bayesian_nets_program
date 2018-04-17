@@ -16,6 +16,8 @@ set(FILES
 )
 
 set(TEST_FILES
+	src/tests/io_tests.cpp
+	src/tests/operation_tests.cpp
 )
 
 add_library(core_lib STATIC ${FILES})

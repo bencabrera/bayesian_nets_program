@@ -150,6 +150,21 @@ CNU read_cnu(std::istream& istr, std::istream& istr_dist)
 	return cnu;
 }
 
+
+std::ostream& print_dist(std::ostream& ostr, const JointDist& dist, const int n)
+{
+	std::vector<std::pair<Marking, double>> tmp(dist.begin(), dist.end());
+	std::sort(tmp.begin(), tmp.end(), [](const auto& p1, const auto& p2) {
+		return p1.first.to_string() < p2.first.to_string();
+	});
+
+	for(auto p : tmp)
+	{
+		print_marking(ostr, p.first, n);
+		ostr << " " << p.second << "\n";
+	}
+}
+
 std::ostream& print_cnu_details(std::ostream& ostr, const CNU& cnu)
 {
 	ostr << "----------------------------------------\n";
@@ -177,16 +192,7 @@ std::ostream& print_cnu_details(std::ostream& ostr, const CNU& cnu)
 
 	ostr << "----------------------------------------\n";
 	ostr << "distribution: \n";
-	std::vector<std::pair<Marking, double>> tmp(cnu.dist.begin(), cnu.dist.end());
-	std::sort(tmp.begin(), tmp.end(), [](const auto& p1, const auto& p2) {
-		return p1.first.to_string() < p2.first.to_string();
-	});
-
-	for(auto p : tmp)
-	{
-		print_marking(ostr, p.first, cnu.n);
-		ostr << " " << p.second << "\n";
-	}
+	print_dist(ostr, cnu.dist, cnu.n);
 
 	ostr << "----------------------------------------\n";
 
