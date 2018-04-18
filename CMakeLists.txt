@@ -14,6 +14,8 @@ set(FILES
 	src/io.cpp
 	src/operations.cpp
 	src/deterministic_operations.cpp
+	src/gbn/matrix.cpp
+	src/gbn/matrix_io.cpp
 )
 
 set(TEST_FILES

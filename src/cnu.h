@@ -1,12 +1,11 @@
 #pragma once
 
-#include <bitset>
+#include "bitvec.h"
+
 #include <unordered_map>
 #include <vector>
 
-constexpr int MAX_PLACES = 64;
-
-using Marking = std::bitset<MAX_PLACES>;
+using Marking = BitVec;
 using JointDist = std::unordered_map<Marking, double>;
 
 struct Transition {
