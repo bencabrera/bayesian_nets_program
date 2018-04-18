@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../bitvec.h"
 
 #include <unordered_map>
@@ -40,17 +42,12 @@ class Matrix {
 		virtual double get(const BitVec& to, const BitVec& from) const = 0;
 		virtual double& set(const BitVec& to, const BitVec& from, double val) = 0;
 
-		// private: 
-		// const BitVec one_mask_n;
-		// const BitVec one_mask_m;
+	protected: 
+		const BitVec one_mask_n;
+		const BitVec one_mask_m;
 
-		// static BitVec init_one_mask(int n) {
-		// BitVec b;
-		// for(int i = n; i < MAX_PLACES; i++)
-		// b[i] = 1;
-
-		// return b;
-		// }
+	private:
+		static BitVec init_one_mask(int n);
 };
 
 

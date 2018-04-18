@@ -20,6 +20,7 @@ set(FILES
 
 set(TEST_FILES
 	src/tests/io_tests.cpp
+	src/tests/matrix_io_tests.cpp
 	src/tests/operation_tests.cpp
 )
 

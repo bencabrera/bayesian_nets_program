@@ -2,8 +2,16 @@
 
 // abstract Matrix class
 Matrix::Matrix(const int n, const int m, const MatrixType type)
-: n(n), m(m), type(type)//, one_mask_n(init_one_mask(n)), one_mask_m(init_one_mask(m))
+: n(n), m(m), type(type), one_mask_n(init_one_mask(n)), one_mask_m(init_one_mask(m))
 {}
+
+BitVec Matrix::init_one_mask(int n) {
+	BitVec b;
+	for(int i = n; i < MAX_PLACES; i++)
+		b[i] = 1;
+
+	return b;
+}
 
 
 // DynamicMatrix
@@ -35,10 +43,12 @@ FMatrix::FMatrix(const int n, const int m, const bool b): Matrix(n,m,F), k(n), b
 
 double FMatrix::get(const BitVec& to, const BitVec& from) const 
 {
+	auto to_copy = to | one_mask_m;
+
 	if(to != from)
 		return 0;
 
-	if((b && to.all()) || (!b && to.none()))
+	if((b && to_copy.all()) || (!b && to.none()))
 		return 0;
 
 	return 1;

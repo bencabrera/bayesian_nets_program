@@ -5,41 +5,36 @@
 #include <boost/algorithm/string/split.hpp>
 #include <cmath>
 
-std::unique_ptr<Matrix> read_matrix(const std::vector<std::string>& lines)
+std::unique_ptr<Matrix> read_matrix(std::vector<std::string> lines)
 {
 	if(lines.empty())
 		throw std::logic_error("Reading in matrix failed because lines vector is empty.");
 
-	std::regex dynamic_regex("^dynamic", std::regex_constants::icase);
-	std::regex f_regex("^F_{?([0-9]+),([0-9]+)}?", std::regex_constants::icase);
-	std::regex one_b_regex("^1_{?([0-9]+)}?", std::regex_constants::icase);
+	std::regex dynamic_regex("^dynamic ([0-9]+) ([0-9]+) ?\\[?([0-9,;]*)\\]?", std::regex_constants::icase);
+	std::regex f_regex("^F_\\{?([0-9]+),([0-9]+)\\}?", std::regex_constants::icase);
+	std::regex one_b_regex("^1_\\{?([0-9])\\}?", std::regex_constants::icase);
 
 	// dynamic matrix
 	std::smatch matches;
 	if(std::regex_match(lines[0], matches, dynamic_regex))
 	{
-		std::string remainder_str = lines[0].substr(7);
-
-		std::stringstream ss(remainder_str);
-		int n, m;
-		ss >> n >> m;
+		int n = std::stoi(matches[1]);
+		int m = std::stoi(matches[2]);
 
 		if(n > 63 || m > 63)
 			throw std::logic_error("Dimensions of matrix too big.");
 
-		remainder_str = std::string(std::istreambuf_iterator<char>(ss), {});
+		std::string matrix_str = matches[3];
 
+		std::unique_ptr<DynamicMatrix> rtn(new DynamicMatrix(n,m));
+		auto& matrix = *rtn;
 		// [1,2,3; 4,5,6; 7,8,9] format
-		if(remainder_str.find_first_of('[') != std::string::npos)
+		if(!matrix_str.empty())
 		{
-			std::unique_ptr<DynamicMatrix> rtn(new DynamicMatrix(n,m));
-
-			auto& matrix = *rtn;
-
-			boost::trim_if(remainder_str, boost::is_any_of(" []"));
+			boost::trim(matrix_str);
 
 			std::vector<std::string> row_strs;
-			boost::split(row_strs, remainder_str, boost::is_any_of(";"));
+			boost::split(row_strs, matrix_str, boost::is_any_of(";"));
 			if(row_strs.size() != static_cast<std::size_t>(1 << m))
 				throw std::logic_error("Provided array does not have right dimension");
 
@@ -61,8 +56,8 @@ std::unique_ptr<Matrix> read_matrix(const std::vector<std::string>& lines)
 				i_row++;
 			}
 
-			return rtn;
 		}
+		return rtn;
 	}
 
 	// F matrix
