@@ -88,6 +88,12 @@ void do_command(std::string command_line, CNU& cnu)
 			std::cout << std::endl;
 		}
 
+		// update marking in CNU
+		for(const auto& p : transition.pre)
+			cnu.m[p] = 0;
+		for(const auto& p : transition.post)
+			cnu.m[p] = 1;
+
 		return;
 	}
 
