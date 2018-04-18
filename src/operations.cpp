@@ -41,7 +41,7 @@ void assert_op(const std::vector<int> places, bool b, JointDist& dist)
 		}
 	}
 
-	if(sum < 1e-40)
+	if(sum > 1e-40)
 		for(auto& [marking,p] : dist)
 			p = p/(1-sum);
 }
@@ -66,24 +66,7 @@ void nassert_op(const std::vector<int> places, bool b, JointDist& dist)
 		}
 	}
 
-	if(sum < 1e-40)
+	if(sum > 1e-40)
 		for(auto& [marking,p] : dist)
 			p = p/(1-sum);
-}
-
-void success_op(const std::vector<int> pre_places, const std::vector<int> post_places, JointDist& dist)
-{
-	assert_op(pre_places,1, dist);
-	assert_op(post_places,0, dist);
-
-	set_op(pre_places,0,dist);
-	set_op(post_places,1,dist);
-}
-void fail_pre_op(const std::vector<int> pre_places, const std::vector<int> /*post_places*/, JointDist& dist)
-{
-	nassert_op(pre_places, 1, dist);
-}
-void fail_post_op(const std::vector<int> /*pre_places*/, const std::vector<int> post_places, JointDist& dist)
-{
-	nassert_op(post_places, 0, dist);
 }

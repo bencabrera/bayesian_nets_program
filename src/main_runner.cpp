@@ -8,29 +8,86 @@
 #include "io.h"
 #include "operations.h"
 #include "deterministic_operations.h"
+#include <boost/algorithm/string/trim.hpp>
+#include <boost/algorithm/string/split.hpp>
 
-void do_command(const std::string command_line, CNU& cnu)
+void do_command(std::string command_line, CNU& cnu)
 {
+	boost::trim(command_line);
 	if(command_line[0] == 't')
 	{
-		auto i_transition = std::stoi(command_line.substr(1));
+		std::vector<std::string> split_command_line;
+		boost::split(split_command_line,command_line,boost::is_any_of(" "));
+
+		bool show_details = false;
+		if(split_command_line.size() > 1)
+		{
+			boost::trim(split_command_line[1]);
+			if(split_command_line[1] == "details")
+				show_details = true;
+		}
+
+		auto i_transition = std::stoi(split_command_line[0].substr(1));
 		const auto& transition = cnu.transitions[i_transition];
+		const auto& pre_places = transition.pre;
+		const auto& post_places = transition.post;
 
 		// fail_pre case
 		if(!check_pre_condition(transition,cnu.m))
 		{
-			fail_pre_op(transition.pre, transition.post, cnu.dist);
+			nassert_op(transition.pre, 1, cnu.dist);
+
+			std::cout << "- fail_pre -" << std::endl;
+			if(show_details) {
+				print_dist(std::cout,cnu.dist,cnu.n); 
+				std::cout << std::endl;
+			}
 			return;
 		}
 
 		// fail_post case
 		if(!check_post_condition(transition,cnu.m))
 		{
-			fail_post_op(transition.pre, transition.post, cnu.dist);
+			nassert_op(transition.post, 0, cnu.dist);
+
+			std::cout << "- fail_post -" << std::endl;
+			if(show_details) {
+				print_dist(std::cout,cnu.dist,cnu.n); 
+				std::cout << std::endl;
+			}
 			return;
 		}
 
-		success_op(transition.pre, transition.post, cnu.dist);
+		std::cout << "- success -" << std::endl;
+
+		assert_op(pre_places,1, cnu.dist);
+		if(show_details) {
+			std::cout << "- assert_pre -" << std::endl;
+			print_dist(std::cout,cnu.dist,cnu.n); 
+			std::cout << std::endl;
+		}
+
+		assert_op(post_places,0, cnu.dist);
+		if(show_details) {
+			std::cout << "- assert_post -" << std::endl;
+			print_dist(std::cout,cnu.dist,cnu.n); 
+			std::cout << std::endl;
+		}
+
+		set_op(pre_places,0,cnu.dist);
+		if(show_details) {
+			std::cout << "- set_pre -" << std::endl;
+			print_dist(std::cout,cnu.dist,cnu.n); 
+			std::cout << std::endl;
+		}
+
+		set_op(post_places,1,cnu.dist);
+		if(show_details) {
+			std::cout << "- set_post -" << std::endl;
+			print_dist(std::cout,cnu.dist,cnu.n); 
+			std::cout << std::endl;
+		}
+
 		return;
 	}
 
