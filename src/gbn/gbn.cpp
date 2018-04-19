@@ -44,6 +44,11 @@ const std::string& name(const GBNGraph::vertex_descriptor& v, const GBNGraph& g)
 	return get(vertex_name, g, v);
 }
 
+VertexType node_type(const GBNGraph::vertex_descriptor& v, const GBNGraph& g)
+{
+	return get(vertex_type, g, v);
+}
+
 // point to check:
 // - does every node have a matrix?
 // - are the dimensions of the matrix correct

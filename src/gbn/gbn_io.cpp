@@ -4,6 +4,7 @@
 #include <regex>
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <boost/graph/graphviz.hpp>
 #include <cmath>
 
 
@@ -88,9 +89,12 @@ GBN read_gbn(std::istream& istr)
 			if(matches[1].str()[0] != 'v' && matches[1].str().empty())
 				throw std::logic_error(std::string("Edge from entry '") + split_strs[i] + "' with starting v has to be followed by parathesis and the port number.");
 
-			std::size_t v_from = vertex_label_map.at(matches[1]);
+			if(!vertex_label_map.count(matches[1].str()))
+				throw std::logic_error(std::string("Precessor '") + matches[1].str() + "' not found.");
+
+			std::size_t v_from = vertex_label_map.at(matches[1].str());
 			std::size_t from_pos;
-			if(matches[1].str()[0] != 'i')
+			if(matches[1].str()[0] == 'i')
 				from_pos = 0;
 			else
 		   		from_pos = std::stoi(matches[2]);
@@ -105,7 +109,39 @@ GBN read_gbn(std::istream& istr)
 	return gbn;
 }
 
-void print_gbn(std::ostream& /*ostr*/, const GBN& /*gbn*/)
-{
+namespace {
+	class VertexWriter {
+		public:
+			VertexWriter(const GBNGraph& g) : g(g) {}
 
+			void operator()(std::ostream& out, const GBNGraph::vertex_descriptor& v) const {
+				if(node_type(v,g) == NODE)
+					out << "[label=\"" << name(v,g) << "\", shape=\"box\"]";
+				if(node_type(v,g) == INPUT)
+					out << "[xlabel=\"" << name(v,g) << "\", shape=\"point\"]";
+				if(node_type(v,g) == OUTPUT)
+					out << "[xlabel=\"" << name(v,g) << "\", shape=\"point\"]";
+			}
+		private:
+			const GBNGraph& g;
+	};
+	class EdgeWriter {
+		public:
+			EdgeWriter(const GBNGraph& g) : g(g) {}
+
+			void operator()(std::ostream& out, const GBNGraph::edge_descriptor& e) const {
+				out << "[label=\"(" << port_from(e,g) << "," << port_to(e,g) << ")\"]";
+			}
+		private:
+			const GBNGraph& g;
+	};
+	struct GraphWriter {
+		void operator()(std::ostream& out) const {
+			out << "rankdir=LR;" << std::endl;
+		}
+	};
+}
+void draw_gbn_graph(std::ostream& ostr, const GBNGraph& g)
+{
+	boost::write_graphviz(ostr, g, VertexWriter(g), EdgeWriter(g), GraphWriter());
 }

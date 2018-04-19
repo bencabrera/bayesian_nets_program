@@ -32,6 +32,7 @@ std::pair<int,int>& type(GBN& gbn);
 const std::pair<int,int>& type(const GBN& gbn);
 
 std::pair<int,int> type(const GBNGraph::vertex_descriptor& v, const GBNGraph& g);
+VertexType node_type(const GBNGraph::vertex_descriptor& v, const GBNGraph& g);
 
 int port_from(const GBNGraph::edge_descriptor& e, const GBNGraph& g);
 int port_to(const GBNGraph::edge_descriptor& e, const GBNGraph& g);
