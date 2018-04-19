@@ -25,6 +25,9 @@ using EdgeProperty = boost::property<boost::edge_index_t, std::size_t, boost::pr
 using GBNGraph = boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, VertexProperty, EdgeProperty, boost::vecS>;
 using GBN = std::tuple<std::pair<int, int>, GBNGraph>;
 
+using Vertex = GBNGraph::vertex_descriptor;
+using Edge = GBNGraph::edge_descriptor;
+
 GBNGraph& graph(GBN& gbn);
 const GBNGraph& graph(const GBN& gbn);
 
@@ -33,6 +36,8 @@ const std::pair<int,int>& type(const GBN& gbn);
 
 std::pair<int,int> type(const GBNGraph::vertex_descriptor& v, const GBNGraph& g);
 VertexType node_type(const GBNGraph::vertex_descriptor& v, const GBNGraph& g);
+
+MatrixPtr matrix(const GBNGraph::vertex_descriptor& v, const GBNGraph& g);
 
 int port_from(const GBNGraph::edge_descriptor& e, const GBNGraph& g);
 int port_to(const GBNGraph::edge_descriptor& e, const GBNGraph& g);

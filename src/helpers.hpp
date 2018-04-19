@@ -1,10 +1,12 @@
-#include "io_helper.h"
+#pragma once
+
+#include <string>
 
 #include <vector>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/trim.hpp>
 
-double read_double(std::string str)
+inline double read_double(std::string str)
 {
 		double p = 0;
 		if(str.find_first_of("/") != std::string::npos)
@@ -19,4 +21,9 @@ double read_double(std::string str)
 			// floting point number
 			p = std::stod(str);	
 		}
+}
+
+inline bool prob_is_zero(double val)
+{
+	return val < 1e-40;
 }

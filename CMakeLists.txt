@@ -18,7 +18,6 @@ set(FILES
 	src/gbn/matrix_io.cpp
 	src/gbn/gbn.cpp
 	src/gbn/gbn_io.cpp
-	src/io_helper.cpp
 )
 
 set(TEST_FILES

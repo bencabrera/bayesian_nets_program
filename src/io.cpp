@@ -8,7 +8,7 @@
 #include <regex>
 #include <cmath>
 
-#include "io_helper.h"
+#include "helpers.hpp"
 
 bool is_valid_joint_dist(const JointDist& dist)
 {
