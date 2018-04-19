@@ -5,7 +5,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include <cmath>
 
-std::unique_ptr<Matrix> read_matrix(std::vector<std::string> lines)
+MatrixPtr read_matrix(std::vector<std::string> lines)
 {
 	if(lines.empty())
 		throw std::logic_error("Reading in matrix failed because lines vector is empty.");
@@ -66,7 +66,7 @@ std::unique_ptr<Matrix> read_matrix(std::vector<std::string> lines)
 		int k = std::stoi(matches[1].str());
 		int b = std::stoi(matches[2].str());
 
-		return std::unique_ptr<Matrix>(new FMatrix(k,k,b));
+		return MatrixPtr(new FMatrix(k,k,b));
 	}
 
 	// One b matrix
@@ -74,7 +74,7 @@ std::unique_ptr<Matrix> read_matrix(std::vector<std::string> lines)
 	{
 		int b = std::stoi(matches[1].str());
 
-		return std::unique_ptr<Matrix>(new OneBMatrix(b));
+		return MatrixPtr(new OneBMatrix(b));
 	}
 
 	throw std::logic_error(std::string("Matrix could not be read. Not able to parse line")+ "'" + lines[0] + "'.");

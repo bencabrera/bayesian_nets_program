@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <boost/functional/hash.hpp>
 #include <functional>
+#include <memory>
 
 enum MatrixType {
 	DYNAMIC,
@@ -49,6 +50,8 @@ class Matrix {
 	private:
 		static BitVec init_one_mask(int n);
 };
+
+using MatrixPtr = std::shared_ptr<Matrix>;
 
 
 class DynamicMatrix : public Matrix {
