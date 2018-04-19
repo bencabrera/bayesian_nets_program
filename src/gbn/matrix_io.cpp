@@ -5,12 +5,14 @@
 #include <boost/algorithm/string/split.hpp>
 #include <cmath>
 
+#include "../io_helper.h"
+
 MatrixPtr read_matrix(std::vector<std::string> lines)
 {
 	if(lines.empty())
 		throw std::logic_error("Reading in matrix failed because lines vector is empty.");
 
-	std::regex dynamic_regex("^dynamic ([0-9]+) ([0-9]+) ?\\[?([0-9,;]*)\\]?", std::regex_constants::icase);
+	std::regex dynamic_regex("^dynamic ([0-9]+) ([0-9]+) ?\\[?([0-9,;\\/]*)\\]?", std::regex_constants::icase);
 	std::regex f_regex("^F_\\{?([0-9]+),([0-9]+)\\}?", std::regex_constants::icase);
 	std::regex one_b_regex("^1_\\{?([0-9])\\}?", std::regex_constants::icase);
 
@@ -51,7 +53,7 @@ MatrixPtr read_matrix(std::vector<std::string> lines)
 
 				unsigned long long i_col = 0;
 				for(auto val : value_strs)
-					matrix.set(i_col++, i_row, std::stod(val));
+					matrix.set(i_row, i_col++, read_double(val));
 
 				i_row++;
 			}

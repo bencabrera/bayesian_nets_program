@@ -59,3 +59,11 @@ TEST_CASE("1_b matrix should be correct 2") {
 	REQUIRE(p_matrix->get(BitVec("1"), BitVec()) == 1);
 	REQUIRE(p_matrix->get(BitVec("0"), BitVec()) == 0);
 }
+
+TEST_CASE("Reading matrices with fractions should work") {
+	auto p_matrix = read_matrix({ "dynamic 1 1 [1/3,1/2;2/3,1/2]" });
+	REQUIRE(p_matrix->get(BitVec("0"), BitVec("0")) == Approx(1.0/3));
+	REQUIRE(p_matrix->get(BitVec("1"), BitVec("0")) == Approx(2.0/3));
+	REQUIRE(p_matrix->get(BitVec("0"), BitVec("1")) == Approx(1.0/2));
+	REQUIRE(p_matrix->get(BitVec("1"), BitVec("1")) == Approx(1.0/2));
+}

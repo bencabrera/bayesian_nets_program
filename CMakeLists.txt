@@ -16,12 +16,15 @@ set(FILES
 	src/deterministic_operations.cpp
 	src/gbn/matrix.cpp
 	src/gbn/matrix_io.cpp
+	src/gbn/gbn.cpp
 	src/gbn/gbn_io.cpp
+	src/io_helper.cpp
 )
 
 set(TEST_FILES
 	src/tests/io_tests.cpp
 	src/tests/matrix_io_tests.cpp
+	src/tests/gbn_io_tests.cpp
 	src/tests/operation_tests.cpp
 )
 

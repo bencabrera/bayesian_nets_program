@@ -38,6 +38,7 @@ GBN read_gbn(std::istream& istr)
 		auto p_matrix = read_matrix({ remainder });
 		put(vertex_matrix, graph(gbn), v, p_matrix);
 		put(vertex_type, graph(gbn), v, NODE);
+		name(v, graph(gbn)) = vertex_label;
 	}
 
 	for(int i = 0; i < n; i++)
@@ -45,6 +46,7 @@ GBN read_gbn(std::istream& istr)
 		auto v = n_vertices+i;
 		vertex_label_map.insert({ std::string("i_")+std::to_string(i), v });
 		put(vertex_type, graph(gbn), v, INPUT);
+		name(v, graph(gbn)) = std::string("i_")+std::to_string(i);
 	}
 
 	for(int i = 0; i < m; i++)
@@ -52,6 +54,7 @@ GBN read_gbn(std::istream& istr)
 		auto v = n_vertices+n+i;
 		vertex_label_map.insert({ std::string("o_")+std::to_string(i), v });
 		put(vertex_type, graph(gbn), v, OUTPUT);
+		name(v, graph(gbn)) = std::string("o_")+std::to_string(i);
 	}
 
 	while(!istr.eof())

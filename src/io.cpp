@@ -8,6 +8,8 @@
 #include <regex>
 #include <cmath>
 
+#include "io_helper.h"
+
 bool is_valid_joint_dist(const JointDist& dist)
 {
 	double sum = 0;
@@ -44,19 +46,7 @@ JointDist read_joint_dist(std::istream& istr)
 		if(marking_str.empty() || p_str.empty())
 			throw std::logic_error("Joint distribution could not be read. Wrong format.");
 
-		double p = 0;
-		if(p_str.find_first_of("/") != std::string::npos)
-		{
-			// fraction
-			std::vector<std::string> strs;
-			boost::split(strs,p_str,boost::is_any_of("/"));
-			p = static_cast<double>(std::stod(strs[0])) / std::stod(strs[1]);
-		}
-		else
-		{
-			// floting point number
-			p = std::stod(p_str);	
-		}
+		double p = read_double(p_str);
 
 		Marking m(marking_str);
 		auto r = dist.insert({ m, p });
