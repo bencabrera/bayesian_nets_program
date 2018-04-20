@@ -65,3 +65,36 @@ TEST_CASE("ProbabilityBookkeeper should work correctly") {
 	bk.update_one_node(8, 0.25);
 	REQUIRE(bk.get_product() == Approx(0.03125));
 }
+
+TEST_CASE("Every wire should always have at least one input port") {
+	std::ifstream f(TEST_INSTANCE_FOLDER + "four_nodes.gbn");
+	auto gbn = read_gbn(f);
+	check_gbn_integrity(gbn);
+
+	auto wire_structure = build_wire_structure(gbn, { 0 });
+	for(auto& w : wire_structure.wires)
+		REQUIRE(w.inside_ports.size() > 0);
+
+	wire_structure = build_wire_structure(gbn, { 2, 3 });
+	for(auto& w : wire_structure.wires)
+		REQUIRE(w.inside_ports.size() > 0);
+}
+
+TEST_CASE("Flipping a wire should turn the right bits on in vertices") {
+	std::ifstream f(TEST_INSTANCE_FOLDER + "four_nodes.gbn");
+	auto gbn = read_gbn(f);
+	check_gbn_integrity(gbn);
+
+	auto wire_structure = build_wire_structure(gbn, { 0 });
+	std::vector<Wire> left_mosts;
+	std::copy_if(wire_structure.wires.begin(), wire_structure.wires.end(), std::back_inserter(left_mosts), [&wire_structure] (const Wire& w) {
+		return w.io_ports[0].first == wire_structure.input_bitvec;
+	});
+	auto& left_most_wire = left_mosts[0];
+	REQUIRE(left_most_wire.inside_ports.size() == 1);
+	REQUIRE(wire_structure.vertex_input_bitvecs[0]->test(0) == 0);
+	auto changed_vertices = flip_wire(left_most_wire);
+	REQUIRE(changed_vertices.size() == 1);
+	REQUIRE(name(changed_vertices[0],graph(gbn)) == "v_1");
+	REQUIRE(wire_structure.vertex_input_bitvecs[0]->test(0) == 1);
+}

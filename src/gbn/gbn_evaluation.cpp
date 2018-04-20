@@ -25,6 +25,8 @@ WireStructure build_wire_structure(const GBN& gbn, std::vector<Vertex> vertices)
 		wire_structure.vertex_input_bitvecs[v] = BitVecPtr(new BitVec());
 		wire_structure.vertex_output_bitvecs[v] = BitVecPtr(new BitVec());
 	}
+	wire_structure.input_bitvec = BitVecPtr(new BitVec());
+	wire_structure.output_bitvec = BitVecPtr(new BitVec());
 
 	const std::set<typename GBNGraph::vertex_descriptor> vertex_set(vertices.begin(), vertices.end());
 	auto& g = graph(gbn);
@@ -65,18 +67,16 @@ WireStructure build_wire_structure(const GBN& gbn, std::vector<Vertex> vertices)
 		{
 			Port p{boost::source(e,g), port_from(e,g)};
 			auto& wire = wires_map[p]; 
-			if(is_in(boost::source(e,g), vertex_set))
-			{
-				wire.inside_ports.push_back({ boost::source(e,g), wire_structure.vertex_output_bitvecs[boost::source(e,g)], port_from(e,g) });
-				wire.inside_ports.push_back({ v, wire_structure.vertex_input_bitvecs[boost::source(e,g)], port_to(e,g) });
-			}
-			else
+			wire.inside_ports.push_back({ v, wire_structure.vertex_input_bitvecs[v], port_to(e,g) });
+			if(!is_in(boost::source(e,g), vertex_set))
 				wire.io_ports.push_back({ wire_structure.input_bitvec, input_ports_map[p] });
 		}
+
 		for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
 		{
-			Port p{v, port_from(e,g)};
+			Port p{boost::source(e,g), port_from(e,g)};
 			auto& wire = wires_map[p]; 
+			wire.inside_ports.push_back({ v, wire_structure.vertex_output_bitvecs[v], port_from(e,g) });
 			if(!is_in(boost::target(e,g), vertex_set))
 				wire.io_ports.push_back({ wire_structure.output_bitvec, output_ports_map[p] });
 		}
@@ -104,7 +104,7 @@ std::vector<Vertex> flip_wire(Wire& wire)
 			p_bitvec->set(i_bit);
 		else
 			p_bitvec->reset(i_bit);
-		changed_vertices.push_back(v);
+		changed_vertices.push_back(v); // TODO: could be optimized out by using the vertices from wire...
 	}
 
 	for(auto [p_bitvec, i_bit] : wire.io_ports)
