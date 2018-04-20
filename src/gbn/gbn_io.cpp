@@ -77,7 +77,7 @@ GBN read_gbn(std::istream& istr)
 		std::size_t v_to = vertex_label_map.at(vec_id_str);
 		for(std::size_t i = 1; i < split_strs.size(); i++)
 		{
-			std::regex edge_from_regex("^(\\w+)\\(?([0-9]*)\\)?$");
+			std::regex edge_from_regex("^([\\w_]+)\\(?([0-9]*)\\)?$");
 
 			std::smatch matches;
 			if(!std::regex_match(split_strs[i], matches, edge_from_regex))

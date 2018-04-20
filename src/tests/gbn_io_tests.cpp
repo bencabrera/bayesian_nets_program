@@ -19,3 +19,9 @@ TEST_CASE("Reading in basic example and intergrity check should work") {
 	auto gbn = read_gbn(f);
 	check_gbn_integrity(gbn);
 }
+
+TEST_CASE("Non matching node and matrix dimension should be detected") {
+	std::ifstream f(TEST_INSTANCE_FOLDER + "wrong_four_nodes.gbn");
+	auto gbn = read_gbn(f);
+	REQUIRE_THROWS_AS(check_gbn_integrity(gbn), std::logic_error);
+}

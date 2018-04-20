@@ -91,8 +91,28 @@ void check_gbn_integrity(const GBN& gbn)
 	// check if matrix dimensions fit with in-coming / out-going edges
 	for(auto v : boost::make_iterator_range(boost::vertices(g)))
 	{
+		if(node_type(v,g) == NODE)
+		{
+			int v_n = boost::in_degree(v,g);	
+			std::set<int> used_output_ports;
+			for(auto e : boost::make_iterator_range(boost::out_edges(v, g)))
+			{
+				used_output_ports.insert(port_from(e,g));
+			}
+			int v_m = used_output_ports.size();
+
+			if(v_n != matrix(v,g)->n)
+				throw std::logic_error(std::string("Input dimension of node '") + name(v,g) + "' (" + std::to_string(n) + ") does not fit matrix input dimension (" + std::to_string(matrix(v,g)->n));
+			if(v_m != matrix(v,g)->m)
+				throw std::logic_error(std::string("Output dimension of node '") + name(v,g) + "' (" + std::to_string(m) + ") does not fit matrix output dimension (" + std::to_string(matrix(v,g)->m));
+		}
+	}
+
+	// check structural integrity of network
+	for(auto v : boost::make_iterator_range(boost::vertices(g)))
+	{
 		const auto v_name = name(v,g);
-		if(get(vertex_type, g, v) == NODE)
+		if(node_type(v,g) == NODE)
 		{
 			std::set<int> used_input_ports;
 			for(auto e : boost::make_iterator_range(boost::in_edges(v, g)))
@@ -120,4 +140,3 @@ void check_gbn_integrity(const GBN& gbn)
 		}
 	}
 }
-
