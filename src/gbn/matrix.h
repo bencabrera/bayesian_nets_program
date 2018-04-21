@@ -41,7 +41,8 @@ class Matrix {
 		Matrix(const int n, const int m, const MatrixType type);
 
 		virtual double get(const BitVec& to, const BitVec& from) const = 0;
-		virtual double& set(const BitVec& to, const BitVec& from, double val) = 0;
+		virtual void set(const BitVec& to, const BitVec& from, double val) = 0;
+		virtual void add(const BitVec& to, const BitVec& from, double val) = 0;
 
 	protected: 
 		const BitVec one_mask_n;
@@ -63,7 +64,8 @@ class DynamicMatrix : public Matrix {
 	DynamicMatrix(const int n, const int m);
 
 	double get(const BitVec& to, const BitVec& from) const;
-	double& set(const BitVec& to, const BitVec& from, double val);
+	void set(const BitVec& to, const BitVec& from, double val);
+	void add(const BitVec& to, const BitVec& from, double val);
 };
 
 class FMatrix : public Matrix {
@@ -76,7 +78,8 @@ class FMatrix : public Matrix {
 		FMatrix(const int n, const int m, const bool b);
 
 		double get(const BitVec& to, const BitVec& from) const;
-		double& set(const BitVec& to, const BitVec& from, double val);
+		void set(const BitVec& to, const BitVec& from, double val);
+		void add(const BitVec& to, const BitVec& from, double val);
 };
 
 class OneBMatrix : public Matrix {
@@ -87,5 +90,6 @@ class OneBMatrix : public Matrix {
 		OneBMatrix(const bool b);
 
 		double get(const BitVec& to, const BitVec& from) const;
-		double& set(const BitVec& to, const BitVec& from, double val);
+		void set(const BitVec& to, const BitVec& from, double val);
+		void add(const BitVec& to, const BitVec& from, double val);
 };

@@ -1,0 +1,38 @@
+#include <iostream>
+#include <fstream>
+
+#include "gbn/gbn.h"
+#include "gbn/gbn_io.h"
+#include "gbn/gbn_evaluation.h"
+#include "gbn/matrix_io.h"
+
+int main(int argc, char** argv)
+{
+	// try {
+		if(argc != 2)
+			throw std::logic_error("Wrong number of arguments.");
+
+		std::ifstream gbn_file(argv[1]);
+
+		auto gbn = read_gbn(gbn_file);
+		check_gbn_integrity(gbn);
+
+		std::vector<Vertex> vertices;
+		for(auto v : boost::make_iterator_range(boost::vertices(graph(gbn))))
+		{
+			if(node_type(v,graph(gbn)) == NODE)
+				vertices.push_back(v);
+		}
+	
+		auto m = evaluate_gbn(gbn, vertices);
+		print_matrix(std::cout, *m);
+
+	// }
+	// catch(const std::logic_error& e)
+	// {
+		// std::cout << "FATAL ERROR: " << e.what() << std::endl;
+		// return 1;
+	// }
+
+	return 0;
+}

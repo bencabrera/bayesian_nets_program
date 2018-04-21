@@ -1,6 +1,7 @@
 #include "gbn_evaluation.h"
 #include "../helpers.hpp"
 #include <iostream>
+#include "matrix_io.h"
 
 namespace {
 	template<typename T>
@@ -72,13 +73,21 @@ WireStructure build_wire_structure(const GBN& gbn, std::vector<Vertex> vertices)
 				wire.io_ports.push_back({ wire_structure.input_bitvec, input_ports_map[p] });
 		}
 
+		std::set<Port> unique_out_ports;
 		for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
 		{
 			Port p{boost::source(e,g), port_from(e,g)};
+			Port output_p{boost::target(e,g), port_to(e,g)};
 			auto& wire = wires_map[p]; 
-			wire.inside_ports.push_back({ v, wire_structure.vertex_output_bitvecs[v], port_from(e,g) });
+			unique_out_ports.insert({ v, port_from(e,g) });
 			if(!is_in(boost::target(e,g), vertex_set))
-				wire.io_ports.push_back({ wire_structure.output_bitvec, output_ports_map[p] });
+				wire.io_ports.push_back({ wire_structure.output_bitvec, output_ports_map[output_p] });
+		}
+
+		for(auto p : unique_out_ports)
+		{
+			auto& wire = wires_map[p]; 
+			wire.inside_ports.push_back({ p.first, wire_structure.vertex_output_bitvecs[v], p.second });
 		}
 	}
 
@@ -109,6 +118,7 @@ std::vector<Vertex> flip_wire(Wire& wire)
 
 	for(auto [p_bitvec, i_bit] : wire.io_ports)
 	{
+		p_bitvec->flip(i_bit);
 		// TODO: following if could be replaced by one flip without branching?
 		if(wire.active)
 			p_bitvec->set(i_bit);
@@ -187,17 +197,55 @@ void ProbabilityBookkeeper::update_one_node(Vertex v, double p)
 // 5.	for each of them all possible allocations of the inside wires have to be tried and multiplied and summed up
 MatrixPtr evaluate_gbn(const GBN& gbn, const std::vector<Vertex> vertices)
 {
-
 	// TODO: check that path closed
 	// TODO: check that vertices does not contain input or output vertices
 	// TODO: for efficiency move all F matrices to front and multiply it into another matrix
 
 	auto& g = graph(gbn);
+	auto wire_structure = build_wire_structure(gbn, vertices);
 
+	auto& wires = wire_structure.wires;
+	MatrixPtr m(new DynamicMatrix(wire_structure.input_ports.size(), wire_structure.output_ports.size()));
 
+	// init probabilities to the value at zero
+	ProbabilityBookkeeper bk(boost::num_vertices(g), vertices);
+	for(auto v : vertices)
+	{
+		auto& m_v = *matrix(v,g);
+		auto p = m_v.get(*wire_structure.vertex_input_bitvecs[v], *wire_structure.vertex_output_bitvecs[v]);
+		bk.update_one_node(v,p);
+	}
+	double product = bk.get_product();
+	m->add(*wire_structure.output_bitvec, *wire_structure.input_bitvec, product);
 
-	std::vector<double> probabilities_for_nodes(vertices.size(),0.0);
-	std::vector<BitVec> vertex_inputs(vertices.size(), BitVec());
-	std::vector<BitVec> vertex_outputs(vertices.size(), BitVec());
-	// notes: if prob is zero computation of product can be skipped by a lot because a lot are already zero
+	std::size_t i_wire = 0;
+	const std::size_t max_i_wire = wires.size();
+	std::set<Vertex> affected_vertices; // TODO: optimization: replace this with flat set
+	while(i_wire < max_i_wire) // TODO: do this more efficiently with gray codes -> only one wire flip at a time needed
+	{
+		auto& w = wires[i_wire];
+		auto affected_vertices_vec = flip_wire(w); 
+		affected_vertices.insert(affected_vertices_vec.begin(), affected_vertices_vec.end());
+
+		if(!w.active) // carry bit needed
+		{
+			i_wire++;
+		}
+		else
+		{
+			for(auto v : affected_vertices)
+			{
+				const auto& m_v = *matrix(v,g);
+				auto p = m_v.get(*wire_structure.vertex_output_bitvecs[v], *wire_structure.vertex_input_bitvecs[v]);
+				bk.update_one_node(v,p);
+			}
+
+			double product = bk.get_product();
+			m->add(*wire_structure.output_bitvec, *wire_structure.input_bitvec, product);
+			affected_vertices.clear();
+			i_wire = 0;	
+		}
+	}
+
+	return m;
 }

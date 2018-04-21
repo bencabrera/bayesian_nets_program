@@ -1,4 +1,5 @@
 #include "matrix.h"
+#include <iostream>
 
 // abstract Matrix class
 Matrix::Matrix(const int n, const int m, const MatrixType type)
@@ -27,11 +28,15 @@ double DynamicMatrix::get(const BitVec& to, const BitVec& from) const
 		return it->second;
 }
 
-double& DynamicMatrix::set(const BitVec& to, const BitVec& from, double val) 
+void DynamicMatrix::set(const BitVec& to, const BitVec& from, double val) 
 {
 	data[{ to, from }] = val;
 }
 
+void DynamicMatrix::add(const BitVec& to, const BitVec& from, double val) 
+{
+	data[{ to, from }] += val;
+}
 
 
 // FMatrix
@@ -54,7 +59,12 @@ double FMatrix::get(const BitVec& to, const BitVec& from) const
 	return 1;
 }
 
-double& FMatrix::set(const BitVec& /*to*/, const BitVec& /*from*/, double /*val*/) 
+void FMatrix::set(const BitVec& /*to*/, const BitVec& /*from*/, double /*val*/) 
+{
+	throw std::logic_error("Tried to set entry of F-matrix.");
+}
+
+void FMatrix::add(const BitVec& /*to*/, const BitVec& /*from*/, double /*val*/) 
 {
 	throw std::logic_error("Tried to set entry of F-matrix.");
 }
@@ -70,7 +80,12 @@ double OneBMatrix::get(const BitVec& to, const BitVec& /*from*/) const
 	return (to.test(0) == b) ? 1 : 0;
 }
 
-double& OneBMatrix::set(const BitVec& /*to*/, const BitVec& /*from*/, double /*val*/) 
+void OneBMatrix::set(const BitVec& /*to*/, const BitVec& /*from*/, double /*val*/) 
+{
+	throw std::logic_error("Tried to set entry of OneB-matrix.");
+}
+
+void OneBMatrix::add(const BitVec& /*to*/, const BitVec& /*from*/, double /*val*/) 
 {
 	throw std::logic_error("Tried to set entry of OneB-matrix.");
 }

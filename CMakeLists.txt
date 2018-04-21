@@ -39,6 +39,10 @@ add_executable(draw_gbn src/main_draw_gbn.cpp)
 target_link_libraries(draw_gbn core_lib)
 target_link_libraries(draw_gbn Boost::regex)
 
+add_executable(evaluate_gbn src/main_evaluate_gbn.cpp)
+target_link_libraries(evaluate_gbn core_lib)
+target_link_libraries(evaluate_gbn Boost::regex)
+
 add_executable(tests src/main_tests.cpp ${TEST_FILES})
 target_link_libraries(tests core_lib)
 target_link_libraries(tests Boost::regex)
