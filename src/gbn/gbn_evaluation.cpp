@@ -212,7 +212,7 @@ MatrixPtr evaluate_gbn(const GBN& gbn, const std::vector<Vertex> vertices)
 	for(auto v : vertices)
 	{
 		auto& m_v = *matrix(v,g);
-		auto p = m_v.get(*wire_structure.vertex_input_bitvecs[v], *wire_structure.vertex_output_bitvecs[v]);
+		auto p = m_v.get(*wire_structure.vertex_output_bitvecs[v], *wire_structure.vertex_input_bitvecs[v]);
 		bk.update_one_node(v,p);
 	}
 	double product = bk.get_product();

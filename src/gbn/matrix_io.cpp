@@ -87,14 +87,14 @@ void print_matrix(std::ostream& ostr, const Matrix& matrix)
 	ostr << matrix.n << " " << matrix.m << std::endl;
 	unsigned long long i_max_row = 1;
 	unsigned long long i_max_col = 1;
-	i_max_col = i_max_col << matrix.m;
-	i_max_row = i_max_row << matrix.n;
+	i_max_col = i_max_col << matrix.n;
+	i_max_row = i_max_row << matrix.m;
 
 	for(unsigned long long i_row = 0; i_row < i_max_row; i_row++)
 	{
 		for(unsigned long long i_col = 0; i_col < i_max_col; i_col++)
 		{
-			ostr << matrix.get(i_col, i_row) << " ";	
+			ostr << matrix.get(i_row, i_col) << " ";	
 		}
 		ostr << "\n";	
 	}

@@ -232,3 +232,55 @@ TEST_CASE("For a single node gbn every wire should have exactly one v_input bitv
 	}
 
 }
+
+TEST_CASE("Evaluation for split.gbn should be correct") 
+{
+	std::ifstream f(TEST_INSTANCE_FOLDER + "split.gbn");
+	auto gbn = read_gbn(f);
+	check_gbn_integrity(gbn);
+
+	std::vector<Vertex> picked_vertices({ 0, 1, 2 });
+
+	auto m = evaluate_gbn(gbn, picked_vertices);
+	
+	// check dimensions
+	REQUIRE(m->n == 1);
+	REQUIRE(m->m == 2);
+
+	// check values
+	REQUIRE(m->get(BitVec("00"), BitVec("0")) == Approx(0.2037037037));
+	REQUIRE(m->get(BitVec("01"), BitVec("0")) == Approx(0.2407407407));
+	REQUIRE(m->get(BitVec("10"), BitVec("0")) == Approx(0.2407407407));
+	REQUIRE(m->get(BitVec("11"), BitVec("0")) == Approx(0.3148148148));
+
+	REQUIRE(m->get(BitVec("00"), BitVec("1")) == Approx(0.1805555556));
+	REQUIRE(m->get(BitVec("01"), BitVec("1")) == Approx(0.2361111111));
+	REQUIRE(m->get(BitVec("10"), BitVec("1")) == Approx(0.2361111111));
+	REQUIRE(m->get(BitVec("11"), BitVec("1")) == Approx(0.3472222222));
+}
+
+TEST_CASE("Evaluation for four_nodes.gbn should be correct") 
+{
+	std::ifstream f(TEST_INSTANCE_FOLDER + "four_nodes.gbn");
+	auto gbn = read_gbn(f);
+	check_gbn_integrity(gbn);
+
+	std::vector<Vertex> picked_vertices({ 0, 1, 2, 3 });
+
+	auto m = evaluate_gbn(gbn, picked_vertices);
+	
+	// check dimensions
+	REQUIRE(m->n == 2);
+	REQUIRE(m->m == 1);
+
+	// check values
+	REQUIRE(m->get(BitVec("0"), BitVec("00")) == Approx(0.4074074074));
+	REQUIRE(m->get(BitVec("0"), BitVec("01")) == Approx(0.4166666667));
+	REQUIRE(m->get(BitVec("0"), BitVec("10")) == Approx(0.4305555556));
+	REQUIRE(m->get(BitVec("0"), BitVec("11")) == Approx(0.4375000000));
+
+	REQUIRE(m->get(BitVec("1"), BitVec("00")) == Approx(0.5925925926));
+	REQUIRE(m->get(BitVec("1"), BitVec("01")) == Approx(0.5833333333));
+	REQUIRE(m->get(BitVec("1"), BitVec("10")) == Approx(0.5694444444));
+	REQUIRE(m->get(BitVec("1"), BitVec("11")) == Approx(0.5625000000));
+}
