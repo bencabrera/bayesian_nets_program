@@ -16,6 +16,7 @@ set(FILES
 	src/deterministic_operations.cpp
 	src/gbn/matrix.cpp
 	src/gbn/matrix_io.cpp
+	src/gbn/matrix_decomposition.cpp
 	src/gbn/gbn.cpp
 	src/gbn/gbn_io.cpp
 	src/gbn/gbn_check.cpp
@@ -27,6 +28,7 @@ set(FILES
 set(TEST_FILES
 	src/tests/io_tests.cpp
 	src/tests/matrix_io_tests.cpp
+	src/tests/matrix_decomposition_tests.cpp
 	src/tests/gbn_io_tests.cpp
 	src/tests/operation_tests.cpp
 	src/tests/gbn_evaluation_tests.cpp
