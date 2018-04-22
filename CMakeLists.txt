@@ -18,7 +18,10 @@ set(FILES
 	src/gbn/matrix_io.cpp
 	src/gbn/gbn.cpp
 	src/gbn/gbn_io.cpp
+	src/gbn/gbn_check.cpp
+	src/gbn/gbn_modification.cpp
 	src/gbn/gbn_evaluation.cpp
+	src/gbn/node_elimination.cpp
 )
 
 set(TEST_FILES
@@ -42,6 +45,10 @@ target_link_libraries(draw_gbn Boost::regex)
 add_executable(evaluate_gbn src/main_evaluate_gbn.cpp)
 target_link_libraries(evaluate_gbn core_lib)
 target_link_libraries(evaluate_gbn Boost::regex)
+
+add_executable(node_elimination src/main_node_elimination.cpp)
+target_link_libraries(node_elimination core_lib)
+target_link_libraries(node_elimination Boost::regex)
 
 add_executable(tests src/main_tests.cpp ${TEST_FILES})
 target_link_libraries(tests core_lib)

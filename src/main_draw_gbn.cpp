@@ -3,6 +3,7 @@
 
 #include "gbn/gbn.h"
 #include "gbn/gbn_io.h"
+#include "gbn/gbn_check.h"
 
 int main(int argc, char** argv)
 {
@@ -16,7 +17,7 @@ int main(int argc, char** argv)
 		check_gbn_integrity(gbn);
 	
 		std::ofstream out_file(argv[2]);
-		draw_gbn_graph(out_file, graph(gbn));
+		draw_gbn_graph(out_file, gbn);
 	// }
 	// catch(const std::logic_error& e)
 	// {

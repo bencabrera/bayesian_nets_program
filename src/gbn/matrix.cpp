@@ -1,14 +1,15 @@
 #include "matrix.h"
 #include <iostream>
+#include "../helpers.hpp"
 
 // abstract Matrix class
-Matrix::Matrix(const int n, const int m, const MatrixType type)
+Matrix::Matrix(const Index n, const Index m, const MatrixType type)
 : n(n), m(m), type(type), one_mask_n(init_one_mask(n)), one_mask_m(init_one_mask(m))
 {}
 
-BitVec Matrix::init_one_mask(int n) {
+BitVec Matrix::init_one_mask(Index n) {
 	BitVec b;
-	for(int i = n; i < MAX_PLACES; i++)
+	for(Index i = n; i < MAX_PLACES; i++)
 		b[i] = 1;
 
 	return b;
@@ -16,7 +17,7 @@ BitVec Matrix::init_one_mask(int n) {
 
 
 // DynamicMatrix
-DynamicMatrix::DynamicMatrix(const int n, const int m): Matrix(n,m,DYNAMIC)
+DynamicMatrix::DynamicMatrix(const Index n, const Index m): Matrix(n,m,DYNAMIC)
 {}
 
 double DynamicMatrix::get(const BitVec& to, const BitVec& from) const 
@@ -40,7 +41,7 @@ void DynamicMatrix::add(const BitVec& to, const BitVec& from, double val)
 
 
 // FMatrix
-FMatrix::FMatrix(const int n, const int m, const bool b): Matrix(n,m,F), k(n), b(b)
+FMatrix::FMatrix(const Index n, const Index m, const bool b): Matrix(n,m,F), k(n), b(b)
 {
 	if(n != m)
 		throw std::logic_error("Tried to create F matrix where n != m");	
@@ -88,4 +89,28 @@ void OneBMatrix::set(const BitVec& /*to*/, const BitVec& /*from*/, double /*val*
 void OneBMatrix::add(const BitVec& /*to*/, const BitVec& /*from*/, double /*val*/) 
 {
 	throw std::logic_error("Tried to set entry of OneB-matrix.");
+}
+
+
+
+
+bool is_stochastic(const Matrix& matrix)
+{
+	unsigned long long i_max_row = 1;
+	unsigned long long i_max_col = 1;
+	i_max_col = i_max_col << matrix.n;
+	i_max_row = i_max_row << matrix.m;
+
+	for(unsigned long long i_col = 0; i_col < i_max_col; i_col++)
+	{
+		double sum = 0;
+		for(unsigned long long i_row = 0; i_row < i_max_row; i_row++)
+		{
+			sum += matrix.get(i_row, i_col);
+		}
+		if(std::abs(1-sum) > 1e-5)
+			return false;
+	}
+
+	return true;
 }

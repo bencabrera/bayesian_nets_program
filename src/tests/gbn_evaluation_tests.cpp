@@ -1,9 +1,10 @@
 #include "../../libs/catch/catch.hpp"
 
-#include "../gbn/gbn_io.h"
 #include "../gbn/gbn_evaluation.h"
 #include "../gbn/matrix_io.h"
 #include <fstream>
+#include "../gbn/gbn_check.h"
+#include "../gbn/gbn_io.h"
 
 #ifdef FOO 
 const std::string TEST_INSTANCE_FOLDER = FOO;
@@ -97,7 +98,7 @@ TEST_CASE("Flipping a wire should turn the right bits on in vertices") {
 	REQUIRE(wire_structure.vertex_input_bitvecs[0]->test(0) == 0);
 	auto changed_vertices = flip_wire(left_most_wire);
 	REQUIRE(changed_vertices.size() == 1);
-	REQUIRE(name(changed_vertices[0],graph(gbn)) == "v_1");
+	REQUIRE(name(changed_vertices[0],gbn.graph) == "v_1");
 	REQUIRE(wire_structure.vertex_input_bitvecs[0]->test(0) == 1);
 	REQUIRE(wire_structure.input_bitvec->test(0) == 1);
 
@@ -110,7 +111,7 @@ TEST_CASE("Flipping a wire should turn the right bits on in vertices") {
 	REQUIRE(wire_structure.vertex_output_bitvecs[0]->test(0) == 0);
 	changed_vertices = flip_wire(right_most_wire);
 	REQUIRE(changed_vertices.size() == 1);
-	REQUIRE(name(changed_vertices[0],graph(gbn)) == "v_1");
+	REQUIRE(name(changed_vertices[0],gbn.graph) == "v_1");
 	REQUIRE(wire_structure.vertex_output_bitvecs[0]->test(0) == 1);
 	REQUIRE(wire_structure.output_bitvec->test(0) == 1);
 }
@@ -151,7 +152,7 @@ TEST_CASE("Computing one product should work")
 	auto& w = tmp[0];
 	auto affected_vertices = flip_wire(w);
 
-	auto g = graph(gbn);
+	auto g = gbn.graph;
 
 	double product = 1;
 	for(auto v : picked_vertices)
@@ -283,4 +284,18 @@ TEST_CASE("Evaluation for four_nodes.gbn should be correct")
 	REQUIRE(m->get(BitVec("1"), BitVec("01")) == Approx(0.5833333333));
 	REQUIRE(m->get(BitVec("1"), BitVec("10")) == Approx(0.5694444444));
 	REQUIRE(m->get(BitVec("1"), BitVec("11")) == Approx(0.5625000000));
+}
+
+TEST_CASE("Evaluation for seven_nodes.gbn should work.") 
+{
+	std::ifstream f(TEST_INSTANCE_FOLDER + "seven_nodes.gbn");
+	auto gbn = read_gbn(f);
+	check_gbn_integrity(gbn);
+
+	std::vector<Vertex> picked_vertices({ 0, 1, 2, 3, 4, 5, 6 });
+	auto m = evaluate_gbn(gbn, picked_vertices);
+
+	REQUIRE(m->n == 4);
+	REQUIRE(m->m == 3);
+	REQUIRE(is_stochastic(*m) == true);
 }

@@ -15,7 +15,7 @@ namespace {
 // TODO: optimization: matrices with a lot of zeros in front so that they are rarely updated
 WireStructure build_wire_structure(const GBN& gbn, std::vector<Vertex> vertices)
 {
-	std::size_t n_vertices = boost::num_vertices(graph(gbn));
+	std::size_t n_vertices = gbn.n_vertices;
 	using Port = WireStructure::Port;
 
 	WireStructure wire_structure;
@@ -30,13 +30,13 @@ WireStructure build_wire_structure(const GBN& gbn, std::vector<Vertex> vertices)
 	wire_structure.output_bitvec = BitVecPtr(new BitVec());
 
 	const std::set<typename GBNGraph::vertex_descriptor> vertex_set(vertices.begin(), vertices.end());
-	auto& g = graph(gbn);
+	auto& g = gbn.graph;
 
 	// find all input and output ports and sort them
 	// - INSIDE < NODE && OUTPUT < NODE // - i_j < i_{j+1} // - o_j < o_{j+1} // - (v,i) < (v+1,0) // - (v,i) < (v,i+1)
 	auto comparison = [&g](const Port& p1, const Port& p2) -> bool {
-		if(node_type(p1.first,g) != node_type(p2.first,g))
-			return node_type(p1.first,g) < node_type(p2.first,g);
+		if(type(p1.first,g) != type(p2.first,g))
+			return type(p1.first,g) < type(p2.first,g);
 		if(name(p1.first,g) != name(p2.first,g))
 			return name(p1.first,g) < name(p2.first,g);
 		return p1.second < p2.second;
@@ -201,14 +201,14 @@ MatrixPtr evaluate_gbn(const GBN& gbn, const std::vector<Vertex> vertices)
 	// TODO: check that vertices does not contain input or output vertices
 	// TODO: for efficiency move all F matrices to front and multiply it into another matrix
 
-	auto& g = graph(gbn);
+	auto& g = gbn.graph;
 	auto wire_structure = build_wire_structure(gbn, vertices);
 
 	auto& wires = wire_structure.wires;
 	MatrixPtr m(new DynamicMatrix(wire_structure.input_ports.size(), wire_structure.output_ports.size()));
 
 	// init probabilities to the value at zero
-	ProbabilityBookkeeper bk(boost::num_vertices(g), vertices);
+	ProbabilityBookkeeper bk(gbn.n_vertices, vertices);
 	for(auto v : vertices)
 	{
 		auto& m_v = *matrix(v,g);

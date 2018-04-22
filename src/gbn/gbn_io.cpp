@@ -6,6 +6,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/graph/graphviz.hpp>
 #include <cmath>
+#include <boost/graph/filtered_graph.hpp>
 
 
 GBN read_gbn(std::istream& istr)
@@ -15,14 +16,14 @@ GBN read_gbn(std::istream& istr)
 	boost::trim(line);
 	std::vector<std::string> first_line_split;
 	boost::split(first_line_split, line, boost::is_any_of(" "));
-	int n_vertices = std::stol(first_line_split[0]);
-	int n = std::stol(first_line_split[1]);
-	int m = std::stol(first_line_split[2]);
-	GBN gbn({ n, m }, n_vertices+n+m);
+	std::size_t n_vertices = std::stol(first_line_split[0]);
+	Index n = std::stol(first_line_split[1]);
+	Index m = std::stol(first_line_split[2]);
+	GBN gbn(n, m, n_vertices);
 
 	// read in vertices and matrices
 	std::map<std::string, std::size_t> vertex_label_map;
-	for(int v = 0; v < n_vertices; v++)
+	for(Vertex v = 0; v < n_vertices; v++)
 	{
 		std::getline(istr, line);
 
@@ -36,26 +37,32 @@ GBN read_gbn(std::istream& istr)
 		std::string remainder = line.substr(first_space+1);
 		boost::trim(remainder);
 
-		auto p_matrix = read_matrix({ remainder });
-		put(vertex_matrix, graph(gbn), v, p_matrix);
-		put(vertex_type, graph(gbn), v, NODE);
-		name(v, graph(gbn)) = vertex_label;
+		try {
+			auto p_matrix = read_matrix({ remainder });
+			put(vertex_matrix, gbn.graph, v, p_matrix);
+			put(vertex_type, gbn.graph, v, NODE);
+			put(vertex_name, gbn.graph, v, vertex_label);
+		}
+		catch(const std::logic_error& e)
+		{
+			throw std::logic_error(std::string("Matrix error in line: '") + line + "\n" + e.what());
+		}
 	}
 
-	for(int i = 0; i < n; i++)
+	for(Index i_input = 0; i_input < n; i_input++)
 	{
-		auto v = n_vertices+i;
-		vertex_label_map.insert({ std::string("i_")+std::to_string(i), v });
-		put(vertex_type, graph(gbn), v, INPUT);
-		name(v, graph(gbn)) = std::string("i_")+std::to_string(i);
+		auto v = n_vertices+i_input;
+		vertex_label_map.insert({ std::string("i_")+std::to_string(i_input), v });
+		put(vertex_type, gbn.graph, v, INPUT);
+		put(vertex_name, gbn.graph, v, std::string("i_")+std::to_string(i_input));
 	}
 
-	for(int i = 0; i < m; i++)
+	for(Index i_output = 0; i_output < m; i_output++)
 	{
-		auto v = n_vertices+n+i;
-		vertex_label_map.insert({ std::string("o_")+std::to_string(i), v });
-		put(vertex_type, graph(gbn), v, OUTPUT);
-		name(v, graph(gbn)) = std::string("o_")+std::to_string(i);
+		auto v = n_vertices+n+i_output;
+		vertex_label_map.insert({ std::string("o_")+std::to_string(i_output), v });
+		put(vertex_type, gbn.graph, v, OUTPUT);
+		put(vertex_name, gbn.graph, v, std::string("o_")+std::to_string(i_output));
 	}
 
 	while(!istr.eof())
@@ -100,9 +107,9 @@ GBN read_gbn(std::istream& istr)
 		   		from_pos = std::stoi(matches[2]);
 			std::size_t to_pos = i-1;
 
-			auto res = boost::add_edge(v_from, v_to, graph(gbn));
+			auto res = boost::add_edge(v_from, v_to, gbn.graph);
 			auto& e = res.first;
-			put(edge_position, graph(gbn), e, std::pair<std::size_t, std::size_t>{ from_pos, to_pos });
+			put(edge_position, gbn.graph, e, std::pair<std::size_t, std::size_t>{ from_pos, to_pos });
 		}
 	}
 
@@ -115,11 +122,11 @@ namespace {
 			VertexWriter(const GBNGraph& g) : g(g) {}
 
 			void operator()(std::ostream& out, const GBNGraph::vertex_descriptor& v) const {
-				if(node_type(v,g) == NODE)
+				if(type(v,g) == NODE)
 					out << "[label=\"" << name(v,g) << "\", shape=\"box\"]";
-				if(node_type(v,g) == INPUT)
+				if(type(v,g) == INPUT)
 					out << "[xlabel=\"" << name(v,g) << "\", shape=\"point\"]";
-				if(node_type(v,g) == OUTPUT)
+				if(type(v,g) == OUTPUT)
 					out << "[xlabel=\"" << name(v,g) << "\", shape=\"point\"]";
 			}
 		private:
@@ -140,8 +147,27 @@ namespace {
 			out << "rankdir=LR;" << std::endl;
 		}
 	};
+
+	struct AllEdgesTruePredicate {
+		inline bool operator()(const Edge& /*e*/) const { return true; }
+	};
+
+	struct VisibleVerticesPredicate {
+		inline VisibleVerticesPredicate()
+		{}
+		inline VisibleVerticesPredicate(const std::set<Vertex> visible_vertices)
+			:visible_vertices(visible_vertices)
+		{}
+
+		bool operator()(const Vertex& v) const { 
+			return visible_vertices.count(v) > 0;
+		}
+
+		std::set<Vertex> visible_vertices;
+	};
 }
-void draw_gbn_graph(std::ostream& ostr, const GBNGraph& g)
+void draw_gbn_graph(std::ostream& ostr, const GBN& gbn)
 {
-	boost::write_graphviz(ostr, g, VertexWriter(g), EdgeWriter(g), GraphWriter());
+	boost::filtered_graph<GBNGraph, AllEdgesTruePredicate, VisibleVerticesPredicate> fg(gbn.graph,AllEdgesTruePredicate(), VisibleVerticesPredicate(gbn.visible_vertices));
+	boost::write_graphviz(ostr, fg, VertexWriter(gbn.graph), EdgeWriter(gbn.graph), GraphWriter());
 }

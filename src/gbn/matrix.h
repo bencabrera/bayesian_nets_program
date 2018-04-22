@@ -29,16 +29,18 @@ namespace std {
 	};
 }
 
+using Index = std::size_t;
+
 class Matrix {
 	public:
 
 		// type of matrix n -> m
-		const int n;
-		const int m;
+		const Index n;
+		const Index m;
 
 		const MatrixType type;
 
-		Matrix(const int n, const int m, const MatrixType type);
+		Matrix(const Index n, const Index m, const MatrixType type);
 
 		virtual double get(const BitVec& to, const BitVec& from) const = 0;
 		virtual void set(const BitVec& to, const BitVec& from, double val) = 0;
@@ -49,7 +51,7 @@ class Matrix {
 		const BitVec one_mask_m;
 
 	private:
-		static BitVec init_one_mask(int n);
+		static BitVec init_one_mask(Index n);
 };
 
 using MatrixPtr = std::shared_ptr<Matrix>;
@@ -61,7 +63,7 @@ class DynamicMatrix : public Matrix {
 
 	public: 
 
-	DynamicMatrix(const int n, const int m);
+	DynamicMatrix(const Index n, const Index m);
 
 	double get(const BitVec& to, const BitVec& from) const;
 	void set(const BitVec& to, const BitVec& from, double val);
@@ -71,11 +73,11 @@ class DynamicMatrix : public Matrix {
 class FMatrix : public Matrix {
 	public:
 
-		const int k;
+		const Index k;
 		const bool b;
 
 
-		FMatrix(const int n, const int m, const bool b);
+		FMatrix(const Index n, const Index m, const bool b);
 
 		double get(const BitVec& to, const BitVec& from) const;
 		void set(const BitVec& to, const BitVec& from, double val);
@@ -93,3 +95,5 @@ class OneBMatrix : public Matrix {
 		void set(const BitVec& to, const BitVec& from, double val);
 		void add(const BitVec& to, const BitVec& from, double val);
 };
+
+bool is_stochastic(const Matrix& m);
