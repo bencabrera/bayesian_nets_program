@@ -23,6 +23,12 @@ TEST_CASE("Reading the three types of matrices should work") {
 	read_matrix({ "F_{4,0}" });
 }
 
+TEST_CASE("Terminator matrix should be correct") {
+	auto p_matrix = read_matrix({ "T" });
+	REQUIRE(p_matrix->get(BitVec("0"), BitVec("0")) == 1);
+	REQUIRE(p_matrix->get(BitVec("0"), BitVec("1")) == 1);
+}
+
 TEST_CASE("F matrix should be correct 1") {
 	auto p_matrix = read_matrix({ "F_{1,1}" });
 	REQUIRE(p_matrix->get(BitVec("1"), BitVec("1")) == 0);

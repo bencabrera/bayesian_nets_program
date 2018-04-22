@@ -37,6 +37,9 @@ struct GBN {
 	GBNGraph graph;
 	std::set<Vertex> visible_vertices;
 	std::set<Vertex> hidden_vertices;
+
+	std::vector<Vertex> input_vertices;
+	std::vector<Vertex> output_vertices;
 };
 
 // vertex / edge specific accessors

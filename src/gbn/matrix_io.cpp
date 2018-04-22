@@ -15,6 +15,7 @@ MatrixPtr read_matrix(std::vector<std::string> lines)
 	std::regex dynamic_regex("^dynamic ([0-9]+) ([0-9]+) ?\\[?([0-9,;\\/]*)\\]?", std::regex_constants::icase);
 	std::regex f_regex("^F_\\{?([0-9]+),([0-9]+)\\}?", std::regex_constants::icase);
 	std::regex one_b_regex("^1_\\{?([0-9])\\}?", std::regex_constants::icase);
+	std::regex terminator_regex("^T", std::regex_constants::icase);
 
 	// dynamic matrix
 	std::smatch matches;
@@ -77,6 +78,12 @@ MatrixPtr read_matrix(std::vector<std::string> lines)
 		int b = std::stoi(matches[1].str());
 
 		return MatrixPtr(new OneBMatrix(b));
+	}
+
+	// terminator matrix
+	if(std::regex_match(lines[0], matches, terminator_regex))
+	{
+		return MatrixPtr(new TerminatorMatrix());
 	}
 
 	throw std::logic_error(std::string("Matrix could not be read. Not able to parse line")+ "'" + lines[0] + "'.");

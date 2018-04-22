@@ -114,3 +114,25 @@ bool is_stochastic(const Matrix& matrix)
 
 	return true;
 }
+
+
+
+
+// TerminatorMatrix
+TerminatorMatrix::TerminatorMatrix()
+	:Matrix(1,0,TERMINATOR)
+{}
+
+double TerminatorMatrix::get(const BitVec& /*to*/, const BitVec& /*from*/) const
+{
+	return 1;
+}
+
+void TerminatorMatrix::set(const BitVec& /*to*/, const BitVec& /*from*/, double /*val*/)
+{
+	throw std::logic_error("Tried to set entry of TerminatorMatrix.");
+}
+void TerminatorMatrix::add(const BitVec& /*to*/, const BitVec& /*from*/, double /*val*/)
+{
+	throw std::logic_error("Tried to set entry of TerminatorMatrix.");
+}

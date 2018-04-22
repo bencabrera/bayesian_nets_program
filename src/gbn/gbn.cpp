@@ -5,6 +5,11 @@ GBN::GBN(Index n, Index m, Index n_inside_vertices)
 {
 	for(Index i = 0; i < n_vertices; i++)
 		visible_vertices.insert(i);
+
+	for(Index i = 0; i < n; i++)
+		input_vertices.push_back(n_vertices+i);
+	for(Index i = 0; i < m; i++)
+		output_vertices.push_back(n_vertices+n+i);
 }
 
 Index n(const GBNGraph::vertex_descriptor& v, const GBNGraph& g)

@@ -12,7 +12,8 @@ enum MatrixType {
 	F,
 	IDENTITY,
 	ZEROS,
-	ONE_B
+	ONE_B,
+	TERMINATOR
 };
 
 namespace std {
@@ -96,4 +97,12 @@ class OneBMatrix : public Matrix {
 		void add(const BitVec& to, const BitVec& from, double val);
 };
 
+class TerminatorMatrix : public Matrix {
+	public:
+		TerminatorMatrix();
+
+		double get(const BitVec& to, const BitVec& from) const;
+		void set(const BitVec& to, const BitVec& from, double val);
+		void add(const BitVec& to, const BitVec& from, double val);
+};
 bool is_stochastic(const Matrix& m);
