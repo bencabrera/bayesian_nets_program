@@ -39,7 +39,7 @@ std::pair<MatrixPtr, MatrixPtr> matrix_decomposition(MatrixPtr p_matrix)
 		for(Index z = 0; z < z_max; z++)
 		{
 			BitVec x_bitvec(x), z_bitvec(z);
-			BitVec xz = bitvec_append(x,z,m.m);
+			BitVec xz = bitvec_append(x,z,m.n);
 
 			auto denom = m_front.get(x,z);
 
