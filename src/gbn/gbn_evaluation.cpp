@@ -13,15 +13,23 @@ namespace {
 
 // TODO: could sort here s.t. big lookups are performed less frequently
 // TODO: optimization: matrices with a lot of zeros in front so that they are rarely updated
-WireStructure build_wire_structure(const GBN& gbn, std::vector<Vertex> vertices)
+WireStructure build_wire_structure(const GBN& gbn, std::vector<Vertex> vertices_vec)
 {
-	std::size_t n_vertices = gbn.n_vertices;
 	using Port = WireStructure::Port;
+
+	std::size_t n_vertices = gbn.n_vertices;
+
+	if(vertices_vec.empty())
+	{
+		for(auto v : vertices(gbn))
+			if(type(v,gbn.graph) == NODE)
+				vertices_vec.push_back(v);
+	}
 
 	WireStructure wire_structure;
 	wire_structure.vertex_input_bitvecs.resize(n_vertices);
 	wire_structure.vertex_output_bitvecs.resize(n_vertices);
-	for(auto v : vertices)
+	for(auto v : vertices_vec)
 	{
 		wire_structure.vertex_input_bitvecs[v] = BitVecPtr(new BitVec());
 		wire_structure.vertex_output_bitvecs[v] = BitVecPtr(new BitVec());
@@ -29,7 +37,7 @@ WireStructure build_wire_structure(const GBN& gbn, std::vector<Vertex> vertices)
 	wire_structure.input_bitvec = BitVecPtr(new BitVec());
 	wire_structure.output_bitvec = BitVecPtr(new BitVec());
 
-	const std::set<typename GBNGraph::vertex_descriptor> vertex_set(vertices.begin(), vertices.end());
+	const std::set<typename GBNGraph::vertex_descriptor> vertex_set(vertices_vec.begin(), vertices_vec.end());
 	auto& g = gbn.graph;
 
 	// find all input and output ports and sort them
@@ -43,7 +51,7 @@ WireStructure build_wire_structure(const GBN& gbn, std::vector<Vertex> vertices)
 	};
 	std::set<Port,decltype(comparison)> input_ports_set(comparison);
 	std::set<Port,decltype(comparison)> output_ports_set(comparison);
-	for(auto v : vertices)
+	for(auto v : vertices_vec)
 	{
 		for(auto e : boost::make_iterator_range(boost::in_edges(v,g)))
 			if(!is_in(boost::source(e,g), vertex_set))
@@ -62,7 +70,7 @@ WireStructure build_wire_structure(const GBN& gbn, std::vector<Vertex> vertices)
 
 	// go through all edges again to now build wires
 	std::map<Port, Wire> wires_map;
-	for(auto v : vertices)
+	for(auto v : vertices_vec)
 	{
 		for(auto e : boost::make_iterator_range(boost::in_edges(v,g)))
 		{
@@ -195,21 +203,27 @@ void ProbabilityBookkeeper::update_one_node(Vertex v, double p)
 // 3. 	order these both sets so that input (i_0, ..., i_n come first) and then the other vertices in any order, same for output
 // 4.	now run two nested loops i = 0 =>  i < |inputs|, i = 0 => i < |outputs|: 
 // 5.	for each of them all possible allocations of the inside wires have to be tried and multiplied and summed up
-MatrixPtr evaluate_gbn(const GBN& gbn, const std::vector<Vertex> vertices)
+MatrixPtr evaluate_gbn(const GBN& gbn, std::vector<Vertex> vertices_vec)
 {
+	if(vertices_vec.empty())
+	{
+		for(auto v : vertices(gbn))
+			if(type(v,gbn.graph) == NODE)
+				vertices_vec.push_back(v);
+	}
 	// TODO: check that path closed
 	// TODO: check that vertices does not contain input or output vertices
 	// TODO: for efficiency move all F matrices to front and multiply it into another matrix
 
 	auto& g = gbn.graph;
-	auto wire_structure = build_wire_structure(gbn, vertices);
+	auto wire_structure = build_wire_structure(gbn, vertices_vec);
 
 	auto& wires = wire_structure.wires;
 	MatrixPtr m(new DynamicMatrix(wire_structure.input_ports.size(), wire_structure.output_ports.size()));
 
 	// init probabilities to the value at zero
-	ProbabilityBookkeeper bk(gbn.n_vertices, vertices);
-	for(auto v : vertices)
+	ProbabilityBookkeeper bk(gbn.n_vertices, vertices_vec);
+	for(auto v : vertices_vec)
 	{
 		auto& m_v = *matrix(v,g);
 		auto p = m_v.get(*wire_structure.vertex_output_bitvecs[v], *wire_structure.vertex_input_bitvecs[v]);

@@ -2,7 +2,7 @@
 #include "gbn_modification.h"
 #include <iostream>
 
-void replace_nodes_by_matrix(GBN& gbn, std::vector<Vertex> vertices)
+void replace_nodes_by_matrix(GBN& gbn, std::vector<Vertex> vertices, std::string new_node_label)
 {
 	auto& g = gbn.graph;
 	auto m = evaluate_gbn(gbn, vertices);
@@ -17,6 +17,8 @@ void replace_nodes_by_matrix(GBN& gbn, std::vector<Vertex> vertices)
 
 	auto v_new = add_vertex(gbn);
 	put(vertex_matrix, g, v_new, m);
+	put(vertex_name, g, v_new, new_node_label);
+	put(vertex_type, g, v_new, NODE);
 
 	for(std::size_t i_port = 0; i_port < input_ports.size(); i_port++)
 	{

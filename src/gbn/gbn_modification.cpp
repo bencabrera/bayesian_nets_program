@@ -29,4 +29,6 @@ void remove_vertex(Vertex v, GBN& gbn)
 		throw std::logic_error("Vertex was not found.");
 
 	gbn.visible_vertices.erase(it);
+	gbn.hidden_vertices.insert(v);
+	gbn.n_vertices--;
 }
