@@ -23,6 +23,7 @@ set(FILES
 	src/gbn/gbn_modification.cpp
 	src/gbn/gbn_evaluation.cpp
 	src/gbn/node_elimination.cpp
+	src/gbn/node_splitting.cpp
 )
 
 set(TEST_FILES
@@ -32,6 +33,7 @@ set(TEST_FILES
 	src/tests/gbn_io_tests.cpp
 	src/tests/operation_tests.cpp
 	src/tests/gbn_evaluation_tests.cpp
+	src/tests/node_splitting_tests.cpp
 )
 
 add_library(core_lib STATIC ${FILES})
@@ -51,6 +53,10 @@ target_link_libraries(evaluate_gbn Boost::regex)
 add_executable(node_elimination src/main_node_elimination.cpp)
 target_link_libraries(node_elimination core_lib)
 target_link_libraries(node_elimination Boost::regex)
+
+add_executable(node_splitting src/main_node_splitting.cpp)
+target_link_libraries(node_splitting core_lib)
+target_link_libraries(node_splitting Boost::regex)
 
 add_executable(tests src/main_tests.cpp ${TEST_FILES})
 target_link_libraries(tests core_lib)
