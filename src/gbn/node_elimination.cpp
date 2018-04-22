@@ -2,7 +2,7 @@
 #include "gbn_modification.h"
 #include <iostream>
 
-void replace_nodes_by_matrix(GBN& gbn, std::vector<Vertex> vertices, std::string new_node_label)
+Vertex replace_nodes_by_matrix(GBN& gbn, std::vector<Vertex> vertices, std::string new_node_label)
 {
 	auto& g = gbn.graph;
 	auto m = evaluate_gbn(gbn, vertices);
@@ -33,4 +33,6 @@ void replace_nodes_by_matrix(GBN& gbn, std::vector<Vertex> vertices, std::string
 		auto tmp = boost::add_edge(v_new, p.first, g);
 		put(edge_position, g, tmp.first, std::pair<std::size_t, std::size_t>{ i_port, p.second });
 	}
+
+	return v_new;
 } 	

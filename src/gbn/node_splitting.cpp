@@ -4,7 +4,7 @@
 #include "matrix_io.h"
 #include <iostream>
 
-std::vector<Vertex> node_splitting(GBN& gbn, Vertex v)
+std::pair<Vertex, Vertex> node_splitting(GBN& gbn, Vertex v)
 {
 	// get matrix of node
 	auto p_m = matrix(v,gbn.graph);
@@ -15,7 +15,7 @@ std::vector<Vertex> node_splitting(GBN& gbn, Vertex v)
 
 	// if matrix just has one output wire -> abort
 	if(m.m == 1)
-		return std::vector<Vertex>();
+		return std::pair<Vertex,Vertex>();
 
 	// decompose matrix
 	auto [p_m_front, p_m_back] = matrix_decomposition(p_m);
