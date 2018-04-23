@@ -36,8 +36,8 @@ class Matrix {
 	public:
 
 		// type of matrix n -> m
-		const Index n;
-		const Index m;
+		Index n;
+		Index m;
 
 		const MatrixType type;
 
@@ -49,12 +49,14 @@ class Matrix {
 		virtual void set(const BitVec& to, const BitVec& from, double val) = 0;
 		virtual void add(const BitVec& to, const BitVec& from, double val) = 0;
 
+		static BitVec init_one_mask(Index n);
+
+		BitVec one_mask_n;
+		BitVec one_mask_m;
+
 	protected: 
-		const BitVec one_mask_n;
-		const BitVec one_mask_m;
 
 	private:
-		static BitVec init_one_mask(Index n);
 };
 
 using MatrixPtr = std::shared_ptr<Matrix>;
@@ -76,7 +78,7 @@ class DynamicMatrix : public Matrix {
 class FMatrix : public Matrix {
 	public:
 
-		const Index k;
+		Index k;
 		const bool b;
 
 

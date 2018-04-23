@@ -54,7 +54,7 @@ namespace {
 			return;
 
 		// if we reached here, then v_pre is a stochastic vertex whose only successor is a terminator
-		
+
 		std::vector<Port> precessor_ports;	
 		for(auto e : boost::make_iterator_range(boost::in_edges(v_pre,g)))
 			precessor_ports.push_back({ boost::source(e,g), port_from(e,g) });
@@ -136,11 +136,87 @@ namespace {
 
 			if(found) {
 				boost::remove_edge_if([&](const Edge& e) {
-					return boost::source(e,g) == v_pre && boost::target(e,g) == v_post && port_from(e,g) == v_pre_port && port_to(e,g) == v_post_port;	
-				}, g);
+						return boost::source(e,g) == v_pre && boost::target(e,g) == v_post && port_from(e,g) == v_pre_port && port_to(e,g) == v_post_port;	
+						}, g);
 				auto e_new = boost::add_edge(v,v_post,g).first;
 				put(edge_position, g, e_new, std::pair<std::size_t, std::size_t>{ F_port, v_post_port });
 			}
+		}
+		while(found);
+	}
+
+	void check_and_apply_F4(GBN& gbn, Vertex v)
+	{
+		auto& g = gbn.graph;
+
+		if(type(v,g) != NODE || matrix(v,g)->type != ONE_B)
+			return;
+
+		auto& m = dynamic_cast<OneBMatrix&>(*matrix(v,g));
+		auto b = m.b;
+
+		bool found;
+		do {
+			found = false;
+			Vertex v_F;
+			Index F_port;
+			for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
+			{
+				auto v_to = boost::target(e,g);
+				if(type(v_to,g) == NODE && matrix(v_to, g)->type == F)
+				{
+					auto& m_F = dynamic_cast<FMatrix&>(*matrix(v_to, g));
+					if(m_F.b == b)
+					{
+						v_F = v_to;
+						F_port = port_to(e,g);
+						found = true;
+						break;
+					}
+				}
+			}
+
+			if(found) {
+				auto& m_F = dynamic_cast<FMatrix&>(*matrix(v_F, g));
+
+				std::vector<Port> output_ports;
+				for(auto e : boost::make_iterator_range(boost::out_edges(v_F,g)))
+				{
+					if(port_from(e,g) == F_port)
+					{
+						output_ports.push_back({ boost::target(e,g), port_to(e,g) });
+					}	
+				}
+
+				boost::remove_edge_if([&](const Edge& e) {
+					if(boost::target(e,g) == v_F && port_to(e,g) == F_port)
+						return true;
+					if(boost::source(e,g) == v_F && port_from(e,g) == F_port)
+						return true;
+
+					return false;
+				},g);
+				
+				for(auto e : boost::make_iterator_range(boost::in_edges(v_F,g)))
+					if(port_to(e,g) >= F_port)
+						put(edge_position, g, e, std::pair<std::size_t, std::size_t>{ port_from(e,g), port_to(e,g)-1 });
+				for(auto e : boost::make_iterator_range(boost::out_edges(v_F,g)))
+					if(port_from(e,g) >= F_port)
+						put(edge_position, g, e, std::pair<std::size_t, std::size_t>{ port_from(e,g)-1, port_to(e,g) });
+
+				m_F.k--;
+				m_F.n--;
+				m_F.m--;
+				m_F.one_mask_n = m_F.init_one_mask(m_F.n);
+				m_F.one_mask_m = m_F.init_one_mask(m_F.m);
+
+				for(auto p : output_ports)
+				{
+					auto e = boost::add_edge(v,p.first,g).first;
+					put(edge_position,g,e,std::pair<std::size_t,std::size_t>{ 0, p.second });
+				}
+			}
+
 		}
 		while(found);
 	}
@@ -158,5 +234,6 @@ void gbn_simplification(GBN& gbn)
 		check_and_apply_F2(gbn, v);
 		check_and_apply_CoUnit(gbn, v);
 		check_and_apply_F3(gbn, v);
+		check_and_apply_F4(gbn, v);
 	}
 }
