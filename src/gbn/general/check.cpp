@@ -1,4 +1,4 @@
-#include "gbn_check.h"
+#include "check.h"
 
 // point to check:
 // - does every node have a matrix?

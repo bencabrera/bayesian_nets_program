@@ -1,10 +1,10 @@
-#include "gbn_simplification.h"
+#include "simplification.h"
 
 #include <iostream>
-#include "matrix_io.h"
-#include "gbn_modification.h"
-#include "node_elimination.h"
-#include "node_splitting.h"
+#include "../matrix/matrix_io.h"
+#include "vertex_add_remove.h"
+#include "merging.h"
+#include "splitting.h"
 
 namespace {
 	using Port = std::pair<Vertex, int>;

@@ -1,12 +1,12 @@
 #include "../../libs/catch/catch.hpp"
 
-#include "../gbn/gbn_io.h"
-#include "../gbn/gbn_check.h"
-#include "../gbn/node_splitting.h"
-#include "../gbn/node_elimination.h"
-#include "../gbn/gbn_evaluation.h"
+#include "../gbn/general/gbn_io.h"
+#include "../gbn/general/check.h"
+#include "../gbn/modification/splitting.h"
+#include "../gbn/modification/merging.h"
+#include "../gbn/general/evaluation.h"
 #include <fstream>
-#include "../gbn/matrix_io.h"
+#include "../gbn/matrix/matrix_io.h"
 
 #ifdef FOO 
 const std::string TEST_INSTANCE_FOLDER = FOO;
@@ -42,7 +42,7 @@ TEST_CASE("Node splitting and merging again should yield the same for seven_node
 	std::ofstream out_file1("before.dot");
 	draw_gbn_graph(out_file1, gbn);
 
-	auto [v_front, v_back] = node_splitting(gbn, 2);
+	auto [v_front, v_back] = split_vertex(gbn, 2);
 	std::ofstream out_file2("after.dot");
 	draw_gbn_graph(out_file2, gbn);
 
@@ -61,7 +61,7 @@ TEST_CASE("Node splitting for seven_nodes.gbn should work 1.")
 	auto p_m_before = evaluate_gbn(gbn);
 	auto& m_before = *p_m_before;
 
-	node_splitting(gbn, 2);
+	split_vertex(gbn, 2);
 
 	auto p_m_after = evaluate_gbn(gbn);
 	auto& m_after = *p_m_after;
@@ -78,7 +78,7 @@ TEST_CASE("Node splitting for seven_nodes.gbn should work 3.")
 	auto p_m_before = evaluate_gbn(gbn);
 	auto& m_before = *p_m_before;
 
-	node_splitting(gbn, 3);
+	split_vertex(gbn, 3);
 
 	auto p_m_after = evaluate_gbn(gbn);
 	auto& m_after = *p_m_after;
@@ -95,7 +95,7 @@ TEST_CASE("Node splitting for seven_nodes.gbn should work 4.")
 	auto p_m_before = evaluate_gbn(gbn);
 	auto& m_before = *p_m_before;
 
-	node_splitting(gbn, 4);
+	split_vertex(gbn, 4);
 
 	auto p_m_after = evaluate_gbn(gbn);
 	auto& m_after = *p_m_after;
@@ -112,7 +112,7 @@ TEST_CASE("Node splitting for seven_nodes.gbn should work 5.")
 	auto p_m_before = evaluate_gbn(gbn);
 	auto& m_before = *p_m_before;
 
-	node_splitting(gbn, 5);
+	split_vertex(gbn, 5);
 
 	auto p_m_after = evaluate_gbn(gbn);
 	auto& m_after = *p_m_after;
@@ -129,7 +129,7 @@ TEST_CASE("Node splitting for seven_nodes.gbn should work 2.")
 	auto p_m_before = evaluate_gbn(gbn);
 	auto& m_before = *p_m_before;
 
-	node_splitting(gbn, 0);
+	split_vertex(gbn, 0);
 
 	auto p_m_after = evaluate_gbn(gbn);
 	auto& m_after = *p_m_after;
@@ -149,7 +149,7 @@ TEST_CASE("Node splitting for first_v_of_seven_nodes.gbn should work.")
 	std::ofstream out_file1("before.dot");
 	draw_gbn_graph(out_file1, gbn);
 
-	node_splitting(gbn, 0);
+	split_vertex(gbn, 0);
 	check_gbn_integrity(gbn);
 
 	std::ofstream out_file2("after.dot");
@@ -175,7 +175,7 @@ TEST_CASE("Node splitting and merging again of third_v_of_seven_nodes.gbn")
 	std::ofstream out_file1("before.dot");
 	draw_gbn_graph(out_file1, gbn);
 
-	auto [v_front,v_back] = node_splitting(gbn, 0);
+	auto [v_front,v_back] = split_vertex(gbn, 0);
 	check_gbn_integrity(gbn);
 
 	std::ofstream out_file2("after.dot");
@@ -196,9 +196,9 @@ TEST_CASE("Replace and split test.")
 	auto p_m_before = evaluate_gbn(gbn);
 	auto& m_before = *p_m_before;
 
-	auto v_new = replace_nodes_by_matrix(gbn, {1,2,3});
-	auto [v_front, v_back] = node_splitting(gbn, v_new);
-	node_splitting(gbn, v_front);
+	auto v_new = merge_vertices(gbn, {1,2,3});
+	auto [v_front, v_back] = split_vertex(gbn, v_new);
+	split_vertex(gbn, v_front);
 	check_gbn_integrity(gbn);
 
 	std::ofstream out_file2("after.dot");
@@ -220,9 +220,9 @@ TEST_CASE("Merging full seven_nodes.gbn and recursively splitting it again shoul
 	auto& m_before = *p_m_before;
 
 	std::vector<Vertex> vertices_vec{0,1,2,3,4,5,6};
-	auto v_new = replace_nodes_by_matrix(gbn, vertices_vec);
+	auto v_new = merge_vertices(gbn, vertices_vec);
 
-	recursive_node_splitting(gbn, v_new);
+	recursively_split_vertex(gbn, v_new);
 
 	std::ofstream out_file2("after.dot");
 	draw_gbn_graph(out_file2, gbn);

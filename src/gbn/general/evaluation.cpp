@@ -1,7 +1,6 @@
-#include "gbn_evaluation.h"
-#include "../helpers.hpp"
+#include "evaluation.h"
+#include "../../helpers.hpp"
 #include <iostream>
-#include "matrix_io.h"
 
 namespace {
 	template<typename T>

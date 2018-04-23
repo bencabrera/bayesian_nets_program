@@ -4,11 +4,11 @@
 #include "cn/cn.h"
 #include "cn/cn_io.h"
 #include "cn/cn_operations.h"
-#include "gbn/gbn.h"
-#include "gbn/gbn_io.h"
-#include "gbn/gbn_check.h"
-#include "gbn/gbn_evaluation.h"
-#include "gbn/matrix_io.h"
+#include "gbn/general/gbn.h"
+#include "gbn/general/gbn_io.h"
+#include "gbn/general/check.h"
+#include "gbn/general/evaluation.h"
+#include "gbn/matrix/matrix_io.h"
 #include "cnu/operations_on_gbn.h"
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/split.hpp>

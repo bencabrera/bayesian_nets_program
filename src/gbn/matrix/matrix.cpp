@@ -1,6 +1,6 @@
 #include "matrix.h"
 #include <iostream>
-#include "../helpers.hpp"
+#include "../../helpers.hpp"
 
 // abstract Matrix class
 Matrix::Matrix(const Index n, const Index m, const MatrixType type, bool is_stochastic)

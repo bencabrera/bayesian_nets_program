@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../bitvec.h"
+#include "../../bitvec.h"
 
 #include <unordered_map>
 #include <boost/functional/hash.hpp>

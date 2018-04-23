@@ -1,8 +1,8 @@
-#include "gbn_evaluation.h"
-#include "gbn_modification.h"
+#include "../general/evaluation.h"
+#include "vertex_add_remove.h"
 #include <iostream>
 
-Vertex replace_nodes_by_matrix(GBN& gbn, std::vector<Vertex> vertices, std::string new_node_label)
+Vertex merge_vertices(GBN& gbn, std::vector<Vertex> vertices, std::string new_node_label)
 {
 	auto& g = gbn.graph;
 	auto m = evaluate_gbn(gbn, vertices);

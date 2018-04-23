@@ -29,17 +29,19 @@ set(CNU_FILES
 )
 
 set(GBN_FILES
-	src/gbn/matrix.cpp
-	src/gbn/matrix_io.cpp
-	src/gbn/matrix_decomposition.cpp
-	src/gbn/gbn.cpp
-	src/gbn/gbn_io.cpp
-	src/gbn/gbn_check.cpp
-	src/gbn/gbn_modification.cpp
-	src/gbn/gbn_evaluation.cpp
-	src/gbn/node_elimination.cpp
-	src/gbn/node_splitting.cpp
-	src/gbn/gbn_simplification.cpp
+	src/gbn/matrix/matrix.cpp
+	src/gbn/matrix/matrix_io.cpp
+	src/gbn/matrix/matrix_decomposition.cpp
+
+	src/gbn/general/gbn.cpp
+	src/gbn/general/gbn_io.cpp
+	src/gbn/general/check.cpp
+	src/gbn/general/evaluation.cpp
+
+	src/gbn/modification/vertex_add_remove.cpp
+	src/gbn/modification/merging.cpp
+	src/gbn/modification/splitting.cpp
+	src/gbn/modification/simplification.cpp
 )
 
 set(TEST_FILES

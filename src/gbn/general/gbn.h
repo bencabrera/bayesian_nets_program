@@ -2,7 +2,7 @@
 
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
-#include "matrix.h"
+#include "../matrix/matrix.h"
 
 using vertex_matrix_t = boost::vertex_rank_t;
 using vertex_name_t = boost::vertex_name_t;

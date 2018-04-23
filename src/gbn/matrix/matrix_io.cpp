@@ -5,7 +5,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include <cmath>
 
-#include "../helpers.hpp"
+#include "../../helpers.hpp"
 
 MatrixPtr read_matrix(std::vector<std::string> lines)
 {

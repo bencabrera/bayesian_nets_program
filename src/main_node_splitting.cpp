@@ -1,13 +1,13 @@
 #include <iostream>
 #include <fstream>
 
-#include "gbn/gbn.h"
-#include "gbn/gbn_io.h"
-#include "gbn/gbn_check.h"
-#include "gbn/gbn_evaluation.h"
-#include "gbn/matrix_io.h"
-#include "gbn/node_elimination.h"
-#include "gbn/node_splitting.h"
+#include "gbn/general/gbn.h"
+#include "gbn/general/gbn_io.h"
+#include "gbn/general/check.h"
+#include "gbn/general/evaluation.h"
+#include "gbn/matrix/matrix_io.h"
+#include "gbn/modification/merging.h"
+#include "gbn/modification/splitting.h"
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/trim.hpp>
 
@@ -30,7 +30,7 @@ int main(int argc, char** argv)
 	std::ofstream out_file1("before.dot");
 	draw_gbn_graph(out_file1, gbn);
 
-	node_splitting(gbn, v);
+	split_vertex(gbn, v);
 
 
 	// check_gbn_integrity(gbn);

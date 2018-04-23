@@ -1,10 +1,10 @@
-#include "gbn_evaluation.h"
-#include "gbn_modification.h"
-#include "matrix_decomposition.h"
-#include "matrix_io.h"
+#include "../general/evaluation.h"
+#include "vertex_add_remove.h"
+#include "../matrix/matrix_decomposition.h"
+#include "../matrix/matrix_io.h"
 #include <iostream>
 
-std::pair<Vertex, Vertex> node_splitting(GBN& gbn, Vertex v)
+std::pair<Vertex, Vertex> split_vertex(GBN& gbn, Vertex v)
 {
 	// get matrix of node
 	auto p_m = matrix(v,gbn.graph);
@@ -116,13 +116,13 @@ std::pair<Vertex, Vertex> node_splitting(GBN& gbn, Vertex v)
 	return {v_front, v_back};
 } 	
 
-void recursive_node_splitting(GBN& gbn, Vertex v)
+void recursively_split_vertex(GBN& gbn, Vertex v)
 {
 	auto& g = gbn.graph;
 
 	if(matrix(v,g)->m == 1)
 		return;
 
-	auto [v_front, v_back] = node_splitting(gbn, v);
-		recursive_node_splitting(gbn, v_front);
+	auto [v_front, v_back] = split_vertex(gbn, v);
+	recursively_split_vertex(gbn, v_front);
 }

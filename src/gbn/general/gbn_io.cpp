@@ -1,5 +1,5 @@
 #include "gbn_io.h"
-#include "matrix_io.h"
+#include "../matrix/matrix_io.h"
 
 #include <regex>
 #include <boost/algorithm/string/trim.hpp>

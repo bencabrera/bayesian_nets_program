@@ -1,5 +1,5 @@
 #include "operations_on_gbn.h"
-#include "../gbn/gbn_modification.h"
+#include "../gbn/modification/vertex_add_remove.h"
 #include <iostream>
 
 void set_op(const std::vector<int> places, bool b, GBN& gbn)

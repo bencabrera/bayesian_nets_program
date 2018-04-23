@@ -1,5 +1,5 @@
 #include "matrix_decomposition.h"
-#include "../helpers.hpp"
+#include "../../helpers.hpp"
 #include <iostream>
 
 // should take two bitvecs and append them: x, y => xy

@@ -1,11 +1,11 @@
 #include "../../libs/catch/catch.hpp"
 
-#include "../gbn/gbn_evaluation.h"
-#include "../gbn/matrix_io.h"
+#include "../gbn/general/evaluation.h"
+#include "../gbn/matrix/matrix_io.h"
 #include <fstream>
-#include "../gbn/gbn_check.h"
-#include "../gbn/gbn_io.h"
-#include "../gbn/node_elimination.h"
+#include "../gbn/general/check.h"
+#include "../gbn/general/gbn_io.h"
+#include "../gbn/modification/merging.h"
 
 #ifdef FOO 
 const std::string TEST_INSTANCE_FOLDER = FOO;
@@ -311,7 +311,7 @@ TEST_CASE("seven_nodes.gbn: After replacing vertices 1,2 by matrix it should eva
 	std::vector<Vertex> vertices_to_replace { 1,2 };
 
 	auto m_before = evaluate_gbn(gbn);
-	replace_nodes_by_matrix(gbn, vertices_to_replace, "A");
+	merge_vertices(gbn, vertices_to_replace, "A");
 	auto m_after = evaluate_gbn(gbn);
 
 	// compare dimensions
@@ -337,7 +337,7 @@ TEST_CASE("seven_nodes.gbn: After replacing vertices 0,1,2 by matrix it should e
 	std::vector<Vertex> vertices_to_replace { 0,1,2 };
 
 	auto m_before = evaluate_gbn(gbn);
-	replace_nodes_by_matrix(gbn, vertices_to_replace, "A");
+	merge_vertices(gbn, vertices_to_replace, "A");
 	auto m_after = evaluate_gbn(gbn);
 
 	// compare dimensions
@@ -363,7 +363,7 @@ TEST_CASE("seven_nodes.gbn: After replacing vertices 0,1,3 by matrix it should e
 	std::vector<Vertex> vertices_to_replace { 0,1,3 };
 
 	auto m_before = evaluate_gbn(gbn);
-	replace_nodes_by_matrix(gbn, vertices_to_replace, "A");
+	merge_vertices(gbn, vertices_to_replace, "A");
 	auto m_after = evaluate_gbn(gbn);
 
 	// compare dimensions
@@ -389,7 +389,7 @@ TEST_CASE("seven_nodes.gbn: After replacing vertices 5,6 by matrix it should eva
 	std::vector<Vertex> vertices_to_replace { 5,6 };
 
 	auto m_before = evaluate_gbn(gbn);
-	replace_nodes_by_matrix(gbn, vertices_to_replace, "A");
+	merge_vertices(gbn, vertices_to_replace, "A");
 	auto m_after = evaluate_gbn(gbn);
 
 	// compare dimensions

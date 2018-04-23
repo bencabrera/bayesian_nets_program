@@ -1,14 +1,14 @@
 #include <iostream>
 #include <fstream>
 
-#include "gbn/gbn.h"
-#include "gbn/gbn_io.h"
-#include "gbn/gbn_check.h"
-#include "gbn/gbn_evaluation.h"
-#include "gbn/matrix_io.h"
-#include "gbn/node_elimination.h"
-#include "gbn/node_splitting.h"
-#include "gbn/gbn_simplification.h"
+#include "gbn/general/gbn.h"
+#include "gbn/general/gbn_io.h"
+#include "gbn/general/check.h"
+#include "gbn/general/evaluation.h"
+#include "gbn/matrix/matrix_io.h"
+#include "gbn/modification/merging.h"
+#include "gbn/modification/splitting.h"
+#include "gbn/modification/simplification.h"
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/trim.hpp>
 

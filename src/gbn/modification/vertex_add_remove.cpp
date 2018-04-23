@@ -1,4 +1,4 @@
-#include "gbn_modification.h"
+#include "vertex_add_remove.h"
 
 Vertex add_vertex(GBN& gbn)
 {
