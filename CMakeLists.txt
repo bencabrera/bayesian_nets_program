@@ -9,9 +9,18 @@ set (CMAKE_CXX_STANDARD 17)
 find_package(Boost REQUIRED regex)
 include_directories(${Boost_INCLUDE_DIRS})
 
+set(GENERAL_FILES
+	src/bitvec.cpp
+)
+
 set(CN_FILES
 	src/cn/cn_io.cpp
 	src/cn/cn_operations.cpp
+)
+
+set(JOINT_DIST_FILES
+	src/joint_dist/joint_dist_check.cpp
+	src/joint_dist/joint_dist_io.cpp
 )
 
 set(CNU_FILES
@@ -33,16 +42,16 @@ set(GBN_FILES
 )
 
 set(TEST_FILES
-	src/tests/io_tests.cpp
+	src/tests/cn_io_tests.cpp
 	src/tests/matrix_io_tests.cpp
 	src/tests/matrix_decomposition_tests.cpp
 	src/tests/gbn_io_tests.cpp
-	src/tests/operation_tests.cpp
+	src/tests/operations_on_joint_dist_tests.cpp
 	src/tests/gbn_evaluation_tests.cpp
 	src/tests/node_splitting_tests.cpp
 )
 
-add_library(core_lib STATIC ${CN_FILES} ${CNU_FILES} ${GBN_FILES})
+add_library(core_lib STATIC ${GENERAL_FILES} ${CN_FILES} ${JOINT_DIST_FILES} ${CNU_FILES} ${GBN_FILES})
 
 add_executable(runner src/main_joint_dist_runner.cpp)
 target_link_libraries(runner core_lib)
