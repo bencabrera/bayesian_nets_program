@@ -14,18 +14,20 @@ const std::string TEST_INSTANCE_FOLDER = FOO;
 const std::string TEST_INSTANCE_FOLDER = "";
 #endif
 
-bool test_matrices_equal(const Matrix& m1, const Matrix& m2)
-{
-	REQUIRE(m1.n == m2.n);
-	REQUIRE(m1.m == m2.m);
+namespace {
+	bool test_matrices_equal(const Matrix& m1, const Matrix& m2)
+	{
+		REQUIRE(m1.n == m2.n);
+		REQUIRE(m1.m == m2.m);
 
-	unsigned long long to_max = 1;
-	unsigned long long from_max = 1;
-	to_max = to_max << m1.m;
-	from_max = from_max << m1.n;
-	for(Index to = 0; to < to_max; to++)
-		for(Index from = 0; from < from_max; from++)
-			REQUIRE(m1.get(to, from) == Approx(m2.get(to, from)));
+		unsigned long long to_max = 1;
+		unsigned long long from_max = 1;
+		to_max = to_max << m1.m;
+		from_max = from_max << m1.n;
+		for(Index to = 0; to < to_max; to++)
+			for(Index from = 0; from < from_max; from++)
+				REQUIRE(m1.get(to, from) == Approx(m2.get(to, from)));
+	}
 }
 
 TEST_CASE("Node splitting and merging again should yield the same for seven_nodes.gbn.")

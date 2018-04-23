@@ -39,6 +39,7 @@ set(GBN_FILES
 	src/gbn/gbn_evaluation.cpp
 	src/gbn/node_elimination.cpp
 	src/gbn/node_splitting.cpp
+	src/gbn/gbn_simplification.cpp
 )
 
 set(TEST_FILES
@@ -49,6 +50,7 @@ set(TEST_FILES
 	src/tests/operations_on_joint_dist_tests.cpp
 	src/tests/gbn_evaluation_tests.cpp
 	src/tests/node_splitting_tests.cpp
+	src/tests/simplification_tests.cpp
 )
 
 add_library(core_lib STATIC ${GENERAL_FILES} ${CN_FILES} ${JOINT_DIST_FILES} ${CNU_FILES} ${GBN_FILES})
@@ -76,6 +78,10 @@ target_link_libraries(node_elimination Boost::regex)
 add_executable(node_splitting src/main_node_splitting.cpp)
 target_link_libraries(node_splitting core_lib)
 target_link_libraries(node_splitting Boost::regex)
+
+add_executable(gbn_simplification src/main_gbn_simplification.cpp)
+target_link_libraries(gbn_simplification core_lib)
+target_link_libraries(gbn_simplification Boost::regex)
 
 add_executable(tests src/main_tests.cpp ${TEST_FILES})
 target_link_libraries(tests core_lib)
