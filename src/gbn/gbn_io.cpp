@@ -143,9 +143,17 @@ namespace {
 			const GBNGraph& g;
 	};
 	struct GraphWriter {
+		GraphWriter(std::string title = "")
+			:title(title)
+		{}
+
 		void operator()(std::ostream& out) const {
+			if(!title.empty())
+				out << "graph[label=\"" << title << "\"," << "labelloc=top," << "labeljust=left];" << std::endl;
 			out << "rankdir=LR;" << std::endl;
 		}
+
+		std::string title;
 	};
 
 	struct AllEdgesTruePredicate {
@@ -166,8 +174,8 @@ namespace {
 		std::set<Vertex> visible_vertices;
 	};
 }
-void draw_gbn_graph(std::ostream& ostr, const GBN& gbn)
+void draw_gbn_graph(std::ostream& ostr, const GBN& gbn, std::string title)
 {
 	boost::filtered_graph<GBNGraph, AllEdgesTruePredicate, VisibleVerticesPredicate> fg(gbn.graph,AllEdgesTruePredicate(), VisibleVerticesPredicate(gbn.visible_vertices));
-	boost::write_graphviz(ostr, fg, VertexWriter(gbn.graph), EdgeWriter(gbn.graph), GraphWriter());
+	boost::write_graphviz(ostr, fg, VertexWriter(gbn.graph), EdgeWriter(gbn.graph), GraphWriter(title));
 }

@@ -12,6 +12,11 @@
 #include "cnu/operations_on_gbn.h"
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <functional>
+
+// globals (naughty, naughty, ...)
+std::string output_folder;
+std::size_t n_operations = 0;
 
 void export_gbn(const GBN& gbn, std::string filename)
 {
@@ -19,7 +24,13 @@ void export_gbn(const GBN& gbn, std::string filename)
 	draw_gbn_graph(f, gbn);
 }
 
-void do_command(std::string command_line, CN& cn, GBN& gbn)
+struct UpdateMetaData {
+	std::size_t i_operation;
+	std::string high_level_op_string;
+	std::string low_level_op_string;
+};
+
+void do_command(std::string command_line, CN& cn, GBN& gbn, std::function<void(UpdateMetaData)> status_callback = std::function<void(UpdateMetaData)>())
 {
 	boost::trim(command_line);
 	if(command_line[0] == 't')
@@ -44,13 +55,10 @@ void do_command(std::string command_line, CN& cn, GBN& gbn)
 		if(!check_pre_condition(transition,cn.m))
 		{
 			nassert_op(transition.pre, 1, gbn);
+			check_gbn_integrity(gbn);
 
-			std::cout << "- fail_pre -" << std::endl;
-			if(show_details) {
-				export_gbn(gbn,"fail_pre.dot");
-				check_gbn_integrity(gbn);
-				std::cout << std::endl;
-			}
+			if(status_callback)
+				status_callback(UpdateMetaData{n_operations++, std::string("fail-pre_{t")+std::to_string(i_transition)+"}", std::string("nassert") });
 			return;
 		}
 
@@ -58,49 +66,32 @@ void do_command(std::string command_line, CN& cn, GBN& gbn)
 		if(!check_post_condition(transition,cn.m))
 		{
 			nassert_op(transition.post, 0, gbn);
+			check_gbn_integrity(gbn);
 
-			std::cout << "- fail_post -" << std::endl;
-			if(show_details) {
-				export_gbn(gbn,"fail_post.dot");
-				check_gbn_integrity(gbn);
-				std::cout << std::endl;
-			}
+			if(status_callback)
+				status_callback(UpdateMetaData{n_operations++, std::string("fail-post_{t")+std::to_string(i_transition)+"}", std::string("nassert") });
 			return;
 		}
 
-		std::cout << "- success -" << std::endl;
-
 		assert_op(pre_places,1, gbn);
-		if(show_details) {
-			std::cout << "- assert_pre -" << std::endl;
-			export_gbn(gbn,"assert_pre.dot");
-			check_gbn_integrity(gbn);
-			std::cout << std::endl;
-		}
+		check_gbn_integrity(gbn);
+		if(status_callback)
+			status_callback(UpdateMetaData{n_operations++, std::string("success_{t")+std::to_string(i_transition)+"}", std::string("assert_pre") });
 
 		assert_op(post_places,0, gbn);
-		if(show_details) {
-			std::cout << "- assert_post -" << std::endl;
-			export_gbn(gbn,"assert_post.dot");
-			check_gbn_integrity(gbn);
-			std::cout << std::endl;
-		}
+		check_gbn_integrity(gbn);
+		if(status_callback)
+			status_callback(UpdateMetaData{n_operations++, std::string("success_{t")+std::to_string(i_transition)+"}", std::string("assert_post") });
 
 		set_op(pre_places,0,gbn);
-		if(show_details) {
-			std::cout << "- set_pre -" << std::endl;
-			export_gbn(gbn,"set_pre.dot");
-			check_gbn_integrity(gbn);
-			std::cout << std::endl;
-		}
+		check_gbn_integrity(gbn);
+		if(status_callback)
+			status_callback(UpdateMetaData{n_operations++, std::string("success_{t")+std::to_string(i_transition)+"}", std::string("set_pre") });
 
 		set_op(post_places,1,gbn);
-		if(show_details) {
-			std::cout << "- set_post -" << std::endl;
-			export_gbn(gbn,"set_post.dot");
-			check_gbn_integrity(gbn);
-			std::cout << std::endl;
-		}
+		check_gbn_integrity(gbn);
+		if(status_callback)
+			status_callback(UpdateMetaData{n_operations++, std::string("success_{t")+std::to_string(i_transition)+"}", std::string("set_post") });
 
 		// update marking in CNU
 		for(const auto& p : transition.pre)
@@ -120,6 +111,16 @@ void do_command(std::string command_line, CN& cn, GBN& gbn)
 		return;
 	}
 
+	if(command_line.substr(0,4) == "draw")
+	{
+		std::cout << std::endl;
+		std::vector<std::string> tmp_vec;
+		boost::split(tmp_vec, command_line, boost::is_any_of(" "));
+		std::ofstream f(output_folder + tmp_vec[1]);
+		draw_gbn_graph(f, gbn);
+		return;
+	}
+
 	if(command_line.substr(0,3) == "cn")
 	{
 		std::cout << std::endl;
@@ -132,14 +133,20 @@ void do_command(std::string command_line, CN& cn, GBN& gbn)
 int main(int argc, char** argv)
 {
 	try {
-		if(argc != 3)
+		if(argc != 4)
 			throw std::logic_error("Wrong number of arguments.");
 
 		std::ifstream cn_file(argv[1]);
 		std::ifstream gbn_file(argv[2]);
+		output_folder = argv[3];
+		if(output_folder.back() != '/')
+			output_folder += '/';
 
 		auto cn = read_cn(cn_file); 
 		auto gbn = read_gbn(gbn_file);
+
+		std::ofstream f(output_folder + std::to_string(0) + ".dot");
+		draw_gbn_graph(f, gbn, "init");
 
 		if(gbn.n != 0)
 			throw std::logic_error("For CNU application, GBN has to have n = 0.");
@@ -147,11 +154,18 @@ int main(int argc, char** argv)
 		if(gbn.m != cn.n)
 			throw std::logic_error("For CNU application, GBN has to have m = |cn.places|.");
 
+		auto callback = [&gbn] (const UpdateMetaData& meta_data) {
+			std::cout << meta_data.high_level_op_string << " " << meta_data.low_level_op_string << std::endl;
+
+			std::ofstream f(output_folder + std::to_string(n_operations) + ".dot");
+			draw_gbn_graph(f, gbn, meta_data.low_level_op_string);
+		};
+
 		std::string line;
 		while(true) 
 		{
 			std::getline(std::cin, line);
-			do_command(line, cn, gbn);
+			do_command(line, cn, gbn, callback);
 		}
 	}
 	catch(const std::logic_error& e)
