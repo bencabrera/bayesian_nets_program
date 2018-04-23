@@ -41,6 +41,6 @@ struct ProbabilityBookkeeper
 		int n_zeros;
 };
 
-WireStructure build_wire_structure(const GBN& gbn, std::vector<Vertex> vertices = {});
+WireStructure build_wire_structure(const GBN& gbn, std::vector<Vertex> vertices = {}, bool is_full_gbn = false);
 std::vector<Vertex> flip_wire(Wire& wire);
 MatrixPtr evaluate_gbn(const GBN& gbn, const std::vector<Vertex> vertices = {});

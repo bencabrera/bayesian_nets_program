@@ -405,3 +405,53 @@ TEST_CASE("seven_nodes.gbn: After replacing vertices 5,6 by matrix it should eva
 		for(unsigned long long i_col = 0; i_col < i_max_col; i_col++)
 			REQUIRE(m_before->get(i_row, i_col) == Approx(m_after->get(i_row, i_col)));
 }
+
+
+TEST_CASE("Evaluating id_1.gbn should yield identity 1 -> 1") {
+	std::ifstream f(TEST_INSTANCE_FOLDER + "id_1.gbn");
+	auto gbn = read_gbn(f);
+	check_gbn_integrity(gbn);
+
+	auto wire_structure = build_wire_structure(gbn,{},true);
+	std::cout << wire_structure.wires.size() << std::endl;
+
+	auto m = evaluate_gbn(gbn);
+	print_matrix(std::cout, *m);
+
+	unsigned long long i_max_row = 1;
+	unsigned long long i_max_col = 1;
+	i_max_col = i_max_col << m->n;
+	i_max_row = i_max_row << m->m;
+
+	for(unsigned long long i_row = 0; i_row < i_max_row; i_row++)
+		for(unsigned long long i_col = 0; i_col < i_max_col; i_col++)
+		{
+			if(i_row == i_col)
+				REQUIRE(m->get(i_row, i_col) == 1);
+			else
+				REQUIRE(m->get(i_row, i_col) == 0);
+		}
+}
+
+TEST_CASE("Evaluating id_1.gbn should yield identity 2 -> 2") {
+	std::ifstream f(TEST_INSTANCE_FOLDER + "id_2.gbn");
+	auto gbn = read_gbn(f);
+	check_gbn_integrity(gbn);
+
+	auto m = evaluate_gbn(gbn);
+	print_matrix(std::cout, *m);
+
+	unsigned long long i_max_row = 1;
+	unsigned long long i_max_col = 1;
+	i_max_col = i_max_col << m->n;
+	i_max_row = i_max_row << m->m;
+
+	for(unsigned long long i_row = 0; i_row < i_max_row; i_row++)
+		for(unsigned long long i_col = 0; i_col < i_max_col; i_col++)
+		{
+			if(i_row == i_col)
+				REQUIRE(m->get(i_row, i_col) == 1);
+			else
+				REQUIRE(m->get(i_row, i_col) == 0);
+		}
+}

@@ -18,14 +18,14 @@ int main(int argc, char** argv)
 		auto gbn = read_gbn(gbn_file);
 		check_gbn_integrity(gbn);
 
-		std::vector<Vertex> vertices_vec;
-		for(auto v : vertices(gbn))
-		{
-			if(type(v,gbn.graph) == NODE)
-				vertices_vec.push_back(v);
-		}
+		// std::vector<Vertex> vertices_vec;
+		// for(auto v : vertices(gbn))
+		// {
+			// if(type(v,gbn.graph) == NODE)
+				// vertices_vec.push_back(v);
+		// }
 	
-		auto m = evaluate_gbn(gbn, vertices_vec);
+		auto m = evaluate_gbn(gbn, {});
 		print_matrix(std::cout, *m);
 
 	// }

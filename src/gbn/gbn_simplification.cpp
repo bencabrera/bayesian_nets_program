@@ -312,6 +312,6 @@ void gbn_simplification(GBN& gbn)
 		check_and_apply_CoUnit(gbn, v);
 		check_and_apply_F3(gbn, v);
 		check_and_apply_F4(gbn, v);
-		check_and_apply_F5(gbn, v);
+		// check_and_apply_F5(gbn, v);
 	}
 }

@@ -13,7 +13,7 @@ namespace {
 
 // TODO: could sort here s.t. big lookups are performed less frequently
 // TODO: optimization: matrices with a lot of zeros in front so that they are rarely updated
-WireStructure build_wire_structure(const GBN& gbn, std::vector<Vertex> vertices_vec)
+WireStructure build_wire_structure(const GBN& gbn, std::vector<Vertex> vertices_vec, bool is_full_gbn)
 {
 	using Port = WireStructure::Port;
 
@@ -21,6 +21,7 @@ WireStructure build_wire_structure(const GBN& gbn, std::vector<Vertex> vertices_
 
 	if(vertices_vec.empty())
 	{
+		is_full_gbn = true;
 		for(auto v : vertices(gbn))
 			if(type(v,gbn.graph) == NODE)
 				vertices_vec.push_back(v);
@@ -60,6 +61,14 @@ WireStructure build_wire_structure(const GBN& gbn, std::vector<Vertex> vertices_
 			if(!is_in(boost::target(e,g), vertex_set))
 				output_ports_set.insert({ boost::target(e,g), port_to(e,g) });
 	}
+	if(is_full_gbn)
+	{
+		std::cout << "IS_FUL_GBN" << std::endl;
+		for(auto v : gbn.input_vertices)
+			input_ports_set.insert({ v, 0 });
+		for(auto v : gbn.output_vertices)
+			output_ports_set.insert({ v, 0 });
+	}
 	wire_structure.input_ports = std::vector<Port>(input_ports_set.begin(), input_ports_set.end());
 	wire_structure.output_ports = std::vector<Port>(output_ports_set.begin(), output_ports_set.end());
 	std::map<Port, std::size_t> input_ports_map, output_ports_map;
@@ -96,6 +105,29 @@ WireStructure build_wire_structure(const GBN& gbn, std::vector<Vertex> vertices_
 		{
 			auto& wire = wires_map[p]; 
 			wire.inside_ports.push_back({ p.first, wire_structure.vertex_output_bitvecs[v], p.second });
+		}
+	}
+
+
+	if(is_full_gbn)
+	{
+		for(auto input_vertex : gbn.input_vertices)
+		{
+			Port p{input_vertex, 0};
+			if(wires_map.find(p) == wires_map.end())
+			{
+				Wire w;
+				w.io_ports.push_back({ wire_structure.input_bitvec, input_ports_map[{ input_vertex, 0 }] });
+				for(auto e : boost::make_iterator_range(boost::out_edges(input_vertex,g)))
+				{
+					auto v_to = boost::target(e,g);
+					if(type(v_to,g) == OUTPUT)
+					{
+						w.io_ports.push_back({ wire_structure.output_bitvec, output_ports_map[{ v_to, 0 }] });
+					}
+				}
+				wires_map.insert({ p, w });
+			}
 		}
 	}
 
@@ -205,8 +237,10 @@ void ProbabilityBookkeeper::update_one_node(Vertex v, double p)
 // 5.	for each of them all possible allocations of the inside wires have to be tried and multiplied and summed up
 MatrixPtr evaluate_gbn(const GBN& gbn, std::vector<Vertex> vertices_vec)
 {
+	bool is_full_gbn = false;
 	if(vertices_vec.empty())
 	{
+		is_full_gbn = true;
 		for(auto v : vertices(gbn))
 			if(type(v,gbn.graph) == NODE)
 				vertices_vec.push_back(v);
@@ -216,7 +250,7 @@ MatrixPtr evaluate_gbn(const GBN& gbn, std::vector<Vertex> vertices_vec)
 	// TODO: for efficiency move all F matrices to front and multiply it into another matrix
 
 	auto& g = gbn.graph;
-	auto wire_structure = build_wire_structure(gbn, vertices_vec);
+	auto wire_structure = build_wire_structure(gbn, vertices_vec, is_full_gbn);
 
 	auto& wires = wire_structure.wires;
 	MatrixPtr m(new DynamicMatrix(wire_structure.input_ports.size(), wire_structure.output_ports.size()));
