@@ -97,6 +97,53 @@ namespace {
 		else
 			remove_vertex(v,gbn);
 	}
+
+	void check_and_apply_F3(GBN& gbn, Vertex v)
+	{
+		auto& g = gbn.graph;
+
+		if(type(v,g) != NODE || matrix(v,g)->type != F)
+			return;
+
+		auto& m = dynamic_cast<FMatrix&>(*matrix(v,g));
+		if(m.k < 2)
+			return;
+
+		// check for all precessors of F if they split their signal to multiple ports
+		bool found;
+		do {
+			found = false;
+			Vertex v_pre, v_post;
+			Index v_pre_port, v_post_port, F_port;
+
+			for(auto [it, end_it] = boost::in_edges(v,g); it != end_it && !found; it++)
+			{
+				auto e = *it;
+				v_pre = boost::source(e,g);
+				v_pre_port = port_from(e,g);
+				F_port = port_to(e,g);
+				for(auto e_pre_post : boost::make_iterator_range(boost::out_edges(v_pre,g)))
+				{
+					v_post = boost::target(e_pre_post,g);
+					if(port_from(e_pre_post,g) == v_pre_port && v_post != v)
+					{
+						found = true;
+						v_post_port = port_to(e_pre_post,g);
+						break;
+					}
+				}
+			}
+
+			if(found) {
+				boost::remove_edge_if([&](const Edge& e) {
+					return boost::source(e,g) == v_pre && boost::target(e,g) == v_post && port_from(e,g) == v_pre_port && port_to(e,g) == v_post_port;	
+				}, g);
+				auto e_new = boost::add_edge(v,v_post,g).first;
+				put(edge_position, g, e_new, std::pair<std::size_t, std::size_t>{ F_port, v_post_port });
+			}
+		}
+		while(found);
+	}
 }
 
 
@@ -110,5 +157,6 @@ void gbn_simplification(GBN& gbn)
 		check_and_apply_F1(gbn, v);
 		check_and_apply_F2(gbn, v);
 		check_and_apply_CoUnit(gbn, v);
+		check_and_apply_F3(gbn, v);
 	}
 }
