@@ -209,3 +209,26 @@ TEST_CASE("Replace and split test.")
 
 	test_matrices_equal(m_before, m_after);
 }
+
+TEST_CASE("Merging full seven_nodes.gbn and recursively splitting it again should yield the same.")
+{
+	std::ifstream f(TEST_INSTANCE_FOLDER + "seven_nodes.gbn");
+	auto gbn = read_gbn(f);
+	check_gbn_integrity(gbn);
+
+	auto p_m_before = evaluate_gbn(gbn);
+	auto& m_before = *p_m_before;
+
+	std::vector<Vertex> vertices_vec{0,1,2,3,4,5,6};
+	auto v_new = replace_nodes_by_matrix(gbn, vertices_vec);
+
+	recursive_node_splitting(gbn, v_new);
+
+	std::ofstream out_file2("after.dot");
+	draw_gbn_graph(out_file2, gbn);
+
+	auto p_m_after = evaluate_gbn(gbn);
+	auto& m_after = *p_m_after;
+
+	test_matrices_equal(m_before, m_after);
+}

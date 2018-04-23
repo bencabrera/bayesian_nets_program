@@ -115,3 +115,14 @@ std::pair<Vertex, Vertex> node_splitting(GBN& gbn, Vertex v)
 
 	return {v_front, v_back};
 } 	
+
+void recursive_node_splitting(GBN& gbn, Vertex v)
+{
+	auto& g = gbn.graph;
+
+	if(matrix(v,g)->m == 1)
+		return;
+
+	auto [v_front, v_back] = node_splitting(gbn, v);
+		recursive_node_splitting(gbn, v_front);
+}
