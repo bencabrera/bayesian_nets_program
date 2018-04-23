@@ -35,6 +35,8 @@ using Index = std::size_t;
 class Matrix {
 	public:
 
+		virtual ~Matrix();
+
 		// type of matrix n -> m
 		Index n;
 		Index m;
@@ -64,11 +66,13 @@ using MatrixPtr = std::shared_ptr<Matrix>;
 
 class DynamicMatrix : public Matrix {
 
+
 	std::unordered_map<std::pair<BitVec,BitVec>, double> data;
 
 	public: 
 
 	DynamicMatrix(const Index n, const Index m);
+	virtual ~DynamicMatrix();
 
 	double get(const BitVec& to, const BitVec& from) const;
 	void set(const BitVec& to, const BitVec& from, double val);
@@ -78,11 +82,13 @@ class DynamicMatrix : public Matrix {
 class FMatrix : public Matrix {
 	public:
 
+
 		Index k;
 		const bool b;
 
 
 		FMatrix(const Index k, const bool b);
+		virtual ~FMatrix();
 
 		double get(const BitVec& to, const BitVec& from) const;
 		void set(const BitVec& to, const BitVec& from, double val);
@@ -92,9 +98,11 @@ class FMatrix : public Matrix {
 class OneBMatrix : public Matrix {
 	public:
 
+
 		const bool b;
 
 		OneBMatrix(const bool b);
+		virtual ~OneBMatrix();
 
 		double get(const BitVec& to, const BitVec& from) const;
 		void set(const BitVec& to, const BitVec& from, double val);
@@ -104,6 +112,7 @@ class OneBMatrix : public Matrix {
 class TerminatorMatrix : public Matrix {
 	public:
 		TerminatorMatrix();
+		virtual ~TerminatorMatrix();
 
 		double get(const BitVec& to, const BitVec& from) const;
 		void set(const BitVec& to, const BitVec& from, double val);

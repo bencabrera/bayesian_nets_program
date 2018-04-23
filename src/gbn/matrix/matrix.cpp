@@ -7,6 +7,9 @@ Matrix::Matrix(const Index n, const Index m, const MatrixType type, bool is_stoc
 : n(n), m(m), type(type), is_stochastic(is_stochastic), one_mask_n(init_one_mask(n)), one_mask_m(init_one_mask(m))
 {}
 
+Matrix::~Matrix()
+{}
+
 BitVec Matrix::init_one_mask(Index n) {
 	BitVec b;
 	for(Index i = n; i < MAX_PLACES; i++)
@@ -17,7 +20,11 @@ BitVec Matrix::init_one_mask(Index n) {
 
 
 // DynamicMatrix
-DynamicMatrix::DynamicMatrix(const Index n, const Index m): Matrix(n,m,DYNAMIC,true)
+DynamicMatrix::DynamicMatrix(const Index n, const Index m)
+	: Matrix(n,m,DYNAMIC,true)
+{}
+
+DynamicMatrix::~DynamicMatrix()
 {}
 
 double DynamicMatrix::get(const BitVec& to, const BitVec& from) const 
@@ -41,11 +48,15 @@ void DynamicMatrix::add(const BitVec& to, const BitVec& from, double val)
 
 
 // FMatrix
-FMatrix::FMatrix(const Index k, const bool b): Matrix(k,k,F,false), k(k), b(b)
+FMatrix::FMatrix(const Index k, const bool b)
+	: Matrix(k,k,F,false), k(k), b(b)
 {
 	if(n != m)
 		throw std::logic_error("Tried to create F matrix where n != m");	
 }
+
+FMatrix::~FMatrix()
+{}
 
 double FMatrix::get(const BitVec& to, const BitVec& from) const 
 {
@@ -73,7 +84,11 @@ void FMatrix::add(const BitVec& /*to*/, const BitVec& /*from*/, double /*val*/)
 
 
 // OneBMatrix
-OneBMatrix::OneBMatrix(const bool b): Matrix(0,1,ONE_B,true), b(b)
+OneBMatrix::OneBMatrix(const bool b)
+	: Matrix(0,1,ONE_B,true), b(b)
+{}
+
+OneBMatrix::~OneBMatrix()
 {}
 
 double OneBMatrix::get(const BitVec& to, const BitVec& /*from*/) const 
@@ -121,6 +136,9 @@ bool is_stochastic(const Matrix& matrix)
 // TerminatorMatrix
 TerminatorMatrix::TerminatorMatrix()
 	:Matrix(1,0,TERMINATOR,true)
+{}
+
+TerminatorMatrix::~TerminatorMatrix()
 {}
 
 double TerminatorMatrix::get(const BitVec& /*to*/, const BitVec& /*from*/) const

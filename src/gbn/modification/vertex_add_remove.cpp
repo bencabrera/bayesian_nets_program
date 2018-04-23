@@ -1,6 +1,6 @@
 #include "vertex_add_remove.h"
 
-Vertex add_vertex(GBN& gbn)
+Vertex add_vertex(GBN& gbn, MatrixPtr p_m, std::string vertex_label)
 {
 	Vertex v_new;
 	if(gbn.hidden_vertices.size() > 0)
@@ -15,6 +15,10 @@ Vertex add_vertex(GBN& gbn)
 		v_new = boost::add_vertex(gbn.graph);
 		gbn.visible_vertices.insert(v_new);
 	}
+
+	put(vertex_name, gbn.graph, v_new, vertex_label);
+	put(vertex_matrix, gbn.graph, v_new, p_m);
+	put(vertex_type, gbn.graph, v_new, NODE);
 
 	gbn.n_vertices++;
 	return v_new;

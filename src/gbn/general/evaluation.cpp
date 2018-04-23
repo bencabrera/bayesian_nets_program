@@ -11,8 +11,10 @@ namespace {
 
 	void reserve_bitvec_for_wire_structure(WireStructure& wire_structure, const GBN& gbn, const std::vector<Vertex>& inside_vertices)
 	{
-		wire_structure.vertex_input_bitvecs.resize(gbn.n_vertices);
-		wire_structure.vertex_output_bitvecs.resize(gbn.n_vertices);
+		auto all_v = all_vertices(gbn);
+		auto v_max = *std::max_element(all_v.begin(), all_v.end()); 
+		wire_structure.vertex_input_bitvecs.resize(v_max+1);
+		wire_structure.vertex_output_bitvecs.resize(v_max+1);
 		for(auto v : inside_vertices)
 		{
 			wire_structure.vertex_input_bitvecs[v] = BitVecPtr(new BitVec());
@@ -285,7 +287,9 @@ namespace {
 		MatrixPtr m(new DynamicMatrix(wire_structure.input_ports.size(), wire_structure.output_ports.size()));
 
 		// init probabilities to the value at zero
-		ProbabilityBookkeeper bk(gbn.n_vertices, inside_vertices);
+		auto all_v = all_vertices(gbn);
+		auto v_max = *std::max_element(all_v.begin(), all_v.end()); 
+		ProbabilityBookkeeper bk(v_max+1, inside_vertices);
 		for(auto v : inside_vertices)
 		{
 			auto& m_v = *matrix(v,g);

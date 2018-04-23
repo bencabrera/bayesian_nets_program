@@ -222,24 +222,24 @@ TEST_CASE("(F4) should work correctly (f4_simplification_3.gbn).")
 	test_matrices_equal(m_before, m_after);
 }
 
-// TEST_CASE("(F5) should work correctly (f5_simplification_1.gbn).")
-// {
-	// std::ifstream f(TEST_INSTANCE_FOLDER + "f5_simplification_1.gbn");
-	// auto gbn = read_gbn(f);
-	// check_gbn_integrity(gbn);
+TEST_CASE("(F5) should work correctly (f5_simplification_1.gbn).")
+{
+	std::ifstream f(TEST_INSTANCE_FOLDER + "f5_simplification_1.gbn");
+	auto gbn = read_gbn(f);
+	check_gbn_integrity(gbn);
 
-	// auto p_m_before = evaluate_gbn(gbn);
-	// auto& m_before = *p_m_before;
-	// auto n_vertices_before = gbn.n_vertices;
+	auto p_m_before = evaluate_gbn(gbn);
+	auto& m_before = *p_m_before;
+	auto n_vertices_before = gbn.n_vertices;
 
-	// gbn_simplification(gbn);
-	// gbn_simplification(gbn);
-	// check_gbn_integrity(gbn);
+	gbn_simplification(gbn);
+	gbn_simplification(gbn);
+	check_gbn_integrity(gbn);
 
-	// auto n_vertices_after = gbn.n_vertices;
+	auto n_vertices_after = gbn.n_vertices;
 
-	// auto p_m_after = evaluate_gbn(gbn);
-	// auto& m_after = *p_m_after;
+	auto p_m_after = evaluate_gbn(gbn);
+	auto& m_after = *p_m_after;
 
-	// test_matrices_equal(m_before, m_after);
-// }
+	test_matrices_equal(m_before, m_after);
+}

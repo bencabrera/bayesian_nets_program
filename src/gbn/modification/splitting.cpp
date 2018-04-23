@@ -55,14 +55,8 @@ std::pair<Vertex, Vertex> split_vertex(GBN& gbn, Vertex v)
 	remove_vertex(v,gbn);
 
 	// add matrices to the the new node and give them names etc.
-	auto v_front = add_vertex(gbn);
-	auto v_back = add_vertex(gbn);
-	put(vertex_matrix, gbn.graph, v_front, p_m_front);
-	put(vertex_matrix, gbn.graph, v_back, p_m_back);
-	put(vertex_type, gbn.graph, v_front, NODE);
-	put(vertex_type, gbn.graph, v_back, NODE);
-	put(vertex_name, gbn.graph, v_front, old_name + " |-");
-	put(vertex_name, gbn.graph, v_back, old_name + " -|");
+	auto v_front = add_vertex(gbn, p_m_front, old_name + " |-");
+	auto v_back = add_vertex(gbn, p_m_back, old_name + " -|");
 
 	// connect new nodes with the old inputs
 	Index i_front_port = 0;

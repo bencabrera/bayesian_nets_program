@@ -42,7 +42,7 @@ struct GBN {
 		friend const std::vector<Vertex>& input_vertices(const GBN& gbn);
 		friend const std::vector<Vertex>& output_vertices(const GBN& gbn);
 
-		friend Vertex add_vertex(GBN& gbn);
+		friend Vertex add_vertex(GBN& gbn, MatrixPtr p_m, std::string vertex_label);
 		friend void remove_vertex(Vertex v, GBN& gbn);
 
 	private:
