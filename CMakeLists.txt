@@ -53,9 +53,13 @@ set(TEST_FILES
 
 add_library(core_lib STATIC ${GENERAL_FILES} ${CN_FILES} ${JOINT_DIST_FILES} ${CNU_FILES} ${GBN_FILES})
 
-add_executable(runner src/main_joint_dist_runner.cpp)
-target_link_libraries(runner core_lib)
-target_link_libraries(runner Boost::regex)
+add_executable(joint_dist_runner src/main_joint_dist_runner.cpp)
+target_link_libraries(joint_dist_runner core_lib)
+target_link_libraries(joint_dist_runner Boost::regex)
+
+add_executable(gbn_runner src/main_gbn_runner.cpp)
+target_link_libraries(gbn_runner core_lib)
+target_link_libraries(gbn_runner Boost::regex)
 
 add_executable(draw_gbn src/main_draw_gbn.cpp)
 target_link_libraries(draw_gbn core_lib)

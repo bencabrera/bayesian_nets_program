@@ -13,7 +13,7 @@ struct Transition {
 };
 
 struct CN {
-	int n; // number of places
+	std::size_t n; // number of places
 	Marking m; // (initial) marking
 	std::vector<Transition> transitions; 
 };

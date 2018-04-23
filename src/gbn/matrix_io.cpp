@@ -69,7 +69,7 @@ MatrixPtr read_matrix(std::vector<std::string> lines)
 		int k = std::stoi(matches[1].str());
 		int b = std::stoi(matches[2].str());
 
-		return MatrixPtr(new FMatrix(k,k,b));
+		return MatrixPtr(new FMatrix(k,b));
 	}
 
 	// One b matrix
@@ -91,7 +91,7 @@ MatrixPtr read_matrix(std::vector<std::string> lines)
 
 void print_matrix(std::ostream& ostr, const Matrix& matrix)
 {
-	ostr << matrix.n << " " << matrix.m << std::endl;
+	ostr << "n: " << matrix.n << " m: " << matrix.m << std::endl;
 	unsigned long long i_max_row = 1;
 	unsigned long long i_max_col = 1;
 	i_max_col = i_max_col << matrix.n;

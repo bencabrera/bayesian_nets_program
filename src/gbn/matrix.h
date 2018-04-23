@@ -78,7 +78,7 @@ class FMatrix : public Matrix {
 		const bool b;
 
 
-		FMatrix(const Index n, const Index m, const bool b);
+		FMatrix(const Index k, const bool b);
 
 		double get(const BitVec& to, const BitVec& from) const;
 		void set(const BitVec& to, const BitVec& from, double val);

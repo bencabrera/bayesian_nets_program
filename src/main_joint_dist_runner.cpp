@@ -1,6 +1,3 @@
-// Next TODOs:
-// - implement and check set, assert and nassert operations
-
 #include <iostream>
 #include <fstream>
 

@@ -41,7 +41,7 @@ void DynamicMatrix::add(const BitVec& to, const BitVec& from, double val)
 
 
 // FMatrix
-FMatrix::FMatrix(const Index n, const Index m, const bool b): Matrix(n,m,F), k(n), b(b)
+FMatrix::FMatrix(const Index k, const bool b): Matrix(k,k,F), k(k), b(b)
 {
 	if(n != m)
 		throw std::logic_error("Tried to create F matrix where n != m");	
