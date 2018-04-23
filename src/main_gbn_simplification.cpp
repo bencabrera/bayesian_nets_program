@@ -29,13 +29,14 @@ int main(int argc, char** argv)
 
 	gbn_simplification(gbn);
 
+	std::ofstream out_file2("after.dot");
+	draw_gbn_graph(out_file2, gbn);
+
+
 	check_gbn_integrity(gbn);
 
 	auto m_after = evaluate_gbn(gbn);
 	print_matrix(std::cout, *m_after);
-
-	std::ofstream out_file2("after.dot");
-	draw_gbn_graph(out_file2, gbn);
 
 	return 0;
 }
