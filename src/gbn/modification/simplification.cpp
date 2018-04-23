@@ -307,7 +307,7 @@ void gbn_simplification(GBN& gbn)
 	// auto& g = gbn.graph;
 
 	// (F1): run over all ONE_B matrices and check their precessors
-	for(auto v: vertices(gbn))	
+	for(auto v: inside_vertices(gbn))	
 	{
 		check_and_apply_F1(gbn, v);
 		check_and_apply_F2(gbn, v);

@@ -1,10 +1,10 @@
-#include "../../libs/catch/catch.hpp"
+#include "../../../libs/catch/catch.hpp"
 
-#include "../cn/cn.h"
-#include "../cn/cn_io.h"
-#include "../joint_dist/joint_dist.h"
-#include "../joint_dist/joint_dist_io.h"
-#include "../cnu/operations_on_joint_dist.h"
+#include "../../cn/cn.h"
+#include "../../cn/cn_io.h"
+#include "../../joint_dist/joint_dist.h"
+#include "../../joint_dist/joint_dist_io.h"
+#include "../../cnu/operations_on_joint_dist.h"
 #include <fstream>
 
 #ifdef FOO 

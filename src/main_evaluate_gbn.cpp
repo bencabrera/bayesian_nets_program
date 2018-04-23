@@ -17,7 +17,7 @@ int main(int argc, char** argv)
 	auto gbn = read_gbn(gbn_file);
 	check_gbn_integrity(gbn);
 
-	auto m = evaluate_gbn(gbn, {});
+	auto m = evaluate_gbn(gbn);
 	print_matrix(std::cout, *m);
 
 	return 0;

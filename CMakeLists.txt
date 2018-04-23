@@ -45,14 +45,16 @@ set(GBN_FILES
 )
 
 set(TEST_FILES
-	src/tests/cn_io_tests.cpp
-	src/tests/matrix_io_tests.cpp
-	src/tests/matrix_decomposition_tests.cpp
-	src/tests/gbn_io_tests.cpp
-	src/tests/operations_on_joint_dist_tests.cpp
-	src/tests/gbn_evaluation_tests.cpp
-	src/tests/node_splitting_tests.cpp
-	src/tests/simplification_tests.cpp
+	src/tests/cn/cn_io_tests.cpp
+
+	src/tests/gbn/matrix_io_tests.cpp
+	src/tests/gbn/matrix_decomposition_tests.cpp
+	src/tests/gbn/gbn_io_tests.cpp
+	src/tests/gbn/evaluation_tests.cpp
+	src/tests/gbn/splitting_tests.cpp
+	src/tests/gbn/simplification_tests.cpp
+
+	src/tests/cnu/operations_on_joint_dist_tests.cpp
 )
 
 add_library(core_lib STATIC ${GENERAL_FILES} ${CN_FILES} ${JOINT_DIST_FILES} ${CNU_FILES} ${GBN_FILES})

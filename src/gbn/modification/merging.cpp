@@ -5,9 +5,9 @@
 Vertex merge_vertices(GBN& gbn, std::vector<Vertex> vertices, std::string new_node_label)
 {
 	auto& g = gbn.graph;
-	auto m = evaluate_gbn(gbn, vertices);
+	auto m = evaluate_vertices(gbn, vertices);
 	// TODO: this should of course be returned from previous function as well and not computed again
-	auto wire_structure = build_wire_structure(gbn, vertices);
+	auto wire_structure = build_wire_structure_for_vertices(gbn, vertices);
 
 	const auto& input_ports = wire_structure.input_ports;
 	const auto& output_ports = wire_structure.output_ports;

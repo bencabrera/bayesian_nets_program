@@ -1,7 +1,7 @@
-#include "../../libs/catch/catch.hpp"
+#include "../../../libs/catch/catch.hpp"
 
-#include "../gbn/general/gbn_io.h"
-#include "../gbn/general/check.h"
+#include "../../gbn/general/gbn_io.h"
+#include "../../gbn/general/check.h"
 #include <fstream>
 
 #ifdef FOO 

@@ -48,7 +48,30 @@ MatrixPtr matrix(const GBNGraph::vertex_descriptor& v, const GBNGraph& g)
 	return get(vertex_matrix, g, v);
 }
 
-std::vector<Vertex> vertices(const GBN& gbn)
+
+
+
+std::vector<Vertex> all_vertices(const GBN& gbn)
 {
 	return std::vector<Vertex>(gbn.visible_vertices.begin(), gbn.visible_vertices.end());
+}
+
+std::vector<Vertex> inside_vertices(const GBN& gbn)
+{
+	std::vector<Vertex> rtn;
+	std::copy_if(gbn.visible_vertices.begin(), gbn.visible_vertices.end(), std::back_inserter(rtn), [&gbn](const Vertex& v) {
+		return type(v,gbn.graph) == NODE;
+	});
+
+	return rtn;
+}
+
+const std::vector<Vertex>& input_vertices(const GBN& gbn)
+{
+	return gbn.input_vertices;
+}
+
+const std::vector<Vertex>& output_vertices(const GBN& gbn)
+{
+	return gbn.output_vertices;
 }

@@ -28,18 +28,29 @@ using Vertex = GBNGraph::vertex_descriptor;
 using Edge = GBNGraph::edge_descriptor;
 
 struct GBN {
-	GBN(Index n, Index m, Index n_inside_vertices);
+	public:
+		GBN(Index n, Index m, Index n_inside_vertices);
 
-	Index n;
-	Index m;
-	Index n_vertices;
+		Index n;
+		Index m;
+		Index n_vertices;
 
-	GBNGraph graph;
-	std::set<Vertex> visible_vertices;
-	std::set<Vertex> hidden_vertices;
+		GBNGraph graph;
 
-	std::vector<Vertex> input_vertices;
-	std::vector<Vertex> output_vertices;
+		friend std::vector<Vertex> all_vertices(const GBN& gbn);
+		friend std::vector<Vertex> inside_vertices(const GBN& gbn);
+		friend const std::vector<Vertex>& input_vertices(const GBN& gbn);
+		friend const std::vector<Vertex>& output_vertices(const GBN& gbn);
+
+		friend Vertex add_vertex(GBN& gbn);
+		friend void remove_vertex(Vertex v, GBN& gbn);
+
+	private:
+		std::set<Vertex> visible_vertices;
+		std::set<Vertex> hidden_vertices;
+
+		std::vector<Vertex> input_vertices;
+		std::vector<Vertex> output_vertices;
 };
 
 // vertex / edge specific accessors
@@ -55,4 +66,7 @@ Index port_to(const GBNGraph::edge_descriptor& e, const GBNGraph& g);
 
 const std::string& name(const GBNGraph::vertex_descriptor& v, const GBNGraph& g);
 
-std::vector<Vertex> vertices(const GBN& gbn);
+std::vector<Vertex> all_vertices(const GBN& gbn);
+std::vector<Vertex> inside_vertices(const GBN& gbn);
+const std::vector<Vertex>& input_vertices(const GBN& gbn);
+const std::vector<Vertex>& output_vertices(const GBN& gbn);

@@ -9,7 +9,7 @@ void check_gbn_integrity(const GBN& gbn)
 {
 	// auto g = graph(gbn);
 	const auto& g = gbn.graph;
-	const auto gbn_vertices = vertices(gbn);
+	const auto gbn_vertices = all_vertices(gbn);
 
 	// check number of nodes etc
 	std::size_t n_nodes = 0, n_inputs = 0, n_outputs = 0;

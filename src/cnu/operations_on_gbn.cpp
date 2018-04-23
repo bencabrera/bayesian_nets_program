@@ -5,10 +5,12 @@
 void set_op(const std::vector<int> places, bool b, GBN& gbn)
 {
 	auto& g = gbn.graph;
+	auto& output_vertices = ::output_vertices(gbn);
+
 	for(auto p : places)
 	{
 		// get precessor of output port
-		auto tmp_in_edges = boost::in_edges(gbn.output_vertices[p], g);
+		auto tmp_in_edges = boost::in_edges(output_vertices[p], g);
 		if(std::distance(tmp_in_edges.first, tmp_in_edges.second) != 1)
 			throw std::logic_error(std::string("Place ") + std::to_string(p) + " has none or more than one precessor");
 		auto e_pre = *(tmp_in_edges.first);
@@ -26,20 +28,22 @@ void set_op(const std::vector<int> places, bool b, GBN& gbn)
 		put(vertex_matrix, g, v_one, MatrixPtr(new OneBMatrix(b)));
 		put(vertex_type, g, v_one, NODE);
 		put(vertex_name, g, v_one, std::string("1_")+std::to_string(b));
-		auto e_one = boost::add_edge(v_one, gbn.output_vertices[p], g).first;
+		auto e_one = boost::add_edge(v_one, output_vertices[p], g).first;
 		put(edge_position, g, e_one, std::pair<std::size_t, std::size_t>{ 0, 0 });
 
-		boost::remove_edge(v_pre, gbn.output_vertices[p], g);
+		boost::remove_edge(v_pre, output_vertices[p], g);
 	}
 }
 
 void assert_op(const std::vector<int> places, bool b, GBN& gbn)
 {
 	auto& g = gbn.graph;
+	auto& output_vertices = ::output_vertices(gbn);
+
 	for(auto p : places)
 	{
 		// get precessor of output port
-		auto tmp_in_edges = boost::in_edges(gbn.output_vertices[p], g);
+		auto tmp_in_edges = boost::in_edges(output_vertices[p], g);
 		if(std::distance(tmp_in_edges.first, tmp_in_edges.second) != 1)
 			throw std::logic_error(std::string("Place ") + std::to_string(p) + " has none or more than one precessor");
 
@@ -53,15 +57,16 @@ void assert_op(const std::vector<int> places, bool b, GBN& gbn)
 		put(vertex_name, g, v_assert, std::string("F_{1,") + std::to_string(1-b) + "}");
 		auto e_term = boost::add_edge(v_pre, v_assert, g).first;
 		put(edge_position, g, e_term, std::pair<std::size_t, std::size_t>{ e_pos.first, 0 });
-		auto e_out = boost::add_edge(v_assert, gbn.output_vertices[p], g).first;
+		auto e_out = boost::add_edge(v_assert, output_vertices[p], g).first;
 		put(edge_position, g, e_out, std::pair<std::size_t, std::size_t>{ 0, 0 });
-		boost::remove_edge(v_pre, gbn.output_vertices[p], g);
+		boost::remove_edge(v_pre, output_vertices[p], g);
 	}
 }
 
 void nassert_op(const std::vector<int> places, bool b, GBN& gbn)
 {
 	auto& g = gbn.graph;
+	auto& output_vertices = ::output_vertices(gbn);
 
 	std::size_t k = places.size();
 	
@@ -73,7 +78,7 @@ void nassert_op(const std::vector<int> places, bool b, GBN& gbn)
 	for(auto p : places)
 	{
 		// get precessor of output port
-		auto tmp_in_edges = boost::in_edges(gbn.output_vertices[p], g);
+		auto tmp_in_edges = boost::in_edges(output_vertices[p], g);
 		if(std::distance(tmp_in_edges.first, tmp_in_edges.second) != 1)
 			throw std::logic_error(std::string("Place ") + std::to_string(p) + " has none or more than one precessor");
 
@@ -83,8 +88,8 @@ void nassert_op(const std::vector<int> places, bool b, GBN& gbn)
 
 		auto e_to_nassert = boost::add_edge(v_pre, v_nassert, g).first;
 		put(edge_position, g, e_to_nassert, std::pair<std::size_t, std::size_t>{ e_pos.first, i_place });
-		auto e_from_nassert = boost::add_edge(v_nassert, gbn.output_vertices[p], g).first;
+		auto e_from_nassert = boost::add_edge(v_nassert, output_vertices[p], g).first;
 		put(edge_position, g, e_from_nassert, std::pair<std::size_t, std::size_t>{ i_place, 0 });
-		boost::remove_edge(v_pre, gbn.output_vertices[p], g);
+		boost::remove_edge(v_pre, output_vertices[p], g);
 	}
 }

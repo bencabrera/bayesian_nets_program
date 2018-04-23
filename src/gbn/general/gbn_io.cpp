@@ -163,8 +163,8 @@ namespace {
 	struct VisibleVerticesPredicate {
 		inline VisibleVerticesPredicate()
 		{}
-		inline VisibleVerticesPredicate(const std::set<Vertex> visible_vertices)
-			:visible_vertices(visible_vertices)
+		inline VisibleVerticesPredicate(const std::vector<Vertex>& visible_vertices)
+			:visible_vertices(visible_vertices.begin(), visible_vertices.end())
 		{}
 
 		bool operator()(const Vertex& v) const { 
@@ -176,6 +176,6 @@ namespace {
 }
 void draw_gbn_graph(std::ostream& ostr, const GBN& gbn, std::string title)
 {
-	boost::filtered_graph<GBNGraph, AllEdgesTruePredicate, VisibleVerticesPredicate> fg(gbn.graph,AllEdgesTruePredicate(), VisibleVerticesPredicate(gbn.visible_vertices));
+	boost::filtered_graph<GBNGraph, AllEdgesTruePredicate, VisibleVerticesPredicate> fg(gbn.graph,AllEdgesTruePredicate(), VisibleVerticesPredicate(all_vertices(gbn)));
 	boost::write_graphviz(ostr, fg, VertexWriter(gbn.graph), EdgeWriter(gbn.graph), GraphWriter(title));
 }

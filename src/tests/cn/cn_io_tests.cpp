@@ -1,7 +1,7 @@
-#include "../../libs/catch/catch.hpp"
+#include "../../../libs/catch/catch.hpp"
 
-#include "../cn/cn.h"
-#include "../cn/cn_io.h"
+#include "../../cn/cn.h"
+#include "../../cn/cn_io.h"
 #include <fstream>
 
 #ifdef FOO 
