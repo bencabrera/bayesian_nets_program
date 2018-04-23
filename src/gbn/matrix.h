@@ -41,7 +41,9 @@ class Matrix {
 
 		const MatrixType type;
 
-		Matrix(const Index n, const Index m, const MatrixType type);
+		bool is_stochastic;
+
+		Matrix(const Index n, const Index m, const MatrixType type, bool is_stochastic);
 
 		virtual double get(const BitVec& to, const BitVec& from) const = 0;
 		virtual void set(const BitVec& to, const BitVec& from, double val) = 0;

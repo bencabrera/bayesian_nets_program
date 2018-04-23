@@ -261,5 +261,15 @@ MatrixPtr evaluate_gbn(const GBN& gbn, std::vector<Vertex> vertices_vec)
 		}
 	}
 
+	for(auto v : vertices_vec)
+	{
+		auto& m_v = *matrix(v,g);
+		if(!m_v.is_stochastic)
+		{
+			m->is_stochastic = false;
+			break;
+		}
+	}
+
 	return m;
 }

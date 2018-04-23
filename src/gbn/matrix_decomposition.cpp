@@ -63,5 +63,8 @@ std::pair<MatrixPtr, MatrixPtr> matrix_decomposition(MatrixPtr p_matrix)
 			}
 		}
 
+	if(!p_matrix->is_stochastic)
+		p_m_front->is_stochastic = false;
+
 	return { p_m_front, p_m_back };
 }

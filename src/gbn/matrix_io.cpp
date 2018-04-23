@@ -60,6 +60,10 @@ MatrixPtr read_matrix(std::vector<std::string> lines)
 			}
 
 		}
+
+		if(!is_stochastic(*rtn))
+			rtn->is_stochastic = false;
+
 		return rtn;
 	}
 
