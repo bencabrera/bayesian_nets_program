@@ -1,5 +1,6 @@
-#include "operations.h"
+#include "operations_on_joint_dist.h"
 #include <iostream>
+#include "../cn/cn.h"
 
 void set_op(const std::vector<int> places, bool b, JointDist& dist)
 {

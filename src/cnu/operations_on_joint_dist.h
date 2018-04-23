@@ -1,6 +1,7 @@
 #pragma once
 
-#include "cnu.h"
+#include "../joint_dist/joint_dist.h"
+#include <vector>
 
 void set_op(const std::vector<int> places, bool b, JointDist& dist);
 void assert_op(const std::vector<int> places, bool b, JointDist& dist);

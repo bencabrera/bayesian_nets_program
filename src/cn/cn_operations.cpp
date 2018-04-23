@@ -1,4 +1,4 @@
-#include "operations.h"
+#include "cn_operations.h"
 #include <iostream>
 
 bool check_places(std::vector<int> places, const Marking& m, bool condition)

@@ -9,11 +9,17 @@ set (CMAKE_CXX_STANDARD 17)
 find_package(Boost REQUIRED regex)
 include_directories(${Boost_INCLUDE_DIRS})
 
-# files
-set(FILES
-	src/io.cpp
-	src/operations.cpp
-	src/deterministic_operations.cpp
+set(CN_FILES
+	src/cn/cn_io.cpp
+	src/cn/cn_operations.cpp
+)
+
+set(CNU_FILES
+	src/cnu/operations_on_gbn.cpp
+	src/cnu/operations_on_joint_dist.cpp
+)
+
+set(GBN_FILES
 	src/gbn/matrix.cpp
 	src/gbn/matrix_io.cpp
 	src/gbn/matrix_decomposition.cpp
@@ -36,9 +42,9 @@ set(TEST_FILES
 	src/tests/node_splitting_tests.cpp
 )
 
-add_library(core_lib STATIC ${FILES})
+add_library(core_lib STATIC ${CN_FILES} ${CNU_FILES} ${GBN_FILES})
 
-add_executable(runner src/main_runner.cpp)
+add_executable(runner src/main_joint_dist_runner.cpp)
 target_link_libraries(runner core_lib)
 target_link_libraries(runner Boost::regex)
 

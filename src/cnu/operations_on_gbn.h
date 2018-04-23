@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gbn.h"
+#include "../gbn/gbn.h"
 
 void set_op(const std::vector<int> places, bool b, GBN& gbn);
 void assert_op(const std::vector<int> places, bool b, GBN& gbn);
