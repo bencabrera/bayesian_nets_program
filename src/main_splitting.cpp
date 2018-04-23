@@ -13,13 +13,10 @@
 
 int main(int argc, char** argv)
 {
-	if(argc != 3)
+	if(argc != 2)
 		throw std::logic_error("Wrong number of arguments.");
 
 	std::ifstream gbn_file(argv[1]);
-
-	std::string v_str(argv[2]);
-	Vertex v = std::stoul(v_str);
 
 	auto gbn = read_gbn(gbn_file);
 	check_gbn_integrity(gbn);
@@ -30,10 +27,11 @@ int main(int argc, char** argv)
 	std::ofstream out_file1("before.dot");
 	draw_gbn_graph(out_file1, gbn);
 
-	split_vertex(gbn, v);
+	auto inside_vertices = ::inside_vertices(gbn);
+	auto v_new = merge_vertices(gbn, inside_vertices);
 
-
-	// check_gbn_integrity(gbn);
+	recursively_split_vertex(gbn, v_new);
+	check_gbn_integrity(gbn);
 
 	auto m_after = evaluate_gbn(gbn);
 	print_matrix(std::cout, *m_after);

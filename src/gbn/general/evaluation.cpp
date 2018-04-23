@@ -35,7 +35,6 @@ WireStructure build_wire_structure_for_whole_gbn(const GBN& gbn)
 	WireStructure wire_structure;
 	reserve_bitvec_for_wire_structure(wire_structure, gbn, inside_vertices);
 
-
 	for(auto v : input_vertices(gbn))
 		wire_structure.input_ports.push_back({ v, 0 });
 	for(auto v : output_vertices(gbn))
@@ -66,7 +65,7 @@ WireStructure build_wire_structure_for_whole_gbn(const GBN& gbn)
 			Port output_p{boost::target(e,g), port_to(e,g)};
 			auto& wire = wires_map[p]; 
 			unique_out_ports.insert({ v, port_from(e,g) });
-			if(type(boost::source(e,g),g) == OUTPUT)
+			if(type(boost::target(e,g),g) == OUTPUT)
 				wire.io_ports.push_back({ wire_structure.output_bitvec, output_ports_map[output_p] });
 		}
 
