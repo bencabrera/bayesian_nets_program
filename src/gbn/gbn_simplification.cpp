@@ -3,6 +3,8 @@
 #include <iostream>
 #include "matrix_io.h"
 #include "gbn_modification.h"
+#include "node_elimination.h"
+#include "node_splitting.h"
 
 namespace {
 	using Port = std::pair<Vertex, int>;
@@ -302,7 +304,7 @@ namespace {
 
 void gbn_simplification(GBN& gbn)
 {
-	auto& g = gbn.graph;
+	// auto& g = gbn.graph;
 
 	// (F1): run over all ONE_B matrices and check their precessors
 	for(auto v: vertices(gbn))	
@@ -314,4 +316,48 @@ void gbn_simplification(GBN& gbn)
 		check_and_apply_F4(gbn, v);
 		// check_and_apply_F5(gbn, v);
 	}
+}
+
+void gbn_eliminate_without_outputs(GBN& gbn)
+{
+	auto& g = gbn.graph;
+
+	bool found;
+	do {
+		Vertex v_without;
+		for(auto v : vertices(gbn))	
+		{
+			bool connected_to_output = false;
+			for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
+			{
+				if(type(boost::target(e,g),g) == OUTPUT)
+				{
+					connected_to_output = true;
+					break;
+				}
+			}
+			if(!connected_to_output)
+			{
+				v_without = v;
+				found = true;
+				break;
+			}
+		}
+
+		if(found) {
+			std::vector<Vertex> successors;
+			successors.push_back(v_without);
+			for(auto e : boost::make_iterator_range(boost::out_edges(v_without,g)))
+			{
+				successors.push_back(boost::target(e,g));
+			}
+
+			auto v_new = replace_nodes_by_matrix(gbn, successors);
+
+			// std::pair<Vertex, Vertex> node_splitting(GBN& gbn, Vertex v)
+			auto [v_front, v_back] = node_splitting(gbn, v_new);
+			
+		}
+	}
+	while(found);
 }
