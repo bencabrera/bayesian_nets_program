@@ -1,0 +1,6 @@
+# Updating Probabilistic Knowledge on Condition/Event Nets using Bayesian Networks
+
+This repository contains the implementation and experimental results for the article *"Updating Probabilistic Knowledge on Condition/Event Nets using Bayesian Networks"* submitted to *Concur '18*. 
+
+## Abstract 
+The paper extends Bayesian networks (BNs) by a mechanism for dynamic changes to the probability distributions represented by BNs. One application scenario is the process of knowledge acquisition of an observer interacting with a system. In particular, the paper considers condition/event nets where the observer’s knowledge about the current marking is a probability distribution over markings. The observer can interact with the net to deduce information about the marking by requesting certain transitions to fire and observing their success or failure. Aiming for an efficient implementation of dynamic changes to probability distributions of BNs, we consider a slightly more general class of networks that form the arrows of a free PROP with a commutative comonoid structure, also known as term graphs. The algebraic structure of such PROPs supplies us with a compositional semantics that functorially maps BNs to their underlying probability distribution and, in particular, it provides a convenient means to describe structural updates of networks.
