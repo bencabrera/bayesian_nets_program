@@ -37,18 +37,20 @@ WireStructure build_wire_structure_for_whole_gbn(const GBN& gbn)
 	WireStructure wire_structure;
 	reserve_bitvec_for_wire_structure(wire_structure, gbn, inside_vertices);
 
+	std::vector<Port> input_ports;
+	std::vector<Port> output_ports;
 	for(auto v : input_vertices(gbn))
-		wire_structure.input_ports.push_back({ v, 0 });
+		input_ports.push_back({ v, 0 });
 	for(auto v : output_vertices(gbn))
-		wire_structure.output_ports.push_back({ v, 0 });
-	std::map<Port, std::size_t> input_ports_map, output_ports_map;
-	for(std::size_t i = 0; i < wire_structure.input_ports.size(); i++)
-		input_ports_map.insert({ wire_structure.input_ports[i], i });
-	for(std::size_t i = 0; i < wire_structure.output_ports.size(); i++)
-		output_ports_map.insert({ wire_structure.output_ports[i], i });
+		output_ports.push_back({ v, 0 });
+	std::map<Port, std::size_t,PortComparison> input_ports_map, output_ports_map;
+	for(std::size_t i = 0; i < input_ports.size(); i++)
+		input_ports_map.insert({ input_ports[i], i });
+	for(std::size_t i = 0; i < output_ports.size(); i++)
+		output_ports_map.insert({ output_ports[i], i });
 
 	// go through all inside vertices 
-	std::map<Port, Wire> wires_map;
+	std::map<Port, Wire,PortComparison> wires_map;
 	for(auto v : inside_vertices)
 	{
 		for(auto e : boost::make_iterator_range(boost::in_edges(v,g)))
@@ -60,7 +62,7 @@ WireStructure build_wire_structure_for_whole_gbn(const GBN& gbn)
 				wire.io_ports.push_back({ wire_structure.input_bitvec, input_ports_map[p] });
 		}
 
-		std::set<Port> unique_out_ports;
+		std::set<Port,PortComparison> unique_out_ports;
 		for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
 		{
 			Port p{boost::source(e,g), port_from(e,g)};
@@ -107,9 +109,7 @@ WireStructure build_wire_structure_for_whole_gbn(const GBN& gbn)
 	return wire_structure;
 }
 
-// TODO: could sort here s.t. big lookups are performed less frequently
-// TODO: optimization: matrices with a lot of zeros in front so that they are rarely updated
-WireStructure build_wire_structure_for_vertices(const GBN& gbn, std::vector<Vertex> inside_vertices)
+WireStructure build_wire_structure_for_vertices(const GBN& gbn, std::vector<Vertex> inside_vertices, VertexSetInputOutputs vertex_set_input_outputs)
 {
 	using Port = WireStructure::Port;
 
@@ -119,70 +119,61 @@ WireStructure build_wire_structure_for_vertices(const GBN& gbn, std::vector<Vert
 	WireStructure wire_structure;
 	reserve_bitvec_for_wire_structure(wire_structure, gbn, inside_vertices);
 
-	const std::set<typename GBNGraph::vertex_descriptor> inside_vertex_set(inside_vertices.begin(), inside_vertices.end());
 	auto& g = gbn.graph;
 
-	// find all input and output ports and sort them
-	// - INSIDE < NODE && OUTPUT < NODE // - i_j < i_{j+1} // - o_j < o_{j+1} // - (v,i) < (v+1,0) // - (v,i) < (v,i+1)
-	auto comparison = [&g](const Port& p1, const Port& p2) -> bool {
-		if(type(p1.first,g) != type(p2.first,g))
-			return type(p1.first,g) < type(p2.first,g);
-		if(name(p1.first,g) != name(p2.first,g))
-			return name(p1.first,g) < name(p2.first,g);
-		return p1.second < p2.second;
-	};
-	std::set<Port,decltype(comparison)> input_ports_set(comparison);
-	std::set<Port,decltype(comparison)> output_ports_set(comparison);
-	for(auto v : inside_vertices)
-	{
-		for(auto e : boost::make_iterator_range(boost::in_edges(v,g)))
-			if(!is_in(boost::source(e,g), inside_vertex_set))
-				input_ports_set.insert({ boost::source(e,g), port_from(e,g) });
-		for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
-			if(!is_in(boost::target(e,g), inside_vertex_set))
-				output_ports_set.insert({ boost::target(e,g), port_to(e,g) });
-	}
-	wire_structure.input_ports = std::vector<Port>(input_ports_set.begin(), input_ports_set.end());
-	wire_structure.output_ports = std::vector<Port>(output_ports_set.begin(), output_ports_set.end());
-	std::map<Port, std::size_t> input_ports_map, output_ports_map;
-	for(std::size_t i = 0; i < wire_structure.input_ports.size(); i++)
-		input_ports_map.insert({ wire_structure.input_ports[i], i });
-	for(std::size_t i = 0; i < wire_structure.output_ports.size(); i++)
-		output_ports_map.insert({ wire_structure.output_ports[i], i });
-
-	// go through all edges again to now build wires
 	std::map<Port, Wire> wires_map;
-	for(auto v : inside_vertices)
+
+	// input / output wires
 	{
-		for(auto e : boost::make_iterator_range(boost::in_edges(v,g)))
+		Index i = 0;
+		for(auto [v, pos] : vertex_set_input_outputs.input_ports)
 		{
-			Port p{boost::source(e,g), port_from(e,g)};
-			auto& wire = wires_map[p]; 
-			wire.inside_ports.push_back({ v, wire_structure.vertex_input_bitvecs[v], port_to(e,g) });
-			if(!is_in(boost::source(e,g), inside_vertex_set))
-				wire.io_ports.push_back({ wire_structure.input_bitvec, input_ports_map[p] });
+			Wire w;
+			w.inside_ports.push_back({ v, wire_structure.vertex_input_bitvecs[v], pos });
+			w.io_ports.push_back({ wire_structure.input_bitvec, i });
+			wires_map.insert({ vertex_set_input_outputs.input_external_map[i], w });
+			i++;
 		}
-
-		std::set<Port> unique_out_ports;
-		for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
+	}
+	{
+		Index i = 0;
+		for(auto [v, pos] : vertex_set_input_outputs.output_ports)
 		{
-			Port p{boost::source(e,g), port_from(e,g)};
-			Port output_p{boost::target(e,g), port_to(e,g)};
-			auto& wire = wires_map[p]; 
-			unique_out_ports.insert({ v, port_from(e,g) });
-			if(!is_in(boost::target(e,g), inside_vertex_set))
-				wire.io_ports.push_back({ wire_structure.output_bitvec, output_ports_map[output_p] });
-		}
-
-		for(auto p : unique_out_ports)
-		{
-			auto& wire = wires_map[p]; 
-			wire.inside_ports.push_back({ p.first, wire_structure.vertex_output_bitvecs[v], p.second });
+			Wire w;
+			w.inside_ports.push_back({ v, wire_structure.vertex_output_bitvecs[v], pos });
+			w.io_ports.push_back({ wire_structure.output_bitvec, i });
+			wires_map.insert({ {v,pos}, w });
+			i++;
 		}
 	}
 
-	for(auto m : wires_map)
-		wire_structure.wires.push_back(m.second);
+	// inside wires
+	const std::set<typename GBNGraph::vertex_descriptor> inside_vertex_set(inside_vertices.begin(), inside_vertices.end());
+	std::map<Port, std::vector<Port>,PortComparison> inside_wires_map;
+	for(auto v : inside_vertices)
+	{
+		for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
+		{
+			if(!is_in(boost::target(e,g), inside_vertex_set))
+				continue;
+
+			Port p_from{boost::source(e,g), port_from(e,g)};
+			Port p_to{boost::target(e,g), port_to(e,g)};
+			inside_wires_map[p_from].push_back(p_to);
+		}
+	}
+	for(auto [p_from, p_to_vec] : inside_wires_map)
+	{
+		Wire& w = wires_map[p_from];
+		w.inside_ports.push_back({ p_from.first, wire_structure.vertex_output_bitvecs[p_from.first], p_from.second });
+		for(auto [v_to, pos_to] : p_to_vec)
+			w.inside_ports.push_back({ v_to, wire_structure.vertex_input_bitvecs[v_to], pos_to });
+	}
+
+	for(auto t : wires_map)
+	{
+		wire_structure.wires.push_back(t.second);
+	}
 
 	return wire_structure;
 }
@@ -275,7 +266,7 @@ void ProbabilityBookkeeper::update_one_node(Vertex v, double p)
 }
 
 namespace {
-	MatrixPtr evaluate_vertices(const GBN& gbn, WireStructure& wire_structure, std::vector<Vertex> inside_vertices)
+	MatrixPtr evaluate_vertices(const GBN& gbn, Index n_inputs, Index n_outputs, WireStructure& wire_structure, std::vector<Vertex> inside_vertices)
 	{
 		// TODO: check that path closed
 		// TODO: check that vertices does not contain input or output vertices
@@ -284,7 +275,7 @@ namespace {
 		auto& g = gbn.graph;
 
 		auto& wires = wire_structure.wires;
-		MatrixPtr m(new DynamicMatrix(wire_structure.input_ports.size(), wire_structure.output_ports.size()));
+		MatrixPtr m(new DynamicMatrix(n_inputs, n_outputs));
 
 		// init probabilities to the value at zero
 		auto all_v = all_vertices(gbn);
@@ -343,15 +334,18 @@ namespace {
 }
 
 
-MatrixPtr evaluate_vertices(const GBN& gbn, const std::vector<Vertex> vertices)
+std::pair<MatrixPtr,VertexSetInputOutputs> evaluate_vertices(const GBN& gbn, const std::vector<Vertex> vertices)
 {
-	auto wire_structure = build_wire_structure_for_vertices(gbn, vertices);
-	return evaluate_vertices(gbn, wire_structure, vertices);
+	auto vertex_set_input_outputs = build_inputs_outputs_for_vertices(gbn, vertices);
+	auto wire_structure = build_wire_structure_for_vertices(gbn, vertices, vertex_set_input_outputs);
+	auto p_m = evaluate_vertices(gbn, vertex_set_input_outputs.input_ports.size(), vertex_set_input_outputs.output_ports.size(), wire_structure, vertices);
+
+	return { p_m, vertex_set_input_outputs };
 }
 
 MatrixPtr evaluate_gbn(const GBN& gbn)
 {
 	auto wire_structure = build_wire_structure_for_whole_gbn(gbn);
 	auto vertices = inside_vertices(gbn);
-	return evaluate_vertices(gbn, wire_structure, vertices);
+	return evaluate_vertices(gbn, gbn.n, gbn.m, wire_structure, vertices);
 }

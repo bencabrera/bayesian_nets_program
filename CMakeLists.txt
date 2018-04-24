@@ -37,6 +37,7 @@ set(GBN_FILES
 	src/gbn/general/gbn_io.cpp
 	src/gbn/general/check.cpp
 	src/gbn/general/evaluation.cpp
+	src/gbn/general/vertex_set_input_output.cpp
 
 	src/gbn/modification/vertex_add_remove.cpp
 	src/gbn/modification/merging.cpp

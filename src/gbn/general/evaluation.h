@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gbn.h"
+#include "vertex_set_input_output.h"
 
 struct Wire {
 	std::vector<std::tuple<Vertex, BitVecPtr, int>> inside_ports;
@@ -19,9 +20,6 @@ struct WireStructure {
 	BitVecPtr output_bitvec;
 
 	std::vector<Wire> wires;
-
-	std::vector<Port> input_ports;
-	std::vector<Port> output_ports;
 };
 
 struct ProbabilityBookkeeper
@@ -41,9 +39,9 @@ struct ProbabilityBookkeeper
 		int n_zeros;
 };
 
-WireStructure build_wire_structure_for_vertices(const GBN& gbn, std::vector<Vertex> inside_vertices);
+WireStructure build_wire_structure_for_vertices(const GBN& gbn, std::vector<Vertex> inside_vertices, VertexSetInputOutputs vertex_set_input_outputs);
 WireStructure build_wire_structure_for_whole_gbn(const GBN& gbn);
 
 std::vector<Vertex> flip_wire(Wire& wire);
-MatrixPtr evaluate_vertices(const GBN& gbn, const std::vector<Vertex> vertices);
+std::pair<MatrixPtr,VertexSetInputOutputs> evaluate_vertices(const GBN& gbn, const std::vector<Vertex> vertices);
 MatrixPtr evaluate_gbn(const GBN& gbn);

@@ -249,7 +249,6 @@ namespace {
 			}
 
 			if(found) {
-				std::cout << "FOUND in F5" << std::endl;
 				auto& m_F = dynamic_cast<FMatrix&>(*matrix(v_F, g));
 				auto k = m_F.k;
 
@@ -293,6 +292,48 @@ namespace {
 		}
 		while(found);
 	}
+
+	void gbn_eliminate_without_outputs(GBN& gbn)
+	{
+		auto& g = gbn.graph;
+
+		bool found;
+		// do {
+			Vertex v_without;
+			auto vec = inside_vertices(gbn);
+			for(auto v : vec)	
+			{
+				bool connected_to_output = false;
+				for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
+				{
+					if(type(boost::target(e,g),g) == OUTPUT)
+					{
+						connected_to_output = true;
+						break;
+					}
+				}
+				if(!connected_to_output && matrix(v,g)->is_stochastic)
+				{
+					v_without = v;
+					found = true;
+					break;
+				}
+			}
+
+			if(found) {
+				std::vector<Vertex> successors;
+				successors.push_back(v_without);
+				for(auto e : boost::make_iterator_range(boost::out_edges(v_without,g)))
+				{
+					successors.push_back(boost::target(e,g));
+				}
+				merge_vertices(gbn, successors);
+
+				// recursively_split_vertex(gbn, v_new);
+			}
+		// }
+		// while(found);
+	}
 }
 
 
@@ -307,48 +348,5 @@ void gbn_simplification(GBN& gbn)
 		check_and_apply_F4(gbn, v);
 		check_and_apply_F5(gbn, v);
 	}
+	gbn_eliminate_without_outputs(gbn);
 }
-
-// void gbn_eliminate_without_outputs(GBN& gbn)
-// {
-	// auto& g = gbn.graph;
-
-	// bool found;
-	// do {
-		// Vertex v_without;
-		// for(auto v : vertices(gbn))	
-		// {
-			// bool connected_to_output = false;
-			// for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
-			// {
-				// if(type(boost::target(e,g),g) == OUTPUT)
-				// {
-					// connected_to_output = true;
-					// break;
-				// }
-			// }
-			// if(!connected_to_output)
-			// {
-				// v_without = v;
-				// found = true;
-				// break;
-			// }
-		// }
-
-		// if(found) {
-			// std::vector<Vertex> successors;
-			// successors.push_back(v_without);
-			// for(auto e : boost::make_iterator_range(boost::out_edges(v_without,g)))
-			// {
-				// successors.push_back(boost::target(e,g));
-			// }
-
-			// auto v_new = replace_nodes_by_matrix(gbn, successors);
-
-			// // std::pair<Vertex, Vertex> node_splitting(GBN& gbn, Vertex v)
-			// auto [v_front, v_back] = node_splitting(gbn, v_new);
-			
-		// }
-	// }
-	// while(found);
-// }

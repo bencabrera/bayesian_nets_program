@@ -13,40 +13,17 @@ const std::string TEST_INSTANCE_FOLDER = FOO;
 const std::string TEST_INSTANCE_FOLDER = "";
 #endif
 
-TEST_CASE("Number of wires, input and output port in WireStructure should be correct 1") {
+TEST_CASE("BEN") {
 	std::ifstream f(TEST_INSTANCE_FOLDER + "four_nodes.gbn");
 	auto gbn = read_gbn(f);
 	check_gbn_integrity(gbn);
 
-	auto wire_structure = build_wire_structure_for_vertices(gbn, { 0 });
-	REQUIRE(wire_structure.wires.size() == 2);
-	REQUIRE(wire_structure.input_ports.size() == 1);
-	REQUIRE(wire_structure.output_ports.size() == 1);
-
-	wire_structure = build_wire_structure_for_vertices(gbn, { 1 });
-	REQUIRE(wire_structure.wires.size() == 2);
-	REQUIRE(wire_structure.input_ports.size() == 1);
-	REQUIRE(wire_structure.output_ports.size() == 1);
-
-	wire_structure = build_wire_structure_for_vertices(gbn, { 0, 1 });
-	REQUIRE(wire_structure.wires.size() == 4);
-	REQUIRE(wire_structure.input_ports.size() == 2);
-	REQUIRE(wire_structure.output_ports.size() == 2);
-
-	wire_structure = build_wire_structure_for_vertices(gbn, { 0, 1, 2 });
+	std::vector<Vertex> vec = { 0,1,2 };
+	auto vertex_set_input_outputs = build_inputs_outputs_for_vertices(gbn, vec);
+	auto wire_structure = build_wire_structure_for_vertices(gbn, vec, vertex_set_input_outputs);
+	REQUIRE(vertex_set_input_outputs.input_ports.size() == 2);
+	REQUIRE(vertex_set_input_outputs.output_ports.size() == 2);
 	REQUIRE(wire_structure.wires.size() == 6);
-	REQUIRE(wire_structure.input_ports.size() == 2);
-	REQUIRE(wire_structure.output_ports.size() == 2);
-
-	wire_structure = build_wire_structure_for_vertices(gbn, { 2 });
-	REQUIRE(wire_structure.wires.size() == 4);
-	REQUIRE(wire_structure.input_ports.size() == 2);
-	REQUIRE(wire_structure.output_ports.size() == 2);
-
-	wire_structure = build_wire_structure_for_vertices(gbn, { 2, 3 });
-	REQUIRE(wire_structure.wires.size() == 5);
-	REQUIRE(wire_structure.input_ports.size() == 2);
-	REQUIRE(wire_structure.output_ports.size() == 1);
 }
 
 TEST_CASE("ProbabilityBookkeeper should work correctly") {
@@ -74,11 +51,16 @@ TEST_CASE("Every wire should always have at least one input port") {
 	auto gbn = read_gbn(f);
 	check_gbn_integrity(gbn);
 
-	auto wire_structure = build_wire_structure_for_vertices(gbn, { 0 });
+
+	std::vector<Vertex> vec = { 0 };
+	auto vertex_set_input_outputs = build_inputs_outputs_for_vertices(gbn, vec);
+	auto wire_structure = build_wire_structure_for_vertices(gbn, vec, vertex_set_input_outputs);
 	for(auto& w : wire_structure.wires)
 		REQUIRE(w.inside_ports.size() > 0);
 
-	wire_structure = build_wire_structure_for_vertices(gbn, { 2, 3 });
+	vec = { 2, 3 };
+	vertex_set_input_outputs = build_inputs_outputs_for_vertices(gbn, vec);
+	wire_structure = build_wire_structure_for_vertices(gbn, vec, vertex_set_input_outputs);
 	for(auto& w : wire_structure.wires)
 		REQUIRE(w.inside_ports.size() > 0);
 }
@@ -88,7 +70,9 @@ TEST_CASE("Flipping a wire should turn the right bits on in vertices") {
 	auto gbn = read_gbn(f);
 	check_gbn_integrity(gbn);
 
-	auto wire_structure = build_wire_structure_for_vertices(gbn, { 0 });
+	std::vector<Vertex> vec = { 0 };
+	auto vertex_set_input_outputs = build_inputs_outputs_for_vertices(gbn, vec);
+	auto wire_structure = build_wire_structure_for_vertices(gbn, vec, vertex_set_input_outputs);
 
 	std::vector<Wire> left_mosts;
 	std::copy_if(wire_structure.wires.begin(), wire_structure.wires.end(), std::back_inserter(left_mosts), [&wire_structure] (const Wire& w) {
@@ -123,7 +107,10 @@ TEST_CASE("Flipping a wire should turn the right bits on in vertices 2 (split ca
 	auto gbn = read_gbn(f);
 	check_gbn_integrity(gbn);
 
-	auto wire_structure = build_wire_structure_for_vertices(gbn, { 0,1,2 });
+	std::vector<Vertex> vec = { 0,1,2 };
+	auto vertex_set_input_outputs = build_inputs_outputs_for_vertices(gbn, vec);
+	auto wire_structure = build_wire_structure_for_vertices(gbn, vec, vertex_set_input_outputs);
+
 	std::vector<Wire> tmp;
 	std::copy_if(wire_structure.wires.begin(), wire_structure.wires.end(), std::back_inserter(tmp), [&wire_structure] (const Wire& w) {
 		return w.inside_ports.size() == 3;
@@ -143,8 +130,9 @@ TEST_CASE("Computing one product should work")
 	auto gbn = read_gbn(f);
 	check_gbn_integrity(gbn);
 
-	std::vector<Vertex> picked_vertices({ 0,1,2 });
-	auto wire_structure = build_wire_structure_for_vertices(gbn, picked_vertices);
+	std::vector<Vertex> vec = { 0,1,2 };
+	auto vertex_set_input_outputs = build_inputs_outputs_for_vertices(gbn, vec);
+	auto wire_structure = build_wire_structure_for_vertices(gbn, vec, vertex_set_input_outputs);
 	std::vector<Wire> tmp;
 	std::copy_if(wire_structure.wires.begin(), wire_structure.wires.end(), std::back_inserter(tmp), [&wire_structure] (const Wire& w) {
 		return w.inside_ports.size() == 3;
@@ -156,7 +144,7 @@ TEST_CASE("Computing one product should work")
 	auto g = gbn.graph;
 
 	double product = 1;
-	for(auto v : picked_vertices)
+	for(auto v : vec)
 	{
 		const auto& m = *matrix(v,g);
 		
@@ -174,12 +162,12 @@ TEST_CASE("Evaluation of single node should just give that matrix of node 1")
 
 	std::vector<Vertex> picked_vertices({ 0 });
 
-	auto m = evaluate_vertices(gbn, picked_vertices);
+	auto [p_m, vertex_set_input_outputs] = evaluate_vertices(gbn, picked_vertices);
 
-	REQUIRE(m->get(BitVec("0"),BitVec("0")) == Approx(0.333333333333));
-	REQUIRE(m->get(BitVec("1"),BitVec("0")) == Approx(0.666666666666));
-	REQUIRE(m->get(BitVec("0"),BitVec("1")) == Approx(0.75));
-	REQUIRE(m->get(BitVec("1"),BitVec("1")) == Approx(0.25));
+	REQUIRE(p_m->get(BitVec("0"),BitVec("0")) == Approx(0.333333333333));
+	REQUIRE(p_m->get(BitVec("1"),BitVec("0")) == Approx(0.666666666666));
+	REQUIRE(p_m->get(BitVec("0"),BitVec("1")) == Approx(0.75));
+	REQUIRE(p_m->get(BitVec("1"),BitVec("1")) == Approx(0.25));
 }
 
 TEST_CASE("Evaluation of single node should just give that matrix of node 2") 
@@ -188,32 +176,40 @@ TEST_CASE("Evaluation of single node should just give that matrix of node 2")
 	auto gbn = read_gbn(f);
 	check_gbn_integrity(gbn);
 
-	std::vector<Vertex> picked_vertices({ 0 });
+	std::vector<Vertex> vec({ 0 });
 
-	auto wire_structure = build_wire_structure_for_vertices(gbn, picked_vertices);
-	REQUIRE(wire_structure.input_ports.size() == 2);
-	REQUIRE(wire_structure.output_ports.size() == 2);
-	auto m = evaluate_vertices(gbn, picked_vertices);
+	auto vertex_set_input_outputs = build_inputs_outputs_for_vertices(gbn, vec);
+	auto wire_structure = build_wire_structure_for_vertices(gbn, vec, vertex_set_input_outputs);
+	REQUIRE(wire_structure.wires.size() == 4);
+	for(auto w : wire_structure.wires)
+	{
+		REQUIRE(w.inside_ports.size() == 1);
+		REQUIRE(w.io_ports.size() == 1);
+	}
 
-	REQUIRE(m->get(BitVec("00"),BitVec("00")) == Approx(0.25));
-	REQUIRE(m->get(BitVec("00"),BitVec("01")) == Approx(0.333333333333));
-	REQUIRE(m->get(BitVec("00"),BitVec("10")) == Approx(0.5));
-	REQUIRE(m->get(BitVec("00"),BitVec("11")) == Approx(1.0));
+	auto [p_m, bla] = evaluate_vertices(gbn, vec);
+	REQUIRE(vertex_set_input_outputs.input_ports.size() == 2);
+	REQUIRE(vertex_set_input_outputs.output_ports.size() == 2);
 
-	REQUIRE(m->get(BitVec("01"),BitVec("00")) == Approx(0.25));
-	REQUIRE(m->get(BitVec("01"),BitVec("01")) == Approx(0.333333333333));
-	REQUIRE(m->get(BitVec("01"),BitVec("10")) == Approx(0.5));
-	REQUIRE(m->get(BitVec("01"),BitVec("11")) == Approx(0));
+	REQUIRE(p_m->get(BitVec("00"),BitVec("00")) == Approx(0.25));
+	REQUIRE(p_m->get(BitVec("00"),BitVec("01")) == Approx(0.333333333333));
+	REQUIRE(p_m->get(BitVec("00"),BitVec("10")) == Approx(0.5));
+	REQUIRE(p_m->get(BitVec("00"),BitVec("11")) == Approx(1.0));
 
-	REQUIRE(m->get(BitVec("10"),BitVec("00")) == Approx(0.25));
-	REQUIRE(m->get(BitVec("10"),BitVec("01")) == Approx(0.333333333333));
-	REQUIRE(m->get(BitVec("10"),BitVec("10")) == Approx(0));
-	REQUIRE(m->get(BitVec("10"),BitVec("11")) == Approx(0));
+	REQUIRE(p_m->get(BitVec("01"),BitVec("00")) == Approx(0.25));
+	REQUIRE(p_m->get(BitVec("01"),BitVec("01")) == Approx(0.333333333333));
+	REQUIRE(p_m->get(BitVec("01"),BitVec("10")) == Approx(0.5));
+	REQUIRE(p_m->get(BitVec("01"),BitVec("11")) == Approx(0));
 
-	REQUIRE(m->get(BitVec("11"),BitVec("00")) == Approx(0.25));
-	REQUIRE(m->get(BitVec("11"),BitVec("01")) == Approx(0));
-	REQUIRE(m->get(BitVec("11"),BitVec("10")) == Approx(0));
-	REQUIRE(m->get(BitVec("11"),BitVec("11")) == Approx(0));
+	REQUIRE(p_m->get(BitVec("10"),BitVec("00")) == Approx(0.25));
+	REQUIRE(p_m->get(BitVec("10"),BitVec("01")) == Approx(0.333333333333));
+	REQUIRE(p_m->get(BitVec("10"),BitVec("10")) == Approx(0));
+	REQUIRE(p_m->get(BitVec("10"),BitVec("11")) == Approx(0));
+
+	REQUIRE(p_m->get(BitVec("11"),BitVec("00")) == Approx(0.25));
+	REQUIRE(p_m->get(BitVec("11"),BitVec("01")) == Approx(0));
+	REQUIRE(p_m->get(BitVec("11"),BitVec("10")) == Approx(0));
+	REQUIRE(p_m->get(BitVec("11"),BitVec("11")) == Approx(0));
 
 }
 
@@ -223,9 +219,9 @@ TEST_CASE("For a single node gbn every wire should have exactly one v_input bitv
 	auto gbn = read_gbn(f);
 	check_gbn_integrity(gbn);
 
-	std::vector<Vertex> picked_vertices({ 0 });
-
-	auto wire_structure = build_wire_structure_for_vertices(gbn, picked_vertices);
+	std::vector<Vertex> vec = { 0 };
+	auto vertex_set_input_outputs = build_inputs_outputs_for_vertices(gbn, vec);
+	auto wire_structure = build_wire_structure_for_vertices(gbn, vec, vertex_set_input_outputs);
 
 	for(auto& w : wire_structure.wires)
 	{
@@ -242,23 +238,22 @@ TEST_CASE("Evaluation for split.gbn should be correct")
 	check_gbn_integrity(gbn);
 
 	std::vector<Vertex> picked_vertices({ 0, 1, 2 });
-
-	auto m = evaluate_vertices(gbn, picked_vertices);
+	auto [p_m, vertex_set_input_outputs] = evaluate_vertices(gbn, picked_vertices);
 	
 	// check dimensions
-	REQUIRE(m->n == 1);
-	REQUIRE(m->m == 2);
+	REQUIRE(p_m->n == 1);
+	REQUIRE(p_m->m == 2);
 
-	// check values
-	REQUIRE(m->get(BitVec("00"), BitVec("0")) == Approx(0.2037037037));
-	REQUIRE(m->get(BitVec("01"), BitVec("0")) == Approx(0.2407407407));
-	REQUIRE(m->get(BitVec("10"), BitVec("0")) == Approx(0.2407407407));
-	REQUIRE(m->get(BitVec("11"), BitVec("0")) == Approx(0.3148148148));
+	// checkp_ values
+	REQUIRE(p_m->get(BitVec("00"), BitVec("0")) == Approx(0.2037037037));
+	REQUIRE(p_m->get(BitVec("01"), BitVec("0")) == Approx(0.2407407407));
+	REQUIRE(p_m->get(BitVec("10"), BitVec("0")) == Approx(0.2407407407));
+	REQUIRE(p_m->get(BitVec("11"), BitVec("0")) == Approx(0.3148148148));
 
-	REQUIRE(m->get(BitVec("00"), BitVec("1")) == Approx(0.1805555556));
-	REQUIRE(m->get(BitVec("01"), BitVec("1")) == Approx(0.2361111111));
-	REQUIRE(m->get(BitVec("10"), BitVec("1")) == Approx(0.2361111111));
-	REQUIRE(m->get(BitVec("11"), BitVec("1")) == Approx(0.3472222222));
+	REQUIRE(p_m->get(BitVec("00"), BitVec("1")) == Approx(0.1805555556));
+	REQUIRE(p_m->get(BitVec("01"), BitVec("1")) == Approx(0.2361111111));
+	REQUIRE(p_m->get(BitVec("10"), BitVec("1")) == Approx(0.2361111111));
+	REQUIRE(p_m->get(BitVec("11"), BitVec("1")) == Approx(0.3472222222));
 }
 
 TEST_CASE("Evaluation for four_nodes.gbn should be correct") 
@@ -269,22 +264,22 @@ TEST_CASE("Evaluation for four_nodes.gbn should be correct")
 
 	std::vector<Vertex> picked_vertices({ 0, 1, 2, 3 });
 
-	auto m = evaluate_vertices(gbn, picked_vertices);
+	auto [p_m,tmp] = evaluate_vertices(gbn, picked_vertices);
 	
 	// check dimensions
-	REQUIRE(m->n == 2);
-	REQUIRE(m->m == 1);
+	REQUIRE(p_m->n == 2);
+	REQUIRE(p_m->m == 1);
 
-	// check values
-	REQUIRE(m->get(BitVec("0"), BitVec("00")) == Approx(0.4074074074));
-	REQUIRE(m->get(BitVec("0"), BitVec("01")) == Approx(0.4166666667));
-	REQUIRE(m->get(BitVec("0"), BitVec("10")) == Approx(0.4305555556));
-	REQUIRE(m->get(BitVec("0"), BitVec("11")) == Approx(0.4375000000));
+	// checkp_ values
+	REQUIRE(p_m->get(BitVec("0"), BitVec("00")) == Approx(0.4074074074));
+	REQUIRE(p_m->get(BitVec("0"), BitVec("01")) == Approx(0.4166666667));
+	REQUIRE(p_m->get(BitVec("0"), BitVec("10")) == Approx(0.4305555556));
+	REQUIRE(p_m->get(BitVec("0"), BitVec("11")) == Approx(0.4375000000));
 
-	REQUIRE(m->get(BitVec("1"), BitVec("00")) == Approx(0.5925925926));
-	REQUIRE(m->get(BitVec("1"), BitVec("01")) == Approx(0.5833333333));
-	REQUIRE(m->get(BitVec("1"), BitVec("10")) == Approx(0.5694444444));
-	REQUIRE(m->get(BitVec("1"), BitVec("11")) == Approx(0.5625000000));
+	REQUIRE(p_m->get(BitVec("1"), BitVec("00")) == Approx(0.5925925926));
+	REQUIRE(p_m->get(BitVec("1"), BitVec("01")) == Approx(0.5833333333));
+	REQUIRE(p_m->get(BitVec("1"), BitVec("10")) == Approx(0.5694444444));
+	REQUIRE(p_m->get(BitVec("1"), BitVec("11")) == Approx(0.5625000000));
 }
 
 TEST_CASE("Evaluation for seven_nodes.gbn should work.") 
@@ -293,12 +288,20 @@ TEST_CASE("Evaluation for seven_nodes.gbn should work.")
 	auto gbn = read_gbn(f);
 	check_gbn_integrity(gbn);
 
-	std::vector<Vertex> picked_vertices({ 0, 1, 2, 3, 4, 5, 6 });
-	auto m = evaluate_vertices(gbn, picked_vertices);
+	std::vector<Vertex> vec({ 0, 1, 2, 3, 4, 5, 6 });
+	auto vertex_set_input_outputs = build_inputs_outputs_for_vertices(gbn, vec);
+	auto wire_structure = build_wire_structure_for_vertices(gbn, vec, vertex_set_input_outputs);
+	auto wire_structure2 = build_wire_structure_for_whole_gbn(gbn);
+	auto [p_m,tmp] = evaluate_vertices(gbn, vec);
 
-	REQUIRE(m->n == 4);
-	REQUIRE(m->m == 3);
-	REQUIRE(is_stochastic(*m) == true);
+	REQUIRE(wire_structure.wires.size() == wire_structure2.wires.size());
+	REQUIRE(wire_structure.wires.size() == 13);
+
+	// print_matrix(std::cout, *p_m);
+
+	REQUIRE(p_m->n == 4);
+	REQUIRE(p_m->m == 3);
+	REQUIRE(is_stochastic(*p_m) == true);
 }
 
 

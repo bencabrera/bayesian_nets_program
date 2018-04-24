@@ -41,17 +41,11 @@ VertexSetInputOutputs build_inputs_outputs_for_vertices(const GBN& gbn, std::vec
 	}
 
 	// make input and output ports unique
-	auto port_comparison = [&g](const Port& p1, const Port& p2) -> bool {
-		if(p1.first != p2.first)
-			return p1.first < p2.first;
-		return p1.second < p2.second;
-	};
-
-	std::set<Port,decltype(port_comparison)> input_port_set;
+	std::set<Port,PortComparison> input_port_set;
 	for(auto t : input_port_pairs)
 		input_port_set.insert(t.second);
 
-	std::set<Port,decltype(port_comparison)> output_port_set;
+	std::set<Port,PortComparison> output_port_set;
 	for(auto t : output_port_pairs)
 		output_port_set.insert(t.first);
 
@@ -59,8 +53,8 @@ VertexSetInputOutputs build_inputs_outputs_for_vertices(const GBN& gbn, std::vec
 	rtn.output_ports = std::vector<Port>(output_port_set.begin(), output_port_set.end());
 
 	// build port indices -> external port map
-	std::map<Port,Port,decltype(port_comparison)> input_port_to_external_map;
-	std::map<Port,std::vector<Port>,decltype(port_comparison)> output_port_to_external_map;
+	std::map<Port,Port,PortComparison> input_port_to_external_map;
+	std::map<Port,std::vector<Port>,PortComparison> output_port_to_external_map;
 	for(auto t : input_port_pairs)
 		input_port_to_external_map.insert({ t.second, t.first });	
 	for(auto t : output_port_pairs)

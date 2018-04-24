@@ -1,34 +1,33 @@
 #include "../general/evaluation.h"
 #include "vertex_add_remove.h"
 #include <iostream>
+#include "../matrix/matrix_io.h"
 
 Vertex merge_vertices(GBN& gbn, std::vector<Vertex> vertices, std::string new_node_label)
 {
 	auto& g = gbn.graph;
-	auto m = evaluate_vertices(gbn, vertices);
-	// TODO: this should of course be returned from previous function as well and not computed again
-	auto wire_structure = build_wire_structure_for_vertices(gbn, vertices);
-
-	const auto& input_ports = wire_structure.input_ports;
-	const auto& output_ports = wire_structure.output_ports;
+	auto [p_m, vertex_set_input_outputs] = evaluate_vertices(gbn, vertices);
 
 	for(auto v : vertices)
 		remove_vertex(v, gbn);
 
-	auto v_new = add_vertex(gbn,m,new_node_label);
+	auto v_new = add_vertex(gbn,p_m,new_node_label);
 
-	for(std::size_t i_port = 0; i_port < input_ports.size(); i_port++)
+	for(std::size_t i_port = 0; i_port < vertex_set_input_outputs.input_ports.size(); i_port++)
 	{
-		const auto& p = input_ports[i_port];
-		auto tmp = boost::add_edge(p.first, v_new, g);
-		put(edge_position, g, tmp.first, std::pair<std::size_t, std::size_t>{ p.second, i_port });
+		const auto& [v_ext, pos_ext] = vertex_set_input_outputs.input_external_map[i_port];
+		auto e = boost::add_edge(v_ext, v_new, g).first;
+		put(edge_position, g, e, std::pair<std::size_t, std::size_t>{ pos_ext, i_port });
 	}
 
-	for(std::size_t i_port = 0; i_port < output_ports.size(); i_port++)
+	for(std::size_t i_port = 0; i_port < vertex_set_input_outputs.output_ports.size(); i_port++)
 	{
-		const auto& p = output_ports[i_port];
-		auto tmp = boost::add_edge(v_new, p.first, g);
-		put(edge_position, g, tmp.first, std::pair<std::size_t, std::size_t>{ i_port, p.second });
+		const auto& external_output_ports = vertex_set_input_outputs.output_external_map[i_port];
+		for(auto [v_ext, pos_ext] : external_output_ports)
+		{
+			auto e = boost::add_edge(v_new, v_ext, g).first;
+			put(edge_position, g, e, std::pair<std::size_t, std::size_t>{ i_port, pos_ext });
+		}
 	}
 
 	return v_new;

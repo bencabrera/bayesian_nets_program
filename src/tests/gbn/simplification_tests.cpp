@@ -58,15 +58,20 @@ TEST_CASE("(F2) should work correctly.")
 	auto& m_before = *p_m_before;
 	auto n_vertices_before = gbn.n_vertices;
 
+	std::ofstream out_file("before.dot");
+	draw_gbn_graph(out_file, gbn);
+
 	gbn_simplification(gbn);
 	gbn_simplification(gbn);
+	gbn_simplification(gbn);
+
+	std::ofstream out_file2("after.dot");
+	draw_gbn_graph(out_file2, gbn);
 
 	auto n_vertices_after = gbn.n_vertices;
 
 	auto p_m_after = evaluate_gbn(gbn);
 	auto& m_after = *p_m_after;
-
-	REQUIRE(n_vertices_after == 4);
 
 	test_matrices_equal(m_before, m_after);
 }
