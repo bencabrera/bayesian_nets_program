@@ -4,6 +4,7 @@
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <cmath>
+#include <iomanip>
 
 #include "../../helpers.hpp"
 
@@ -101,11 +102,25 @@ void print_matrix(std::ostream& ostr, const Matrix& matrix)
 	i_max_col = i_max_col << matrix.n;
 	i_max_row = i_max_row << matrix.m;
 
+	ostr.precision(4);
+
+
+	ostr << std::setw(matrix.m+3) << " ";
+	for(unsigned long long i_col = 0; i_col < i_max_col; i_col++)
+		ostr << std::setw(6) << BitVec(i_col).to_string().substr(MAX_PLACES-matrix.n) << " ";	
+	ostr << std::endl;
+
+	ostr << std::setw(matrix.m+3) << " ";
+	for(unsigned long long i_col = 0; i_col < i_max_col; i_col++)
+		ostr << std::setw(5) << std::fixed << "------" << " ";	
+	ostr << std::endl;
+
 	for(unsigned long long i_row = 0; i_row < i_max_row; i_row++)
 	{
+		ostr << BitVec(i_row).to_string().substr(MAX_PLACES-matrix.m) << " | ";
 		for(unsigned long long i_col = 0; i_col < i_max_col; i_col++)
 		{
-			ostr << matrix.get(i_row, i_col) << " ";	
+			ostr << std::setw(5) << std::fixed << matrix.get(i_row, i_col) << " ";	
 		}
 		ostr << "\n";	
 	}
