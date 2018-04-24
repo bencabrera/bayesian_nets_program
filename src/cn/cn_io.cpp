@@ -4,6 +4,9 @@
 #include <string>
 #include <boost/algorithm/string_regex.hpp>
 #include <boost/algorithm/string/trim.hpp>
+#include <boost/graph/graph_traits.hpp>
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/graphviz.hpp>
 #include <boost/regex.hpp>
 #include <regex>
 #include <cmath>
@@ -119,4 +122,66 @@ std::ostream& print_cn_details(std::ostream& ostr, const CN& cn)
 	return ostr;
 }
 
+namespace {
+	using vertex_name_t = boost::vertex_name_t;
+	using vertex_type_t = boost::vertex_owner_t;
 
+	const auto vertex_name = boost::vertex_name;
+	const auto vertex_type = boost::vertex_owner;
+	enum VertexType {
+		PLACE,
+		TRANSITION
+	};
+
+	using VertexProperty = boost::property<vertex_name_t, std::string, boost::property<vertex_type_t, VertexType>>;
+	using CNGraph = boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, VertexProperty, boost::no_property, boost::vecS>;
+
+	class VertexWriter {
+		public:
+			VertexWriter(const CNGraph& g) : g(g) {}
+
+			void operator()(std::ostream& out, const CNGraph::vertex_descriptor& v) const {
+				if(get(vertex_type,g,v) == PLACE)
+					out << "[label=\"" << get(vertex_name,g,v) << "\", shape=\"circle\"]";
+				else
+					out << "[label=\"" << get(vertex_name,g,v) << "\", shape=\"box\", height=0.15, width=0.6]";
+			}
+		private:
+			const CNGraph& g;
+	};
+
+	CNGraph build_cn_graph(const CN& cn)
+	{
+		CNGraph g(cn.n + cn.transitions.size());
+		for(std::size_t i = 0; i < cn.n; i++)
+		{
+			put(vertex_name, g, i, std::string("S") + std::to_string(i));
+			put(vertex_type, g, i, PLACE);
+		}
+
+		for(std::size_t i = 0; i < cn.transitions.size(); i++)
+		{
+			put(vertex_name, g, cn.n+i, std::string("t") + std::to_string(i));
+			put(vertex_type, g, cn.n+i, TRANSITION);
+		}
+		for(std::size_t i = 0; i < cn.transitions.size(); i++)
+		{
+			auto& t = cn.transitions[i];
+			for(auto s : t.pre)
+				boost::add_edge(s,cn.n+i,g);
+			for(auto s : t.post)
+				boost::add_edge(cn.n+i,s,g);
+		}
+
+		return g;
+	}
+}
+
+std::ostream& draw_cn(std::ostream& ostr, const CN& cn)
+{
+	auto g = build_cn_graph(cn);
+
+	boost::write_graphviz(ostr, g, VertexWriter(g));//, EdgeWriter(gbn.graph), GraphWriter(title));
+
+	return ostr;
+}
