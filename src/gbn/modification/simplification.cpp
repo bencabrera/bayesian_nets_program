@@ -5,16 +5,17 @@
 #include "vertex_add_remove.h"
 #include "merging.h"
 #include "splitting.h"
+#include "../general/path_closing.h"
 
 namespace {
 	using Port = std::pair<Vertex, int>;
 
-	void check_and_apply_F1(GBN& gbn, Vertex v)
+	bool check_and_apply_F1(GBN& gbn, Vertex v)
 	{
 		auto& g = gbn.graph;
 
 		if(type(v,g) != NODE)
-			return;
+			return false;
 
 		if(matrix(v,g)->type == ONE_B)
 		{
@@ -34,23 +35,27 @@ namespace {
 				}
 
 				remove_vertex(v,gbn);
+
+				return true;
 			}
 		}
+
+		return false;
 	}
 
 	// TODO: implement the more general version for n -> m
-	void check_and_apply_F2(GBN& gbn, Vertex v)
+	bool check_and_apply_F2(GBN& gbn, Vertex v)
 	{
 		auto& g = gbn.graph;
 
 		if(type(v,g) != NODE || matrix(v,g)->type != TERMINATOR)
-			return;
+			return false;
 
 		auto e_pre = *(boost::in_edges(v,g).first);
 		auto v_pre = boost::source(e_pre, g);
 
 		if(boost::out_degree(v_pre,g) != 1)
-			return;
+			return false;
 
 		// if we reached here, then v_pre is a stochastic vertex whose only successor is a terminator
 
@@ -67,15 +72,17 @@ namespace {
 			auto e = boost::add_edge(p.first, v_term, g).first;
 			put(edge_position, g, e, std::pair<std::size_t, std::size_t>{ p.second, 0 });
 		}
+
+		return true;
 	}
 
 	// TODO: implement the more general version for n -> m
-	void check_and_apply_CoUnit(GBN& gbn, Vertex v)
+	bool check_and_apply_CoUnit(GBN& gbn, Vertex v)
 	{
 		auto& g = gbn.graph;
 
 		if(type(v,g) != NODE || matrix(v,g)->type != TERMINATOR)
-			return;
+			return false;
 
 		auto e_pre = *(boost::in_edges(v,g).first);
 		auto v_pre = boost::source(e_pre, g);
@@ -89,23 +96,26 @@ namespace {
 		}
 
 		if(n_same_ports <= 1)
-			return;
+			return false;
 		else
 			remove_vertex(v,gbn);
+
+		return true;
 	}
 
-	void check_and_apply_F3(GBN& gbn, Vertex v)
+	bool check_and_apply_F3(GBN& gbn, Vertex v)
 	{
 		auto& g = gbn.graph;
 
 		if(type(v,g) != NODE || matrix(v,g)->type != F)
-			return;
+			return false;
 
 		auto& m = dynamic_cast<FMatrix&>(*matrix(v,g));
 		if(m.k < 2)
-			return;
+			return false;
 
 		// check for all precessors of F if they split their signal to multiple ports
+		bool found_once = false;
 		bool found;
 		do {
 			found = false;
@@ -131,6 +141,7 @@ namespace {
 			}
 
 			if(found) {
+				found_once = true;
 				boost::remove_edge_if([&](const Edge& e) {
 						return boost::source(e,g) == v_pre && boost::target(e,g) == v_post && port_from(e,g) == v_pre_port && port_to(e,g) == v_post_port;	
 						}, g);
@@ -139,18 +150,21 @@ namespace {
 			}
 		}
 		while(found);
+
+		return found_once;
 	}
 
-	void check_and_apply_F4(GBN& gbn, Vertex v)
+	bool check_and_apply_F4(GBN& gbn, Vertex v)
 	{
 		auto& g = gbn.graph;
 
 		if(type(v,g) != NODE || matrix(v,g)->type != ONE_B)
-			return;
+			return false;
 
 		auto& m = dynamic_cast<OneBMatrix&>(*matrix(v,g));
 		auto b = m.b;
 
+		bool found_once = false;
 		bool found;
 		do {
 			found = false;
@@ -167,6 +181,7 @@ namespace {
 						v_F = v_to;
 						F_port = port_to(e,g);
 						found = true;
+						found_once = true;
 						break;
 					}
 				}
@@ -215,18 +230,21 @@ namespace {
 
 		}
 		while(found);
+
+		return found_once;
 	}
 
-	void check_and_apply_F5(GBN& gbn, Vertex v)
+	bool check_and_apply_F5(GBN& gbn, Vertex v)
 	{
 		auto& g = gbn.graph;
 
 		if(type(v,g) != NODE || matrix(v,g)->type != ONE_B)
-			return;
+			return false;
 
 		auto& m = dynamic_cast<OneBMatrix&>(*matrix(v,g));
 		auto b = m.b;
 
+		bool found_once = false;
 		bool found;
 		do {
 			found = false;
@@ -243,6 +261,7 @@ namespace {
 						v_F = v_to;
 						F_port = port_to(e,g);
 						found = true;
+						found_once = true;
 						break;
 					}
 				}
@@ -291,6 +310,8 @@ namespace {
 			}
 		}
 		while(found);
+
+		return found_once;
 	}
 
 	bool gbn_eliminate_without_outputs(GBN& gbn)
@@ -323,9 +344,10 @@ namespace {
 			std::vector<Vertex> successors;
 			successors.push_back(v_without);
 			for(auto e : boost::make_iterator_range(boost::out_edges(v_without,g)))
-			{
 				successors.push_back(boost::target(e,g));
-			}
+
+			successors = path_closing(gbn, successors);
+
 			auto v_new = merge_vertices(gbn, successors);
 
 			recursively_split_vertex(gbn, v_new);
@@ -359,6 +381,8 @@ namespace {
 			{
 				precessors.push_back(boost::source(e,g));
 			}
+
+			precessors = path_closing(gbn, precessors);
 			auto v_new = merge_vertices(gbn, precessors);
 
 			recursively_split_vertex(gbn, v_new);
@@ -415,29 +439,33 @@ namespace {
 
 void gbn_simplification(GBN& gbn)
 {
-	for(auto v: inside_vertices(gbn))	
-	{
-		check_and_apply_F1(gbn, v);
-		check_and_apply_F2(gbn, v);
-		check_and_apply_CoUnit(gbn, v);
-		check_and_apply_F3(gbn, v);
-		check_and_apply_F4(gbn, v);
-		check_and_apply_F5(gbn, v);
-	}
+	bool found_at_least_one = false;
+	// do {
+		for(auto v: inside_vertices(gbn))	
+		{
+			found_at_least_one = found_at_least_one || check_and_apply_F1(gbn, v);
+			found_at_least_one = found_at_least_one || check_and_apply_F2(gbn, v);
+			found_at_least_one = found_at_least_one || check_and_apply_CoUnit(gbn, v);
+			found_at_least_one = found_at_least_one || check_and_apply_F3(gbn, v);
+			found_at_least_one = found_at_least_one || check_and_apply_F4(gbn, v);
+			found_at_least_one = found_at_least_one || check_and_apply_F5(gbn, v);
+		}
+	// }
+	// while(found_at_least_one);
 
-	bool found;
-	do {
-		found = gbn_eliminate_without_outputs(gbn);
-	}
-	while(found);
+	// bool found;
+	// do {
+		// found = gbn_eliminate_without_outputs(gbn);
+	// }
+	// while(found);
 
-	do {
-		found = gbn_switch_substoch_to_front(gbn);
-	}
-	while(found);
+	// do {
+		// found = gbn_switch_substoch_to_front(gbn);
+	// }
+	// while(found);
 
-	do {
-		found = normalize_substoch_front_vertices(gbn);
-	}
-	while(found);
+	// do {
+		// found = normalize_substoch_front_vertices(gbn);
+	// }
+	// while(found);
 }
