@@ -38,6 +38,7 @@ set(GBN_FILES
 	src/gbn/general/check.cpp
 	src/gbn/general/evaluation.cpp
 	src/gbn/general/vertex_set_input_output.cpp
+	src/gbn/general/path_closing.cpp
 
 	src/gbn/modification/vertex_add_remove.cpp
 	src/gbn/modification/merging.cpp
@@ -87,6 +88,10 @@ target_link_libraries(splitting Boost::regex)
 add_executable(simplification src/main_simplification.cpp)
 target_link_libraries(simplification core_lib)
 target_link_libraries(simplification Boost::regex)
+
+add_executable(path_closing src/main_path_closing.cpp)
+target_link_libraries(path_closing core_lib)
+target_link_libraries(path_closing Boost::regex)
 
 add_executable(tests src/main_tests.cpp ${TEST_FILES})
 target_link_libraries(tests core_lib)
