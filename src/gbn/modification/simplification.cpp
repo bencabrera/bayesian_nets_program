@@ -293,46 +293,122 @@ namespace {
 		while(found);
 	}
 
-	void gbn_eliminate_without_outputs(GBN& gbn)
+	bool gbn_eliminate_without_outputs(GBN& gbn)
 	{
 		auto& g = gbn.graph;
 
-		bool found;
-		// do {
-			Vertex v_without;
-			auto vec = inside_vertices(gbn);
-			for(auto v : vec)	
+		bool found = false;
+		Vertex v_without;
+		auto vec = inside_vertices(gbn);
+		for(auto v : vec)	
+		{
+			bool connected_to_output = false;
+			for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
 			{
-				bool connected_to_output = false;
-				for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
+				if(type(boost::target(e,g),g) == OUTPUT)
 				{
-					if(type(boost::target(e,g),g) == OUTPUT)
-					{
-						connected_to_output = true;
-						break;
-					}
-				}
-				if(!connected_to_output && matrix(v,g)->is_stochastic)
-				{
-					v_without = v;
-					found = true;
+					connected_to_output = true;
 					break;
 				}
 			}
-
-			if(found) {
-				std::vector<Vertex> successors;
-				successors.push_back(v_without);
-				for(auto e : boost::make_iterator_range(boost::out_edges(v_without,g)))
-				{
-					successors.push_back(boost::target(e,g));
-				}
-				merge_vertices(gbn, successors);
-
-				// recursively_split_vertex(gbn, v_new);
+			if(!connected_to_output && matrix(v,g)->is_stochastic && matrix(v,g)->type != TERMINATOR)
+			{
+				v_without = v;
+				found = true;
+				break;
 			}
-		// }
-		// while(found);
+		}
+
+		if(found) {
+			std::vector<Vertex> successors;
+			successors.push_back(v_without);
+			for(auto e : boost::make_iterator_range(boost::out_edges(v_without,g)))
+			{
+				successors.push_back(boost::target(e,g));
+			}
+			auto v_new = merge_vertices(gbn, successors);
+
+			recursively_split_vertex(gbn, v_new);
+		}
+
+		return found;
+	}
+
+	bool gbn_switch_substoch_to_front(GBN& gbn)
+	{
+		auto& g = gbn.graph;
+
+		bool found = false;
+		Vertex v_substoch;
+		auto vec = inside_vertices(gbn);
+		for(auto v : vec)	
+		{
+			auto m = matrix(v,g);
+			if(!m->is_stochastic && boost::in_degree(v,g) > 0) {
+				v_substoch = v;
+				found = true;	
+			}
+		}
+
+		std::cout << "found: " << found << std::endl;
+
+		if(found) {
+			std::vector<Vertex> precessors;
+			precessors.push_back(v_substoch);
+			for(auto e : boost::make_iterator_range(boost::in_edges(v_substoch,g)))
+			{
+				precessors.push_back(boost::source(e,g));
+			}
+			auto v_new = merge_vertices(gbn, precessors);
+
+			recursively_split_vertex(gbn, v_new);
+		}
+
+		return found;
+	}
+
+	bool normalize_substoch_front_vertices(GBN& gbn)
+	{
+		std::cout << "NORMALIZATION" << std::endl;
+		auto& g = gbn.graph;
+
+		bool found = false;
+		Vertex v_substoch;
+		auto vec = inside_vertices(gbn);
+		for(auto v : vec)	
+		{
+			auto m = matrix(v,g);
+			if(!m->is_stochastic && boost::in_degree(v,g) == 0) {
+				v_substoch = v;
+				found = true;	
+			}
+		}
+
+		std::cout << "found substoch: " << found << std::endl;
+
+		if(found) {
+			std::cout << name(v_substoch,g) << std::endl;
+			for(auto v : vec)	
+			{
+				std::cout << name(v,g) << std::endl;
+				print_matrix(std::cout, *matrix(v,g));
+			}
+			auto m = matrix(v_substoch,g);
+			double sum = m->get(BitVec(0),BitVec(0))+m->get(BitVec(1),BitVec(0));
+			std::cout << "sum: " << sum << std::endl;
+
+			m->set(BitVec(0),BitVec(0), m->get(BitVec(0),BitVec(0))/sum);
+			m->set(BitVec(1),BitVec(0), m->get(BitVec(1),BitVec(0))/sum);
+			m->is_stochastic = true;
+
+			for(auto v : vec)	
+			{
+				std::cout << name(v,g) << std::endl;
+				print_matrix(std::cout, *matrix(v,g));
+			}
+		}
+
+		return found;
 	}
 }
 
@@ -348,5 +424,20 @@ void gbn_simplification(GBN& gbn)
 		check_and_apply_F4(gbn, v);
 		check_and_apply_F5(gbn, v);
 	}
-	gbn_eliminate_without_outputs(gbn);
+
+	bool found;
+	do {
+		found = gbn_eliminate_without_outputs(gbn);
+	}
+	while(found);
+
+	do {
+		found = gbn_switch_substoch_to_front(gbn);
+	}
+	while(found);
+
+	do {
+		found = normalize_substoch_front_vertices(gbn);
+	}
+	while(found);
 }
