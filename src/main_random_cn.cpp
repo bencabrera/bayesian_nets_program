@@ -25,6 +25,7 @@ int main(int argc, const char* argv[])
 		("places", "Number of places", cxxopts::value<std::size_t>())
 		("transitions", "Number of transitions", cxxopts::value<std::size_t>())
 		("file", "Output file", cxxopts::value<std::string>())
+		("seed", "Seed", cxxopts::value<std::size_t>()->default_value("0"))
 		;
 	options.positional_help("<places> <transitions> <file>").show_positional_help();
 	options.parse_positional({"places", "transitions", "file"});
@@ -47,10 +48,17 @@ int main(int argc, const char* argv[])
 	std::size_t n_max_pre_places = params["max-pre-places"].as<std::size_t>();
 	std::size_t n_min_post_places = params["min-post-places"].as<std::size_t>(); 
 	std::size_t n_max_post_places = params["max-post-places"].as<std::size_t>();
+	std::size_t seed = params["seed"].as<std::size_t>();
 
 	std::string path = params["file"].as<std::string>();
 
-	auto cn = randomize_cn(n_places, n_transitions, n_min_tokens, n_max_tokens, n_min_pre_places, n_max_pre_places, n_min_post_places, n_max_post_places);
+    std::random_device rd;  
+    std::mt19937 mt(rd()); 
+
+	if(seed != 0)
+		mt.seed(seed);
+
+	auto cn = randomize_cn(n_places, n_transitions, n_min_tokens, n_max_tokens, n_min_pre_places, n_max_pre_places, n_min_post_places, n_max_post_places, mt);
 
 	std::ofstream f(path);
 	export_cn(f, cn);

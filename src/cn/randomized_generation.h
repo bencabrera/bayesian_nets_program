@@ -2,6 +2,8 @@
 
 #include "cn.h"
 
+#include <random>
+
 CN randomize_cn(
 	std::size_t n_places, 
 	std::size_t n_transitions, 
@@ -10,5 +12,6 @@ CN randomize_cn(
 	std::size_t n_min_pre_places, 
 	std::size_t n_max_pre_places,
 	std::size_t n_min_post_places, 
-	std::size_t n_max_post_places
+	std::size_t n_max_post_places,
+	std::mt19937& mt
 );

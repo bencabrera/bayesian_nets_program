@@ -1,6 +1,5 @@
 #include "randomized_generation.h"
 
-#include <random>
 #include <algorithm>
 
 CN randomize_cn(
@@ -11,14 +10,12 @@ CN randomize_cn(
 	std::size_t n_min_pre_places, 
 	std::size_t n_max_pre_places,
 	std::size_t n_min_post_places, 
-	std::size_t n_max_post_places
+	std::size_t n_max_post_places,
+	std::mt19937& mt
 )
 {
 	CN cn;
 	cn.n = n_places;
-
-    std::random_device rd;  
-    std::mt19937 mt(rd()); 
 
 	std::vector<std::size_t> places(n_places);
 	std::iota(places.begin(), places.end(), 0);
