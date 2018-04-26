@@ -38,7 +38,7 @@ CN read_cn(std::istream& istr)
 		ss2 >> place;
 		if(place != -1)
 		{
-			if(place >= cn.n || place < 0)
+			if(static_cast<std::size_t>(place) >= cn.n || place < 0)
 				throw std::logic_error("Marking contains place that is larger than n (or lower than zero).");
 			cn.m.set(place);
 		}
@@ -65,7 +65,7 @@ CN read_cn(std::istream& istr)
 			ss4 >> tmp;
 			if(tmp != -1)
 			{
-				if(tmp >= cn.n || tmp < 0)
+				if(static_cast<std::size_t>(tmp) >= cn.n || tmp < 0)
 					throw std::logic_error("Transition contains place that is larger than n (or lower than zero).");
 
 				t.pre.push_back(tmp);
@@ -80,7 +80,7 @@ CN read_cn(std::istream& istr)
 			ss5 >> tmp;
 			if(tmp != -1)
 			{
-				if(tmp >= cn.n || tmp < 0)
+				if(static_cast<std::size_t>(tmp) >= cn.n || tmp < 0)
 					throw std::logic_error("Transition contains place that is larger than n (or lower than zero).");
 				t.post.push_back(tmp);
 			}

@@ -20,7 +20,7 @@ bool check_post_condition(const Transition& t, const Marking& m)
 	return check_places(t.post, m, false);
 }
 
-bool fire_transition(const Transition& t, Marking& m)
+void fire_transition(const Transition& t, Marking& m)
 {
 	if(!check_pre_condition(t,m) || !check_post_condition(t,m))
 		throw std::logic_error("Trying to fire transition where pre or post condition is not satisfied.");	

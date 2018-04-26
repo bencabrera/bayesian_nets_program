@@ -39,7 +39,7 @@ MatrixPtr read_matrix(std::vector<std::string> lines)
 
 			std::vector<std::string> row_strs;
 			boost::split(row_strs, matrix_str, boost::is_any_of(";"));
-			if(row_strs.size() != (1 << m))
+			if(row_strs.size() != (static_cast<std::size_t>(1) << m))
 				throw std::logic_error(std::string("Rows: Provided array") + std::to_string(row_strs.size()) + " does not have right dimension " + std::to_string((1 << m)));
 
 			unsigned long long i_row = 0;
@@ -50,7 +50,7 @@ MatrixPtr read_matrix(std::vector<std::string> lines)
 				std::vector<std::string> value_strs;
 				boost::split(value_strs, row_str, boost::is_any_of(","));
 
-				if(value_strs.size() != (1 << n))
+				if(value_strs.size() != (static_cast<std::size_t>(1) << n))
 					throw std::logic_error(std::string("Cols: Provided array") + std::to_string(value_strs.size()) + " does not have right dimension " + std::to_string((1 << n)));
 
 				unsigned long long i_col = 0;

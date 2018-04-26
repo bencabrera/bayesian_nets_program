@@ -26,7 +26,7 @@ int main(int argc, char** argv)
 	auto gbn = read_gbn(gbn_file);
 	check_gbn_integrity(gbn);
 
-	auto [p_m, vertex_set_input_outputs] = evaluate_vertices(gbn, vertices);
+	auto p_m = evaluate_vertices(gbn, vertices).first;
 	print_matrix(std::cout, *p_m);
 
 	return 0;

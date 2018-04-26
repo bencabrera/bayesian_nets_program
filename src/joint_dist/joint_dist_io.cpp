@@ -45,7 +45,7 @@ JointDist read_joint_dist(std::istream& istr)
 }
 
 
-std::ostream& print_dist(std::ostream& ostr, const JointDist& dist, const int n)
+void print_dist(std::ostream& ostr, const JointDist& dist, const int n)
 {
 	std::vector<std::pair<BitVec, double>> tmp(dist.begin(), dist.end());
 	std::sort(tmp.begin(), tmp.end(), [](const auto& p1, const auto& p2) {

@@ -5,6 +5,10 @@ project(Petri_Nets_With_Uncertainty)
 # set c++ standard to c++11
 set (CMAKE_CXX_STANDARD 17)
 
+# warning level
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic -Werror=return-type")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # look for boost library (required)
 find_package(Boost REQUIRED regex)
 include_directories(${Boost_INCLUDE_DIRS})

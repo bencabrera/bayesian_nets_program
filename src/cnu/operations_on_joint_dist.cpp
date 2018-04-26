@@ -43,8 +43,8 @@ void assert_op(const std::vector<int> places, bool b, JointDist& dist)
 	}
 
 	if(sum > 1e-40)
-		for(auto& [marking,p] : dist)
-			p = p/(1-sum);
+		for(auto& t : dist)
+			t.second = t.second/(1-sum);
 }
 
 void nassert_op(const std::vector<int> places, bool b, JointDist& dist)
@@ -68,6 +68,6 @@ void nassert_op(const std::vector<int> places, bool b, JointDist& dist)
 	}
 
 	if(sum > 1e-40)
-		for(auto& [marking,p] : dist)
-			p = p/(1-sum);
+		for(auto& t : dist)
+			t.second = t.second/(1-sum);
 }

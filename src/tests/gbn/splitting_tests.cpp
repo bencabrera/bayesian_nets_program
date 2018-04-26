@@ -15,7 +15,7 @@ const std::string TEST_INSTANCE_FOLDER = "";
 #endif
 
 namespace {
-	bool test_matrices_equal(const Matrix& m1, const Matrix& m2)
+	void test_matrices_equal(const Matrix& m1, const Matrix& m2)
 	{
 		REQUIRE(m1.n == m2.n);
 		REQUIRE(m1.m == m2.m);
@@ -42,7 +42,7 @@ TEST_CASE("Node splitting and merging again should yield the same for seven_node
 	std::ofstream out_file1("before.dot");
 	draw_gbn_graph(out_file1, gbn);
 
-	auto [v_front, v_back] = split_vertex(gbn, 2);
+	split_vertex(gbn, 2);
 	std::ofstream out_file2("after.dot");
 	draw_gbn_graph(out_file2, gbn);
 
@@ -198,7 +198,7 @@ TEST_CASE("Replace and split test.")
 	auto& m_before = *p_m_before;
 
 	auto v_new = merge_vertices(gbn, {1,2,3});
-	auto [v_front, v_back] = split_vertex(gbn, v_new);
+	auto v_front = split_vertex(gbn, v_new).first;
 	split_vertex(gbn, v_front);
 	check_gbn_integrity(gbn);
 

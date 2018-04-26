@@ -16,7 +16,7 @@ const std::string TEST_INSTANCE_FOLDER = "";
 #endif
 
 namespace {
-	bool test_matrices_equal(const Matrix& m1, const Matrix& m2)
+	void test_matrices_equal(const Matrix& m1, const Matrix& m2)
 	{
 		REQUIRE(m1.n == m2.n);
 		REQUIRE(m1.m == m2.m);
@@ -56,7 +56,6 @@ TEST_CASE("(F2) should work correctly.")
 
 	auto p_m_before = evaluate_gbn(gbn);
 	auto& m_before = *p_m_before;
-	auto n_vertices_before = gbn.n_vertices;
 
 	std::ofstream out_file("before.dot");
 	draw_gbn_graph(out_file, gbn);
@@ -67,8 +66,6 @@ TEST_CASE("(F2) should work correctly.")
 
 	std::ofstream out_file2("after.dot");
 	draw_gbn_graph(out_file2, gbn);
-
-	auto n_vertices_after = gbn.n_vertices;
 
 	auto p_m_after = evaluate_gbn(gbn);
 	auto& m_after = *p_m_after;
@@ -84,12 +81,9 @@ TEST_CASE("(F3) should work correctly (f3_simplification_1.gbn).")
 
 	auto p_m_before = evaluate_gbn(gbn);
 	auto& m_before = *p_m_before;
-	auto n_vertices_before = gbn.n_vertices;
 
 	gbn_simplification(gbn);
 	check_gbn_integrity(gbn);
-
-	auto n_vertices_after = gbn.n_vertices;
 
 	auto p_m_after = evaluate_gbn(gbn);
 	auto& m_after = *p_m_after;
@@ -105,12 +99,9 @@ TEST_CASE("(F3) should work correctly (f3_simplification_2.gbn).")
 
 	auto p_m_before = evaluate_gbn(gbn);
 	auto& m_before = *p_m_before;
-	auto n_vertices_before = gbn.n_vertices;
 
 	gbn_simplification(gbn);
 	check_gbn_integrity(gbn);
-
-	auto n_vertices_after = gbn.n_vertices;
 
 	auto p_m_after = evaluate_gbn(gbn);
 	auto& m_after = *p_m_after;
@@ -126,12 +117,9 @@ TEST_CASE("(F3) should work correctly (f3_simplification_3.gbn).")
 
 	auto p_m_before = evaluate_gbn(gbn);
 	auto& m_before = *p_m_before;
-	auto n_vertices_before = gbn.n_vertices;
 
 	gbn_simplification(gbn);
 	check_gbn_integrity(gbn);
-
-	auto n_vertices_after = gbn.n_vertices;
 
 	auto p_m_after = evaluate_gbn(gbn);
 	auto& m_after = *p_m_after;
@@ -147,13 +135,10 @@ TEST_CASE("(F3) should work correctly (f3_simplification_3.gbn) 2.")
 
 	auto p_m_before = evaluate_gbn(gbn);
 	auto& m_before = *p_m_before;
-	auto n_vertices_before = gbn.n_vertices;
 
 	gbn_simplification(gbn);
 	gbn_simplification(gbn);
 	check_gbn_integrity(gbn);
-
-	auto n_vertices_after = gbn.n_vertices;
 
 	auto p_m_after = evaluate_gbn(gbn);
 	auto& m_after = *p_m_after;
@@ -169,13 +154,10 @@ TEST_CASE("(F4) should work correctly (f4_simplification_1.gbn).")
 
 	auto p_m_before = evaluate_gbn(gbn);
 	auto& m_before = *p_m_before;
-	auto n_vertices_before = gbn.n_vertices;
 
 	gbn_simplification(gbn);
 	gbn_simplification(gbn);
 	check_gbn_integrity(gbn);
-
-	auto n_vertices_after = gbn.n_vertices;
 
 	auto p_m_after = evaluate_gbn(gbn);
 	auto& m_after = *p_m_after;
@@ -191,13 +173,10 @@ TEST_CASE("(F4) should work correctly (f4_simplification_2.gbn).")
 
 	auto p_m_before = evaluate_gbn(gbn);
 	auto& m_before = *p_m_before;
-	auto n_vertices_before = gbn.n_vertices;
 
 	gbn_simplification(gbn);
 	gbn_simplification(gbn);
 	check_gbn_integrity(gbn);
-
-	auto n_vertices_after = gbn.n_vertices;
 
 	auto p_m_after = evaluate_gbn(gbn);
 	auto& m_after = *p_m_after;
@@ -213,13 +192,10 @@ TEST_CASE("(F4) should work correctly (f4_simplification_3.gbn).")
 
 	auto p_m_before = evaluate_gbn(gbn);
 	auto& m_before = *p_m_before;
-	auto n_vertices_before = gbn.n_vertices;
 
 	gbn_simplification(gbn);
 	gbn_simplification(gbn);
 	check_gbn_integrity(gbn);
-
-	auto n_vertices_after = gbn.n_vertices;
 
 	auto p_m_after = evaluate_gbn(gbn);
 	auto& m_after = *p_m_after;
@@ -235,13 +211,10 @@ TEST_CASE("(F5) should work correctly (f5_simplification_1.gbn).")
 
 	auto p_m_before = evaluate_gbn(gbn);
 	auto& m_before = *p_m_before;
-	auto n_vertices_before = gbn.n_vertices;
 
 	gbn_simplification(gbn);
 	gbn_simplification(gbn);
 	check_gbn_integrity(gbn);
-
-	auto n_vertices_after = gbn.n_vertices;
 
 	auto p_m_after = evaluate_gbn(gbn);
 	auto& m_after = *p_m_after;
