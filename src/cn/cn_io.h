@@ -5,5 +5,6 @@
 #include <iostream>
 
 CN read_cn(std::istream& istr);
-std::ostream& print_cn_details(std::ostream& ostr, const CN& cn);
-std::ostream& draw_cn(std::ostream& ostr, const CN& cn);
+void print_cn_details(std::ostream& ostr, const CN& cn);
+void draw_cn(std::ostream& ostr, const CN& cn);
+void export_cn(std::ostream& ostr, const CN& cn);

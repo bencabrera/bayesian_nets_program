@@ -2,7 +2,7 @@
 #include "../gbn/modification/vertex_add_remove.h"
 #include <iostream>
 
-void set_op(const std::vector<int> places, bool b, GBN& gbn)
+void set_op(const std::vector<std::size_t> places, bool b, GBN& gbn)
 {
 	auto& g = gbn.graph;
 	auto& output_vertices = ::output_vertices(gbn);
@@ -29,7 +29,7 @@ void set_op(const std::vector<int> places, bool b, GBN& gbn)
 	}
 }
 
-void assert_op(const std::vector<int> places, bool b, GBN& gbn)
+void assert_op(const std::vector<std::size_t> places, bool b, GBN& gbn)
 {
 	auto& g = gbn.graph;
 	auto& output_vertices = ::output_vertices(gbn);
@@ -54,7 +54,7 @@ void assert_op(const std::vector<int> places, bool b, GBN& gbn)
 	}
 }
 
-void nassert_op(const std::vector<int> places, bool b, GBN& gbn)
+void nassert_op(const std::vector<std::size_t> places, bool b, GBN& gbn)
 {
 	auto& g = gbn.graph;
 	auto& output_vertices = ::output_vertices(gbn);

@@ -29,9 +29,8 @@ CN read_cn(std::istream& istr)
 	// read in initial marking
 	std::getline(istr, line);
 	boost::trim(line);
-	if(line.empty())
-		throw std::logic_error("Wrong format: initial marking");
 	std::stringstream ss2(line);
+	cn.m = std::vector<bool>(cn.n);
 	while(!ss2.eof())
 	{
 		int place = -1;
@@ -40,7 +39,7 @@ CN read_cn(std::istream& istr)
 		{
 			if(static_cast<std::size_t>(place) >= cn.n || place < 0)
 				throw std::logic_error("Marking contains place that is larger than n (or lower than zero).");
-			cn.m.set(place);
+			cn.m[place] = true;
 		}
 	}
 	
@@ -92,12 +91,13 @@ CN read_cn(std::istream& istr)
 }
 
 
-std::ostream& print_cn_details(std::ostream& ostr, const CN& cn)
+void print_cn_details(std::ostream& ostr, const CN& cn)
 {
 	ostr << "----------------------------------------\n";
 	ostr << "n: " << cn.n << "\n";
 	ostr << "m: ";
-	print_bitvec(ostr, cn.m, cn.n);
+	for(auto t : cn.m)
+		ostr << t;
 	ostr << "\n";
 	ostr << "----------------------------------------\n";
 	ostr << "transitions: " << "\n";
@@ -118,8 +118,6 @@ std::ostream& print_cn_details(std::ostream& ostr, const CN& cn)
 	}
 
 	ostr.flush();
-
-	return ostr;
 }
 
 namespace {
@@ -177,11 +175,27 @@ namespace {
 	}
 }
 
-std::ostream& draw_cn(std::ostream& ostr, const CN& cn)
+void draw_cn(std::ostream& ostr, const CN& cn)
 {
 	auto g = build_cn_graph(cn);
 
 	boost::write_graphviz(ostr, g, VertexWriter(g));//, EdgeWriter(gbn.graph), GraphWriter(title));
+}
 
-	return ostr;
+void export_cn(std::ostream& ostr, const CN& cn)
+{
+	ostr << cn.n << std::endl;
+	for(std::size_t i = 0; i < cn.m.size(); i++)
+		if(cn.m[i])
+			ostr << i << " ";
+	ostr << std::endl;
+	for(auto t : cn.transitions)
+	{
+		for(auto p : t.pre)
+			ostr << p << " ";
+		ostr << " ->";
+		for(auto p : t.post)
+			ostr << " " << p;
+		ostr << "\n";
+	}
 }

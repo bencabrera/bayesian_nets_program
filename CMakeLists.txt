@@ -20,6 +20,7 @@ set(GENERAL_FILES
 set(CN_FILES
 	src/cn/cn_io.cpp
 	src/cn/cn_operations.cpp
+	src/cn/randomized_generation.cpp
 )
 
 set(JOINT_DIST_FILES
@@ -100,6 +101,10 @@ target_link_libraries(simplification Boost::regex)
 add_executable(path_closing src/main_path_closing.cpp)
 target_link_libraries(path_closing core_lib)
 target_link_libraries(path_closing Boost::regex)
+
+add_executable(random_cn src/main_random_cn.cpp)
+target_link_libraries(random_cn core_lib)
+target_link_libraries(random_cn Boost::regex)
 
 add_executable(tests src/main_tests.cpp ${TEST_FILES})
 target_link_libraries(tests core_lib)

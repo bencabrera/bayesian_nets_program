@@ -7,6 +7,7 @@
 #include <boost/regex.hpp>
 #include <regex>
 #include <cmath>
+#include <algorithm>
 
 #include "../helpers.hpp"
 #include "joint_dist_check.h"
@@ -32,7 +33,8 @@ JointDist read_joint_dist(std::istream& istr)
 
 		double p = read_double(p_str);
 
-		BitVec m(marking_str);
+		auto m = read_bool_vector(marking_str);
+		std::reverse(m.begin(), m.end());
 		auto r = dist.insert({ m, p });
 		if(!r.second)
 			throw std::logic_error(std::string("Joint distribution could not be read. Marking ") + marking_str + "defined multiple times.");
@@ -45,16 +47,11 @@ JointDist read_joint_dist(std::istream& istr)
 }
 
 
-void print_dist(std::ostream& ostr, const JointDist& dist, const int n)
+void print_dist(std::ostream& ostr, const JointDist& dist)
 {
-	std::vector<std::pair<BitVec, double>> tmp(dist.begin(), dist.end());
-	std::sort(tmp.begin(), tmp.end(), [](const auto& p1, const auto& p2) {
-		return p1.first.to_string() < p2.first.to_string();
-	});
-
-	for(auto p : tmp)
+	for(auto p : dist)
 	{
-		print_bitvec(ostr, p.first, n);
+		print_bool_vector(ostr, p.first);
 		ostr << " " << p.second << "\n";
 	}
 }

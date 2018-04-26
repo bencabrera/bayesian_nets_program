@@ -38,7 +38,7 @@ void do_command(std::string command_line, CN& cn, JointDist& dist)
 
 			std::cout << "- fail_pre -" << std::endl;
 			if(show_details) {
-				print_dist(std::cout,dist,cn.n); 
+				print_dist(std::cout,dist); 
 				std::cout << std::endl;
 			}
 			return;
@@ -51,7 +51,7 @@ void do_command(std::string command_line, CN& cn, JointDist& dist)
 
 			std::cout << "- fail_post -" << std::endl;
 			if(show_details) {
-				print_dist(std::cout,dist,cn.n); 
+				print_dist(std::cout,dist); 
 				std::cout << std::endl;
 			}
 			return;
@@ -62,28 +62,28 @@ void do_command(std::string command_line, CN& cn, JointDist& dist)
 		assert_op(pre_places,1, dist);
 		if(show_details) {
 			std::cout << "- assert_pre -" << std::endl;
-			print_dist(std::cout,dist,cn.n); 
+			print_dist(std::cout,dist); 
 			std::cout << std::endl;
 		}
 
 		assert_op(post_places,0, dist);
 		if(show_details) {
 			std::cout << "- assert_post -" << std::endl;
-			print_dist(std::cout,dist,cn.n); 
+			print_dist(std::cout,dist); 
 			std::cout << std::endl;
 		}
 
 		set_op(pre_places,0,dist);
 		if(show_details) {
 			std::cout << "- set_pre -" << std::endl;
-			print_dist(std::cout,dist,cn.n); 
+			print_dist(std::cout,dist); 
 			std::cout << std::endl;
 		}
 
 		set_op(post_places,1,dist);
 		if(show_details) {
 			std::cout << "- set_post -" << std::endl;
-			print_dist(std::cout,dist,cn.n); 
+			print_dist(std::cout,dist); 
 			std::cout << std::endl;
 		}
 
@@ -99,7 +99,7 @@ void do_command(std::string command_line, CN& cn, JointDist& dist)
 	if(command_line.substr(0,4) == "dist")
 	{
 		std::cout << std::endl;
-		print_dist(std::cout, dist, cn.n);
+		print_dist(std::cout, dist);
 		std::cout << std::endl;
 		return;
 	}

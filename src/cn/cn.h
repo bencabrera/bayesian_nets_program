@@ -5,11 +5,11 @@
 #include <unordered_map>
 #include <vector>
 
-using Marking = BitVec;
+using Marking = std::vector<bool>;
 
 struct Transition {
-	std::vector<int> pre;
-	std::vector<int> post;
+	std::vector<std::size_t> pre;
+	std::vector<std::size_t> post;
 };
 
 struct CN {

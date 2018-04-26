@@ -1,7 +1,7 @@
 #include "cn_operations.h"
 #include <iostream>
 
-bool check_places(std::vector<int> places, const Marking& m, bool condition)
+bool check_places(std::vector<std::size_t> places, const Marking& m, bool condition)
 {
 	for(const auto p: places)
 		if(m[p] != condition)

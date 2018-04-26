@@ -13,10 +13,12 @@ const std::string TEST_INSTANCE_FOLDER = FOO;
 const std::string TEST_INSTANCE_FOLDER = "";
 #endif
 
-void compare_dists(const JointDist& dist1, const JointDist& dist2)
-{
-	for(const auto& [m, p] : dist1)
-		REQUIRE(p == Approx(dist2.at(m)));
+namespace {
+	void compare_dists(const JointDist& dist1, const JointDist& dist2)
+	{
+		for(const auto& [m, p] : dist1)
+			REQUIRE(p == Approx(dist2.at(m)));
+	}
 }
 
 TEST_CASE("Set operation should work correctly 1") {
