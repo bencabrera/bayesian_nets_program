@@ -4,12 +4,23 @@ GBN::GBN(Index n, Index m, Index n_inside_vertices)
 	:n(n), m(m), n_vertices(n_inside_vertices + n + m), graph(n_vertices)
 {
 	for(Index i = 0; i < n_vertices; i++)
+	{
+		put(vertex_type, graph, i, NODE);
 		visible_vertices.insert(i);
+	}
 
 	for(Index i = 0; i < n; i++)
+	{
+		put(vertex_type, graph, n_inside_vertices+i, INPUT);
+		put(vertex_name, graph, n_inside_vertices+i, std::string("i_")+std::to_string(i));
 		input_vertices.push_back(n_inside_vertices+i);
+	}
 	for(Index i = 0; i < m; i++)
+	{
+		put(vertex_type, graph, n_inside_vertices+n+i, OUTPUT);
+		put(vertex_name, graph, n_inside_vertices+n+i, std::string("o_")+std::to_string(i));
 		output_vertices.push_back(n_inside_vertices+n+i);
+	}
 }
 
 Index n(const GBNGraph::vertex_descriptor& v, const GBNGraph& g)

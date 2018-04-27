@@ -44,6 +44,7 @@ set(GBN_FILES
 	src/gbn/general/evaluation.cpp
 	src/gbn/general/vertex_set_input_output.cpp
 	src/gbn/general/path_closing.cpp
+	src/gbn/general/randomized_generation.cpp
 
 	src/gbn/modification/vertex_add_remove.cpp
 	src/gbn/modification/merging.cpp
@@ -105,6 +106,10 @@ target_link_libraries(path_closing Boost::regex)
 add_executable(random_cn src/main_random_cn.cpp)
 target_link_libraries(random_cn core_lib)
 target_link_libraries(random_cn Boost::regex)
+
+add_executable(random_gbn src/main_random_gbn.cpp)
+target_link_libraries(random_gbn core_lib)
+target_link_libraries(random_gbn Boost::regex)
 
 add_executable(tests src/main_tests.cpp ${TEST_FILES})
 target_link_libraries(tests core_lib)
