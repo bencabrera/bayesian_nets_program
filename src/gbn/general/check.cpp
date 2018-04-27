@@ -45,9 +45,9 @@ void check_gbn_integrity(const GBN& gbn)
 			}
 
 			if(boost::in_degree(v,g) != matrix(v,g)->n)
-				throw std::logic_error(std::string("Input dimension of node '") + name(v,g) + "' (" + std::to_string(gbn.n) + ") does not fit matrix input dimension (" + std::to_string(matrix(v,g)->n));
+				throw std::logic_error(std::string("Input dimension of node '") + name(v,g) + "' (" + std::to_string(boost::in_degree(v,g)) + ") does not fit matrix input dimension (" + std::to_string(matrix(v,g)->n) + ").");
 			if(used_output_ports.size() != matrix(v,g)->m)
-				throw std::logic_error(std::string("Output dimension of node '") + name(v,g) + "' (" + std::to_string(gbn.m) + ") does not fit matrix output dimension (" + std::to_string(matrix(v,g)->m));
+				throw std::logic_error(std::string("Output dimension of node '") + name(v,g) + "' (" + std::to_string(used_output_ports.size()) + ") does not fit matrix output dimension (" + std::to_string(matrix(v,g)->m) + ").");
 		}
 	}
 

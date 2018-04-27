@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "../matrix/randomized_generation.h"
+#include "../modification/vertex_add_remove.h"
 
 namespace {
 	using Port = std::pair<Vertex, int>;
@@ -56,6 +57,7 @@ GBN generate_random_gbn(std::size_t n, std::size_t m, std::size_t n_inside_verti
 
 	std::uniform_int_distribution<std::size_t> rand_n_precessors(params.n_min_precessors, params.n_max_precessors);
 	std::uniform_int_distribution<std::size_t> rand_n_successors(params.n_min_successors, params.n_max_successors);
+	std::uniform_int_distribution<std::size_t> rand_n_successors_without_pre(std::min(1ul,params.n_min_successors), params.n_max_successors);
 
 	std::vector<Port> previous_output_ports;
 	// add inputs to previous output ports
@@ -68,8 +70,7 @@ GBN generate_random_gbn(std::size_t n, std::size_t m, std::size_t n_inside_verti
 	{
 		put(vertex_name, g, v, std::string("v_")+std::to_string(v));
 		std::size_t n_precessors = rand_n_precessors(mt);
-		std::cout << "n_precessors: " << n_precessors << std::endl;
-		std::size_t n_successors = rand_n_successors(mt);
+		std::size_t n_successors = (n_precessors == 0) ? rand_n_successors_without_pre(mt) : rand_n_successors(mt);
 		pre_and_successors.push_back({ n_precessors, n_successors });
 
 		auto it = (params.vertex_window_size <= previous_output_ports.size()) ? previous_output_ports.end()-params.vertex_window_size : previous_output_ports.begin();
@@ -153,17 +154,38 @@ GBN generate_random_gbn(std::size_t n, std::size_t m, std::size_t n_inside_verti
 		i_port++;
 	}
 
+	// remove isolated nodes
+	bool found = false;
+	do {
+		found = false;
+		Vertex v_isolated = 0;
+
+		for(auto v : inside_vertices(gbn))
+		{
+			if(boost::in_degree(v, g) == 0 && boost::out_degree(v,g) == 0)
+			{
+				found = true;
+				v_isolated = v;
+				break;
+			}
+		}
+
+		if(found)
+			remove_vertex(v_isolated, gbn);
+	}
+	while(found) ;
+
 
 	// assign matrices
 	for(auto v : inside_vertices(gbn))
 	{
 		std::set<std::size_t> input_ports;
 		for(auto e : boost::make_iterator_range(boost::in_edges(v,g)))
-			input_ports.insert(get(edge_position,g,e).second);
+			input_ports.insert(port_to(e,g));
 
 		std::set<std::size_t> output_ports;
 		for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
-			output_ports.insert(get(edge_position,g,e).second);
+			output_ports.insert(port_from(e,g));
 
 		auto n_v = input_ports.size();
 		auto m_v = output_ports.size();

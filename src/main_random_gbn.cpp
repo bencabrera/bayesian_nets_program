@@ -5,6 +5,7 @@
 #include "gbn/general/gbn_io.h"
 #include "gbn/general/randomized_generation.h"
 #include "gbn/general/evaluation.h"
+#include "gbn/general/check.h"
 #include "gbn/matrix/matrix_io.h"
 
 // #include "../libs/cxxopts/include/cxxopts.hpp"
@@ -59,14 +60,35 @@ int main(int /*argc*/, const char** /*argv[]*/)
 
 	RandomGBNParams params;
 	params.vertex_window_size = 10;
+	params.matrix_params.F_matrix_prob = 0.0;
+	params.matrix_params.OneB_matrix_prob = 0.0;
 
-	auto gbn = generate_random_gbn(4,4,10,mt,params);
-	auto p_m = evaluate_gbn(gbn);
+	auto gbn = generate_random_gbn(5,5,10,mt,params);
 
-	print_matrix(std::cout, *p_m);
 
 	std::ofstream f("test.dot");
 	draw_gbn_graph(f, gbn);
+
+	for(auto v : inside_vertices(gbn))
+	{
+		if(type(v,gbn.graph) == NODE)
+		{
+			std::set<int> used_output_ports;
+			for(auto e : boost::make_iterator_range(boost::out_edges(v, gbn.graph)))
+			{
+				used_output_ports.insert(port_from(e,gbn.graph));
+			}
+
+			std::cout << name(v,gbn.graph) << " " << boost::in_degree(v,gbn.graph) << " " << used_output_ports.size() << std::endl;
+		}
+	}
+
+
+	check_gbn_integrity(gbn);
+	auto p_m = evaluate_gbn(gbn);
+	print_matrix(std::cout, *p_m);
+
+
 
 	return 0;
 }
