@@ -4,20 +4,20 @@
 MatrixPtr generate_random_matrix(std::size_t n, std::size_t m, std::mt19937& mt, RandomMatrixParams params)
 {
     std::uniform_real_distribution<double> rand_is_special_matrix(0,1);
-    std::uniform_int_distribution<bool> rand_b(0,1);
+    std::uniform_int_distribution<int> rand_b(0,1);
 
 	// maybe generate F matrix
 	if(n == m && n >= 1)
 	{
 		if(rand_is_special_matrix(mt) < params.F_matrix_prob)
-			return MatrixPtr(new FMatrix(n, rand_b(mt)));
+			return MatrixPtr(new FMatrix(n, static_cast<bool>(rand_b(mt))));
 	}
 
 	// maybe generate OneB matrix
 	if(n == 0 && m == 1)
 	{
 		if(rand_is_special_matrix(mt) < params.OneB_matrix_prob)
-			return MatrixPtr(new OneBMatrix(rand_b(mt)));
+			return MatrixPtr(new OneBMatrix(static_cast<bool>(rand_b(mt))));
 	}
 
 	// maybe generate Terminator matrix

@@ -143,16 +143,28 @@ namespace {
 			const GBNGraph& g;
 	};
 	struct GraphWriter {
-		GraphWriter(std::string title = "")
-			:title(title)
+		GraphWriter(const GBN& gbn, std::string title = "")
+			:gbn(gbn),
+			title(title)
 		{}
 
 		void operator()(std::ostream& out) const {
 			if(!title.empty())
 				out << "graph[label=\"" << title << "\"," << "labelloc=top," << "labeljust=left];" << std::endl;
 			out << "rankdir=LR;" << std::endl;
+
+			out << "{ rank=same; ";
+			for(auto v : input_vertices(gbn))
+				out << v << ";";
+			out << "}" << std::endl;
+
+			out << "{ rank=same; ";
+			for(auto v : output_vertices(gbn))
+				out << v << ";";
+			out << "}" << std::endl;
 		}
 
+		const GBN& gbn;
 		std::string title;
 	};
 
@@ -177,5 +189,5 @@ namespace {
 void draw_gbn_graph(std::ostream& ostr, const GBN& gbn, std::string title)
 {
 	boost::filtered_graph<GBNGraph, AllEdgesTruePredicate, VisibleVerticesPredicate> fg(gbn.graph,AllEdgesTruePredicate(), VisibleVerticesPredicate(all_vertices(gbn)));
-	boost::write_graphviz(ostr, fg, VertexWriter(gbn.graph), EdgeWriter(gbn.graph), GraphWriter(title));
+	boost::write_graphviz(ostr, fg, VertexWriter(gbn.graph), EdgeWriter(gbn.graph), GraphWriter(gbn, title));
 }

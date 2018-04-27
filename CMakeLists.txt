@@ -37,6 +37,7 @@ set(GBN_FILES
 	src/gbn/matrix/matrix.cpp
 	src/gbn/matrix/matrix_io.cpp
 	src/gbn/matrix/matrix_decomposition.cpp
+	src/gbn/matrix/randomized_generation.cpp
 
 	src/gbn/general/gbn.cpp
 	src/gbn/general/gbn_io.cpp

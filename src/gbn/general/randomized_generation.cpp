@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "../matrix/randomized_generation.h"
+
 namespace {
 	using Port = std::pair<Vertex, int>;
 
@@ -149,6 +151,46 @@ GBN generate_random_gbn(std::size_t n, std::size_t m, std::size_t n_inside_verti
 		put(edge_position, g, e, std::make_pair(port.second, 0));
 
 		i_port++;
+	}
+
+
+	// assign matrices
+	for(auto v : inside_vertices(gbn))
+	{
+		std::set<std::size_t> input_ports;
+		for(auto e : boost::make_iterator_range(boost::in_edges(v,g)))
+			input_ports.insert(get(edge_position,g,e).second);
+
+		std::set<std::size_t> output_ports;
+		for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
+			output_ports.insert(get(edge_position,g,e).second);
+
+		auto n_v = input_ports.size();
+		auto m_v = output_ports.size();
+
+		auto p_m = generate_random_matrix(n_v, m_v, mt, params.matrix_params);
+
+		put(vertex_matrix, g, v, p_m);
+		switch(p_m->type) {
+			case F: {
+				auto& m = dynamic_cast<FMatrix&>(*p_m);		
+				put(vertex_name, g, v, std::string("F_{") + std::to_string(m.k) + "," + std::to_string(m.b) + "}");
+				break;
+			}
+			case ONE_B: {
+				auto& m = dynamic_cast<OneBMatrix&>(*p_m);		
+				put(vertex_name, g, v, std::string("1_") + std::to_string(m.b));
+				break;
+			}
+
+			case TERMINATOR: {
+				put(vertex_name, g, v, std::string("T"));
+				break;
+			}
+
+			default:
+				break;
+		}
 	}
 
 	return gbn;

@@ -4,6 +4,8 @@
 #include "gbn/general/gbn.h"
 #include "gbn/general/gbn_io.h"
 #include "gbn/general/randomized_generation.h"
+#include "gbn/general/evaluation.h"
+#include "gbn/matrix/matrix_io.h"
 
 // #include "../libs/cxxopts/include/cxxopts.hpp"
 
@@ -59,9 +61,12 @@ int main(int /*argc*/, const char** /*argv[]*/)
 	params.vertex_window_size = 10;
 
 	auto gbn = generate_random_gbn(4,4,10,mt,params);
+	auto p_m = evaluate_gbn(gbn);
+
+	print_matrix(std::cout, *p_m);
 
 	std::ofstream f("test.dot");
-	draw_gbn_graph(f, gbn, "blubbern");
+	draw_gbn_graph(f, gbn);
 
 	return 0;
 }
