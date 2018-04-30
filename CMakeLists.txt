@@ -62,6 +62,7 @@ set(TEST_FILES
 	src/tests/gbn/evaluation_tests.cpp
 	src/tests/gbn/splitting_tests.cpp
 	src/tests/gbn/simplification_tests.cpp
+	src/tests/gbn/automated_simplification_tests.cpp
 
 	src/tests/cnu/operations_on_joint_dist_tests.cpp
 )

@@ -23,7 +23,7 @@ namespace {
 
 	std::vector<std::size_t> remove_spaces_in_vec(std::vector<std::size_t> vec)
 	{
-		if(vec.size() < 2)
+		if(vec.size() == 0)
 			return vec;
 
 		std::sort(vec.begin(), vec.end());
@@ -33,6 +33,9 @@ namespace {
 			for(std::size_t j = 0; j < vec.size(); j++)
 				vec[j] -= vec[0];
 		}
+
+		if(vec.size() < 2)
+			return vec;
 
 		for(std::size_t i = 1; i < vec.size(); i++)
 		{
@@ -87,30 +90,6 @@ GBN generate_random_gbn(std::size_t n, std::size_t m, std::size_t n_inside_verti
 			previous_output_ports.push_back({ v, i });
 	}
 
-	for(Vertex v = 0; v < n_inside_vertices; v++)
-	{
-		if(boost::out_degree(v,g) == 0)
-			continue;
-		
-		std::vector<std::size_t> tmp;
-		for(std::size_t i = 0; i < boost::out_degree(v,g); i++)
-			for(std::size_t p = 0; p < pre_and_successors[v].second; p++)
-				tmp.push_back(p);
-		std::shuffle(tmp.begin(), tmp.end(), mt);
-		std::vector<std::size_t> output_ports(tmp.begin(), tmp.begin()+boost::out_degree(v,g));
-
-		output_ports = remove_spaces_in_vec(output_ports);
-
-		std::shuffle(output_ports.begin(), output_ports.end(), mt);
-
-		std::size_t i = 0;
-		for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
-		{
-			auto p = std::make_pair(output_ports[i++], get(edge_position,g,e).second);
-			put(edge_position, g, e, p);
-		}
-	}
-
 	std::vector<Vertex> input_ports_without;
 	// identify input ports without connection
 	for(Vertex i_input = 0; i_input < n; i_input++)
@@ -154,6 +133,31 @@ GBN generate_random_gbn(std::size_t n, std::size_t m, std::size_t n_inside_verti
 		i_port++;
 	}
 
+	for(Vertex v = 0; v < n_inside_vertices; v++)
+	{
+		if(boost::out_degree(v,g) == 0)
+			continue;
+		
+		std::vector<std::size_t> tmp;
+		for(std::size_t i = 0; i < boost::out_degree(v,g); i++)
+			for(std::size_t p = 0; p < pre_and_successors[v].second; p++)
+				tmp.push_back(p);
+		std::shuffle(tmp.begin(), tmp.end(), mt);
+		std::vector<std::size_t> output_ports(tmp.begin(), tmp.begin()+boost::out_degree(v,g));
+
+		output_ports = remove_spaces_in_vec(output_ports);
+
+		std::shuffle(output_ports.begin(), output_ports.end(), mt);
+
+		std::size_t i = 0;
+		for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
+		{
+			auto p = std::make_pair(output_ports[i++], get(edge_position,g,e).second);
+			put(edge_position, g, e, p);
+		}
+	}
+
+
 	// remove isolated nodes
 	bool found = false;
 	do {
@@ -174,6 +178,17 @@ GBN generate_random_gbn(std::size_t n, std::size_t m, std::size_t n_inside_verti
 			remove_vertex(v_isolated, gbn);
 	}
 	while(found) ;
+
+
+	// add terminator to inside vertices without outputs
+	for(auto v : inside_vertices(gbn))
+	{
+		if(boost::out_degree(v,g) == 0)
+		{
+			auto v_new = add_vertex(gbn, std::make_shared<TerminatorMatrix>(), "T");
+			boost::add_edge(v, v_new, g);
+		}
+	}
 
 
 	// assign matrices

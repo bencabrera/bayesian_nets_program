@@ -45,31 +45,81 @@ bool check_and_apply_F1(GBN& gbn, Vertex v)
 }
 
 // TODO: implement the more general version for n -> m
+// bool check_and_apply_F2(GBN& gbn, Vertex v)
+// {
+	// auto& g = gbn.graph;
+
+	// if(type(v,g) != NODE || matrix(v,g)->type != TERMINATOR)
+		// return false;
+
+	// auto e_pre = *(boost::in_edges(v,g).first);
+	// auto v_pre = boost::source(e_pre, g);
+
+	// if(type(v_pre,g) != NODE)
+		// return false;
+
+	// if(boost::out_degree(v_pre,g) != 1)
+		// return false;
+
+	// // if we reached here, then v_pre is a stochastic vertex whose only successor is a terminator
+	// if(!matrix(v_pre,g)->is_stochastic)
+		// return false;
+
+	// std::vector<Port> precessor_ports;	
+	// for(auto e : boost::make_iterator_range(boost::in_edges(v_pre,g)))
+		// precessor_ports.push_back({ boost::source(e,g), port_from(e,g) });
+
+	// remove_vertex(v,gbn);
+	// remove_vertex(v_pre,gbn);
+
+	// for(auto& p : precessor_ports)
+	// {
+		// auto v_term = add_vertex(gbn, std::make_shared<TerminatorMatrix>(), "T");
+		// auto e = boost::add_edge(p.first, v_term, g).first;
+		// put(edge_position, g, e, std::pair<std::size_t, std::size_t>{ p.second, 0 });
+	// }
+
+	// return true;
+// }
+
 bool check_and_apply_F2(GBN& gbn, Vertex v)
 {
 	auto& g = gbn.graph;
 
-	if(type(v,g) != NODE || matrix(v,g)->type != TERMINATOR)
+	if(type(v,g) != NODE)
 		return false;
 
-	auto e_pre = *(boost::in_edges(v,g).first);
-	auto v_pre = boost::source(e_pre, g);
-
-	if(boost::out_degree(v_pre,g) != 1)
+	if(!matrix(v,g)->is_stochastic)
 		return false;
+
+	if(boost::out_degree(v,g) == 0)
+		return false;
+
+	for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
+	{
+		auto v_suc = boost::target(e,g);
+		if(type(v_suc,g) != NODE)
+			return false;
+		if(matrix(v_suc,g)->type != TERMINATOR)
+			return false;
+	}
 
 	// if we reached here, then v_pre is a stochastic vertex whose only successor is a terminator
 
 	std::vector<Port> precessor_ports;	
-	for(auto e : boost::make_iterator_range(boost::in_edges(v_pre,g)))
+	for(auto e : boost::make_iterator_range(boost::in_edges(v,g)))
 		precessor_ports.push_back({ boost::source(e,g), port_from(e,g) });
 
+	for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
+	{
+		auto v_suc = boost::target(e,g);
+		remove_vertex(v_suc,gbn);
+	}
 	remove_vertex(v,gbn);
-	remove_vertex(v_pre,gbn);
 
 	for(auto& p : precessor_ports)
 	{
-		auto v_term = add_vertex(gbn, MatrixPtr(new TerminatorMatrix()), "T");
+		auto v_term = add_vertex(gbn, std::make_shared<TerminatorMatrix>(), "T");
 		auto e = boost::add_edge(p.first, v_term, g).first;
 		put(edge_position, g, e, std::pair<std::size_t, std::size_t>{ p.second, 0 });
 	}
