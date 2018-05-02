@@ -133,15 +133,17 @@ GBN generate_random_gbn(std::size_t n, std::size_t m, std::size_t n_inside_verti
 		i_port++;
 	}
 
+	// remove space in between output ports
 	for(Vertex v = 0; v < n_inside_vertices; v++)
 	{
-		if(boost::out_degree(v,g) == 0)
+		if(boost::out_degree(v,g) == 0 || pre_and_successors[v].second == 0)
 			continue;
 		
 		std::vector<std::size_t> tmp;
 		for(std::size_t i = 0; i < boost::out_degree(v,g); i++)
 			for(std::size_t p = 0; p < pre_and_successors[v].second; p++)
 				tmp.push_back(p);
+
 		std::shuffle(tmp.begin(), tmp.end(), mt);
 		std::vector<std::size_t> output_ports(tmp.begin(), tmp.begin()+boost::out_degree(v,g));
 

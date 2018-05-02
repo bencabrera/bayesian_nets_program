@@ -15,3 +15,18 @@ bool check_and_apply_F5(GBN& gbn, Vertex v);
 bool gbn_eliminate_without_outputs(GBN& gbn);
 bool gbn_switch_substoch_to_front(GBN& gbn);
 bool normalize_substoch_front_vertices(GBN& gbn);
+
+template<typename ...Functions>
+void apply_simplifications_for_each_vertex(GBN& gbn, const Functions& ...functions)
+{
+	auto funcs = { functions... };
+
+	bool changed = false;
+	do {
+		changed = false;
+		for(auto f : funcs)
+			for(auto v : inside_vertices(gbn))
+				changed = changed || f(gbn,v);
+	}
+	while(changed);
+}

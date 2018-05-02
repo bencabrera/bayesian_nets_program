@@ -155,3 +155,67 @@ TEST_CASE("Automated: (F2) simplification should not modify distribution")
 		test_matrices_equal(m_before, m_after);
 	}
 }
+
+TEST_CASE("Automated: (CoUnit) & (F1) & (F2) simplifications together should not modify distribution")
+{
+    std::random_device rd;  
+    std::mt19937 mt(rd()); 
+
+	RandomGBNParams params;
+	params.vertex_window_size = 10;
+	params.matrix_params.F_matrix_prob = 0.0;
+	params.matrix_params.OneB_matrix_prob = 1.0;
+
+	for(std::size_t i = 0; i < 100; i++)
+	{
+		auto gbn = generate_random_gbn(5,5,10,mt,params);
+		auto gbn_before = gbn;
+
+		// std::ofstream f1("test_before.dot");
+		// draw_gbn_graph(f1, gbn_before);
+
+		auto p_m_before = evaluate_gbn(gbn);
+		auto& m_before = *p_m_before;
+
+		// try {
+			// std::cout << "before" << std::endl;
+			apply_simplifications_for_each_vertex(gbn, check_and_apply_CoUnit, check_and_apply_F1, check_and_apply_F2);
+			// std::cout << "after" << std::endl;
+		// }
+		// catch(const std::exception& e)
+		// {
+			// std::cout << "caught" << std::endl;
+			// std::ofstream f1("test_before.dot");
+			// std::ofstream f2("test_after.dot");
+			// draw_gbn_graph(f1, gbn_before);
+			// draw_gbn_graph(f2, gbn);
+			// throw e;
+		// }
+
+		auto p_m_after = evaluate_gbn(gbn);
+		auto& m_after = *p_m_after;
+
+		if(!check_matrices_equal(m_before, m_after))
+		{
+			std::ofstream f1("test_before.dot");
+			std::ofstream f2("test_after.dot");
+			draw_gbn_graph(f1, gbn_before);
+			draw_gbn_graph(f2, gbn);
+		}
+
+		// try{
+			check_gbn_integrity(gbn);
+		// }
+		// catch(const std::exception& e)
+		// {
+			// std::cout << "caught" << std::endl;
+			// std::ofstream f1("test_before.dot");
+			// std::ofstream f2("test_after.dot");
+			// draw_gbn_graph(f1, gbn_before);
+			// draw_gbn_graph(f2, gbn);
+			// throw e;
+		// }
+
+		test_matrices_equal(m_before, m_after);
+	}
+}
