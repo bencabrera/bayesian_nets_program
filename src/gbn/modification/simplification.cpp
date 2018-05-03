@@ -8,7 +8,7 @@
 #include "../general/path_closing.h"
 
 namespace {
-	using Port = std::pair<Vertex, int>;
+	using Port = std::pair<Vertex, std::size_t>;
 }
 
 bool check_and_apply_F1(GBN& gbn, Vertex v)
@@ -43,44 +43,6 @@ bool check_and_apply_F1(GBN& gbn, Vertex v)
 
 	return false;
 }
-
-// TODO: implement the more general version for n -> m
-// bool check_and_apply_F2(GBN& gbn, Vertex v)
-// {
-	// auto& g = gbn.graph;
-
-	// if(type(v,g) != NODE || matrix(v,g)->type != TERMINATOR)
-		// return false;
-
-	// auto e_pre = *(boost::in_edges(v,g).first);
-	// auto v_pre = boost::source(e_pre, g);
-
-	// if(type(v_pre,g) != NODE)
-		// return false;
-
-	// if(boost::out_degree(v_pre,g) != 1)
-		// return false;
-
-	// // if we reached here, then v_pre is a stochastic vertex whose only successor is a terminator
-	// if(!matrix(v_pre,g)->is_stochastic)
-		// return false;
-
-	// std::vector<Port> precessor_ports;	
-	// for(auto e : boost::make_iterator_range(boost::in_edges(v_pre,g)))
-		// precessor_ports.push_back({ boost::source(e,g), port_from(e,g) });
-
-	// remove_vertex(v,gbn);
-	// remove_vertex(v_pre,gbn);
-
-	// for(auto& p : precessor_ports)
-	// {
-		// auto v_term = add_vertex(gbn, std::make_shared<TerminatorMatrix>(), "T");
-		// auto e = boost::add_edge(p.first, v_term, g).first;
-		// put(edge_position, g, e, std::pair<std::size_t, std::size_t>{ p.second, 0 });
-	// }
-
-	// return true;
-// }
 
 bool check_and_apply_F2(GBN& gbn, Vertex v)
 {
@@ -161,43 +123,50 @@ bool check_and_apply_F3(GBN& gbn, Vertex v)
 	if(type(v,g) != NODE || matrix(v,g)->type != F)
 		return false;
 
-	auto& m = dynamic_cast<FMatrix&>(*matrix(v,g));
-	if(m.k < 2)
-		return false;
+	// list of input ports of FMatrix node
+	std::map<Port, std::size_t> input_ports_of_F;
+	for(auto e : boost::make_iterator_range(boost::in_edges(v,g)))
+		input_ports_of_F.insert({{ boost::source(e,g), port_from(e,g) }, port_to(e,g) });
 
-	// check for all precessors of F if they split their signal to multiple ports
+	// list successors of Fmatrix
+	std::set<Vertex> successors;
+	for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
+		successors.insert(boost::target(e,g));
+
+	// run through all successors 
 	bool found_once = false;
 	bool found;
 	do {
 		found = false;
-		Vertex v_pre, v_post;
-		Index v_pre_port, v_post_port, F_port;
+		Port pre_port, post_port;
+		Index F_idx;
 
-		for(auto [it, end_it] = boost::in_edges(v,g); it != end_it && !found; it++)
+		for(auto v_suc : successors)
 		{
-			auto e = *it;
-			v_pre = boost::source(e,g);
-			v_pre_port = port_from(e,g);
-			F_port = port_to(e,g);
-			for(auto e_pre_post : boost::make_iterator_range(boost::out_edges(v_pre,g)))
+			for(auto [it, end_it] = boost::in_edges(v_suc,g); it != end_it && !found; it++)
 			{
-				v_post = boost::target(e_pre_post,g);
-				if(port_from(e_pre_post,g) == v_pre_port && v_post != v)
+				auto e = *it;
+				pre_port = { boost::source(e,g), port_from(e,g) };
+				post_port = { boost::target(e,g), port_to(e,g) };
+
+				auto map_it = input_ports_of_F.find(pre_port);
+				if(map_it != input_ports_of_F.end())
 				{
+					F_idx = map_it->second;
 					found = true;
-					v_post_port = port_to(e_pre_post,g);
-					break;
 				}
 			}
+			if(found)
+				break;
 		}
 
 		if(found) {
 			found_once = true;
 			boost::remove_edge_if([&](const Edge& e) {
-					return boost::source(e,g) == v_pre && boost::target(e,g) == v_post && port_from(e,g) == v_pre_port && port_to(e,g) == v_post_port;	
-					}, g);
-			auto e_new = boost::add_edge(v,v_post,g).first;
-			put(edge_position, g, e_new, std::pair<std::size_t, std::size_t>{ F_port, v_post_port });
+				return boost::source(e,g) == pre_port.first && boost::target(e,g) == post_port.first && port_from(e,g) == pre_port.second && port_to(e,g) == post_port.second;	
+			}, g);
+			auto e_new = boost::add_edge(v,post_port.first,g).first;
+			put(edge_position, g, e_new, std::pair<std::size_t, std::size_t>{ F_idx, post_port.second });
 		}
 	}
 	while(found);
@@ -205,14 +174,65 @@ bool check_and_apply_F3(GBN& gbn, Vertex v)
 	return found_once;
 }
 
-bool check_and_apply_F4(GBN& gbn, Vertex v)
+// bool check_and_apply_F3(GBN& gbn, Vertex v)
+// {
+// auto& g = gbn.graph;
+
+// if(type(v,g) != NODE || matrix(v,g)->type != F)
+// return false;
+
+// auto& m = dynamic_cast<FMatrix&>(*matrix(v,g));
+// if(m.k < 2)
+// return false;
+
+// // check for all precessors of F if they split their signal to multiple ports
+// bool found_once = false;
+// bool found;
+// do {
+// found = false;
+// Vertex v_pre, v_post;
+// Index v_pre_port, v_post_port, F_port;
+
+// for(auto [it, end_it] = boost::in_edges(v,g); it != end_it && !found; it++)
+// {
+// auto e = *it;
+// v_pre = boost::source(e,g);
+// v_pre_port = port_from(e,g);
+// F_port = port_to(e,g);
+// for(auto e_pre_post : boost::make_iterator_range(boost::out_edges(v_pre,g)))
+// {
+// v_post = boost::target(e_pre_post,g);
+// if(port_from(e_pre_post,g) == v_pre_port && v_post != v)
+// {
+// found = true;
+// v_post_port = port_to(e_pre_post,g);
+// break;
+// }
+// }
+// }
+
+// if(found) {
+// found_once = true;
+// boost::remove_edge_if([&](const Edge& e) {
+// return boost::source(e,g) == v_pre && boost::target(e,g) == v_post && port_from(e,g) == v_pre_port && port_to(e,g) == v_post_port;	
+// }, g);
+// auto e_new = boost::add_edge(v,v_post,g).first;
+// put(edge_position, g, e_new, std::pair<std::size_t, std::size_t>{ F_port, v_post_port });
+// }
+// }
+// while(found);
+
+// return found_once;
+// }
+
+bool check_and_apply_F4(GBN& gbn, Vertex v_oneb)
 {
 	auto& g = gbn.graph;
 
-	if(type(v,g) != NODE || matrix(v,g)->type != ONE_B)
+	if(type(v_oneb,g) != NODE || matrix(v_oneb,g)->type != ONE_B)
 		return false;
 
-	auto& m = dynamic_cast<OneBMatrix&>(*matrix(v,g));
+	auto& m = dynamic_cast<OneBMatrix&>(*matrix(v_oneb,g));
 	auto b = m.b;
 
 	bool found_once = false;
@@ -221,7 +241,7 @@ bool check_and_apply_F4(GBN& gbn, Vertex v)
 		found = false;
 		Vertex v_F;
 		Index F_port;
-		for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
+		for(auto e : boost::make_iterator_range(boost::out_edges(v_oneb,g)))
 		{
 			auto v_to = boost::target(e,g);
 			if(type(v_to,g) == NODE && matrix(v_to, g)->type == F)
@@ -274,7 +294,7 @@ bool check_and_apply_F4(GBN& gbn, Vertex v)
 
 			for(auto p : output_ports)
 			{
-				auto e = boost::add_edge(v,p.first,g).first;
+				auto e = boost::add_edge(v_oneb,p.first,g).first;
 				put(edge_position,g,e,std::pair<std::size_t,std::size_t>{ 0, p.second });
 			}
 		}
@@ -307,6 +327,8 @@ bool check_and_apply_F5(GBN& gbn, Vertex v)
 			if(type(v_to,g) == NODE && matrix(v_to, g)->type == F)
 			{
 				auto& m_F = dynamic_cast<FMatrix&>(*matrix(v_to, g));
+				if(m_F.k < 2)
+					continue;
 				if(m_F.b == !b)
 				{
 					v_F = v_to;

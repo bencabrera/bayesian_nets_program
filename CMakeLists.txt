@@ -6,7 +6,7 @@ project(Petri_Nets_With_Uncertainty)
 set (CMAKE_CXX_STANDARD 17)
 
 # warning level
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic -Werror=return-type")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic -Werror=return-type -Wuninitialized -Wmaybe-uninitialized")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # look for boost library (required)
