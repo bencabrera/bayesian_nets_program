@@ -9,6 +9,9 @@ GBN::GBN(Index n, Index m, Index n_inside_vertices)
 		visible_vertices.insert(i);
 	}
 
+	for(Index v = 0; v < n_inside_vertices; v++)
+		put(vertex_name, graph, v, std::string("v_")+std::to_string(v));
+
 	for(Index i = 0; i < n; i++)
 	{
 		put(vertex_type, graph, n_inside_vertices+i, INPUT);
