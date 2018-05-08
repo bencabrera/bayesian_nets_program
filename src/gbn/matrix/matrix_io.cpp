@@ -30,7 +30,7 @@ MatrixPtr read_matrix(std::vector<std::string> lines)
 
 		std::string matrix_str = matches[3];
 
-		std::unique_ptr<DynamicMatrix> rtn(new DynamicMatrix(n,m));
+		MatrixPtr rtn = std::make_shared<DynamicMatrix>(n,m);
 		auto& matrix = *rtn;
 		// [1,2,3; 4,5,6; 7,8,9] format
 		if(!matrix_str.empty())
@@ -74,7 +74,7 @@ MatrixPtr read_matrix(std::vector<std::string> lines)
 		int k = std::stoi(matches[1].str());
 		int b = std::stoi(matches[2].str());
 
-		return MatrixPtr(new FMatrix(k,b));
+		return std::make_shared<FMatrix>(k,b);
 	}
 
 	// One b matrix
@@ -82,13 +82,13 @@ MatrixPtr read_matrix(std::vector<std::string> lines)
 	{
 		int b = std::stoi(matches[1].str());
 
-		return MatrixPtr(new OneBMatrix(b));
+		return std::make_shared<OneBMatrix>(b);
 	}
 
 	// terminator matrix
 	if(std::regex_match(lines[0], matches, terminator_regex))
 	{
-		return MatrixPtr(new TerminatorMatrix());
+		return std::make_shared<TerminatorMatrix>();
 	}
 
 	throw std::logic_error(std::string("Matrix could not be read. Not able to parse line")+ "'" + lines[0] + "'.");

@@ -30,7 +30,7 @@ bool check_and_apply_F1(GBN& gbn, Vertex v)
 
 			for(auto p : sucessor_ports)
 			{
-				auto v_new = add_vertex(gbn, MatrixPtr(new OneBMatrix(m.b)),std::string("1_") + std::to_string(m.b));
+				auto v_new = add_vertex(gbn, std::make_shared<OneBMatrix>(m.b),std::string("1_") + std::to_string(m.b));
 				auto e = boost::add_edge(v_new, p.first, g).first;
 				put(edge_position, g, e, std::pair<std::size_t, std::size_t>{ 0, p.second });
 			}

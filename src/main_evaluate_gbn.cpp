@@ -26,10 +26,10 @@ int main(int argc, char** argv)
 	auto gbn = read_gbn(gbn_file);
 	check_gbn_integrity(gbn);
 
-	auto wire_structure = build_wire_structure_for_whole_gbn(gbn);
-	print_wire_structure(std::cout, wire_structure, gbn);
+	auto wire_structure = build_wire_structure(gbn);
+	// print_wire_structure(std::cout, wire_structure, gbn);
 
-	auto p_m = evaluate_gbn(gbn);
+	auto p_m = evaluate(gbn);
 	print_matrix(std::cout, *p_m);
 
 	return 0;

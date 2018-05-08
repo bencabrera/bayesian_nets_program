@@ -105,7 +105,7 @@ void do_command(std::string command_line, CN& cn, GBN& gbn, std::function<void(U
 	if(command_line.substr(0,4) == "dist")
 	{
 		std::cout << std::endl;
-		auto p_m = evaluate_gbn(gbn);
+		auto p_m = evaluate(gbn);
 		print_matrix(std::cout, *p_m);
 		std::cout << std::endl;
 		return;

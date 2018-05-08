@@ -1,6 +1,7 @@
 #include "../../../../libs/catch/catch.hpp"
 
 #include "../../../gbn/evaluation/wire_structure.h"
+#include "../../../gbn/evaluation/vertex_set_input_output.h"
 #include "../../../gbn/general/gbn_io.h"
 #include "../../../gbn/general/check.h"
 #include <fstream>
@@ -17,10 +18,10 @@ TEST_CASE("Wire structure should have correct number of wires. (four_nodes.gbn)"
 	check_gbn_integrity(gbn);
 
 	std::vector<Vertex> vec = { 0,1,2 };
-	auto vertex_set_input_outputs = build_inputs_outputs_for_vertices(gbn, vec);
-	auto wire_structure = build_wire_structure_for_vertices(gbn, vec, vertex_set_input_outputs);
-	REQUIRE(vertex_set_input_outputs.input_ports.size() == 2);
-	REQUIRE(vertex_set_input_outputs.output_ports.size() == 2);
+	auto [input_ports, output_ports] =  build_inputs_outputs_for_vertices(gbn, vec);
+	auto wire_structure = build_wire_structure(gbn, vec);
+	REQUIRE(input_ports.size() == 2);
+	REQUIRE(output_ports.size() == 2);
 	REQUIRE(wire_structure.wires.size() == 6);
 }
 
@@ -32,13 +33,13 @@ TEST_CASE("Every wire should always have at least one input port") {
 
 	std::vector<Vertex> vec = { 0 };
 	auto vertex_set_input_outputs = build_inputs_outputs_for_vertices(gbn, vec);
-	auto wire_structure = build_wire_structure_for_vertices(gbn, vec, vertex_set_input_outputs);
+	auto wire_structure = build_wire_structure(gbn, vec);
 	for(auto& w : wire_structure.wires)
 		REQUIRE(w.inside_ports.size() > 0);
 
 	vec = { 2, 3 };
 	vertex_set_input_outputs = build_inputs_outputs_for_vertices(gbn, vec);
-	wire_structure = build_wire_structure_for_vertices(gbn, vec, vertex_set_input_outputs);
+	wire_structure = build_wire_structure(gbn, vec);
 	for(auto& w : wire_structure.wires)
 		REQUIRE(w.inside_ports.size() > 0);
 }

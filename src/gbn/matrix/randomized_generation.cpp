@@ -10,25 +10,25 @@ MatrixPtr generate_random_matrix(std::size_t n, std::size_t m, std::mt19937& mt,
 	if(n == m && n >= 1)
 	{
 		if(rand_is_special_matrix(mt) < params.F_matrix_prob)
-			return MatrixPtr(new FMatrix(n, static_cast<bool>(rand_b(mt))));
+			return std::make_shared<FMatrix>(n, static_cast<bool>(rand_b(mt)));
 	}
 
 	// maybe generate OneB matrix
 	if(n == 0 && m == 1)
 	{
 		if(rand_is_special_matrix(mt) < params.OneB_matrix_prob)
-			return MatrixPtr(new OneBMatrix(static_cast<bool>(rand_b(mt))));
+			return std::make_shared<OneBMatrix>(static_cast<bool>(rand_b(mt)));
 	}
 
 	// maybe generate Terminator matrix
 	if(n == 1 && m == 0)
 	{
 		if(rand_is_special_matrix(mt) < params.Terminator_matrix_prob)
-			return MatrixPtr(new TerminatorMatrix());
+			return std::make_shared<TerminatorMatrix>();
 	}
 
 	// else generate dynamic matrix
-	MatrixPtr p_m(new DynamicMatrix(n,m));
+	MatrixPtr p_m = std::make_shared<DynamicMatrix>(n,m);
 	auto& matrix = *p_m;
 
 	unsigned long long i_max_row = 1;

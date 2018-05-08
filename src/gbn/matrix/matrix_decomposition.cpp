@@ -19,7 +19,7 @@ std::pair<MatrixPtr, MatrixPtr> matrix_decomposition(MatrixPtr p_matrix)
 		throw std::logic_error("Can not split matrix with m < 2");
 
 	// build m_front
-	MatrixPtr p_m_front(new DynamicMatrix(m.n, m.m-1));
+	MatrixPtr p_m_front = std::make_shared<DynamicMatrix>(m.n, m.m-1);
 	auto& m_front = *p_m_front;
 	unsigned long long i_max_row = 1;
 	unsigned long long i_max_col = 1;
@@ -30,7 +30,7 @@ std::pair<MatrixPtr, MatrixPtr> matrix_decomposition(MatrixPtr p_matrix)
 			m_front.set(i_row, i_col, m.get(2*i_row, i_col) + m.get(2*i_row+1, i_col));
 
 	// build m_back
-	MatrixPtr p_m_back(new DynamicMatrix(m.n+m.m-1, 1));
+	MatrixPtr p_m_back = std::make_shared<DynamicMatrix>(m.n+m.m-1, 1);
 	auto& m_back = *p_m_back;
 	unsigned long long x_max = 1, z_max = 1;
 	x_max = x_max << (m.m-1);

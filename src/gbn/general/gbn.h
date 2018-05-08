@@ -26,6 +26,7 @@ using GBNGraph = boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirect
 
 using Vertex = GBNGraph::vertex_descriptor;
 using Edge = GBNGraph::edge_descriptor;
+using Port = std::pair<Vertex, std::size_t>;
 
 struct GBN {
 	public:

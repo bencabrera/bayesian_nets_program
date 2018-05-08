@@ -69,13 +69,13 @@ TEST_CASE("Automated: (CoUnit) simplification should not modify distribution")
 		auto gbn = generate_random_gbn(5,5,10,mt,params);
 		check_gbn_integrity(gbn);
 
-		auto p_m_before = evaluate_gbn(gbn);
+		auto p_m_before = evaluate(gbn);
 		auto& m_before = *p_m_before;
 
 		for(auto v : inside_vertices(gbn))
 			check_and_apply_CoUnit(gbn, v);
 
-		auto p_m_after = evaluate_gbn(gbn);
+		auto p_m_after = evaluate(gbn);
 		auto& m_after = *p_m_after;
 
 		test_matrices_equal(m_before, m_after);
@@ -97,13 +97,13 @@ TEST_CASE("Automated: (F1) simplification should not modify distribution")
 		auto gbn = generate_random_gbn(5,5,10,mt,params);
 		auto gbn_before = gbn;
 
-		auto p_m_before = evaluate_gbn(gbn);
+		auto p_m_before = evaluate(gbn);
 		auto& m_before = *p_m_before;
 
 		for(auto v : inside_vertices(gbn))
 			check_and_apply_F1(gbn, v);
 
-		auto p_m_after = evaluate_gbn(gbn);
+		auto p_m_after = evaluate(gbn);
 		auto& m_after = *p_m_after;
 
 		if(!check_matrices_equal(m_before, m_after))
@@ -135,13 +135,13 @@ TEST_CASE("Automated: (F2) simplification should not modify distribution")
 		auto gbn = generate_random_gbn(5,5,10,mt,params);
 		auto gbn_before = gbn;
 
-		auto p_m_before = evaluate_gbn(gbn);
+		auto p_m_before = evaluate(gbn);
 		auto& m_before = *p_m_before;
 
 		for(auto v : inside_vertices(gbn))
 			check_and_apply_F2(gbn, v);
 
-		auto p_m_after = evaluate_gbn(gbn);
+		auto p_m_after = evaluate(gbn);
 		auto& m_after = *p_m_after;
 
 		if(!check_matrices_equal(m_before, m_after))
@@ -176,7 +176,7 @@ TEST_CASE("Automated: (CoUnit) & (F1) & (F2) simplifications together should not
 		// std::ofstream f1("test_before.dot");
 		// draw_gbn_graph(f1, gbn_before);
 
-		auto p_m_before = evaluate_gbn(gbn);
+		auto p_m_before = evaluate(gbn);
 		auto& m_before = *p_m_before;
 
 		// try {
@@ -194,7 +194,7 @@ TEST_CASE("Automated: (CoUnit) & (F1) & (F2) simplifications together should not
 			// throw e;
 		// }
 
-		auto p_m_after = evaluate_gbn(gbn);
+		auto p_m_after = evaluate(gbn);
 		auto& m_after = *p_m_after;
 
 		if(!check_matrices_equal(m_before, m_after))
@@ -243,13 +243,13 @@ TEST_CASE("Automated: (F3) simplification should not modify distribution")
 		auto gbn = generate_random_gbn(5,5,10,mt,params);
 		auto gbn_before = gbn;
 
-		auto p_m_before = evaluate_gbn(gbn);
+		auto p_m_before = evaluate(gbn);
 		auto& m_before = *p_m_before;
 
 		for(auto v : inside_vertices(gbn))
 			check_and_apply_F3(gbn, v);
 
-		auto p_m_after = evaluate_gbn(gbn);
+		auto p_m_after = evaluate(gbn);
 		auto& m_after = *p_m_after;
 
 		if(!check_matrices_equal(m_before, m_after))
@@ -281,13 +281,13 @@ TEST_CASE("Automated: (F4) simplification should not modify distribution")
 		auto gbn = generate_random_gbn(5,5,10,mt,params);
 		auto gbn_before = gbn;
 
-		auto p_m_before = evaluate_gbn(gbn);
+		auto p_m_before = evaluate(gbn);
 		auto& m_before = *p_m_before;
 
 		for(auto v : inside_vertices(gbn))
 			check_and_apply_F4(gbn, v);
 
-		auto p_m_after = evaluate_gbn(gbn);
+		auto p_m_after = evaluate(gbn);
 		auto& m_after = *p_m_after;
 
 		if(!check_matrices_equal(m_before, m_after))
@@ -319,13 +319,13 @@ TEST_CASE("Automated: (F5) simplification should not modify distribution")
 		auto gbn = generate_random_gbn(5,5,10,mt,params);
 		auto gbn_before = gbn;
 
-		auto p_m_before = evaluate_gbn(gbn);
+		auto p_m_before = evaluate(gbn);
 		auto& m_before = *p_m_before;
 
 		for(auto v : inside_vertices(gbn))
 			check_and_apply_F5(gbn, v);
 
-		auto p_m_after = evaluate_gbn(gbn);
+		auto p_m_after = evaluate(gbn);
 		auto& m_after = *p_m_after;
 
 		// if(!check_matrices_equal(m_before, m_after))
@@ -377,7 +377,7 @@ TEST_CASE("Automated: (CoUnit) - (F5) simplifications together should not modify
 		std::ofstream f1("test_before.dot");
 		draw_gbn_graph(f1, gbn_before);
 
-		auto p_m_before = evaluate_gbn(gbn);
+		auto p_m_before = evaluate(gbn);
 		auto& m_before = *p_m_before;
 
 		// try {
@@ -397,7 +397,7 @@ TEST_CASE("Automated: (CoUnit) - (F5) simplifications together should not modify
 			// throw e;
 		// }
 
-		auto p_m_after = evaluate_gbn(gbn);
+		auto p_m_after = evaluate(gbn);
 		auto& m_after = *p_m_after;
 
 		if(!check_matrices_equal(m_before, m_after))

@@ -57,12 +57,12 @@ TEST_CASE("OneB replacement (F1) should work correctly.")
 	auto gbn = read_gbn(f);
 	check_gbn_integrity(gbn);
 
-	auto p_m_before = evaluate_gbn(gbn);
+	auto p_m_before = evaluate(gbn);
 	auto& m_before = *p_m_before;
 
 	gbn_simplification(gbn);
 
-	auto p_m_after = evaluate_gbn(gbn);
+	auto p_m_after = evaluate(gbn);
 	auto& m_after = *p_m_after;
 
 	test_matrices_equal(m_before, m_after);
@@ -74,7 +74,7 @@ TEST_CASE("(F2) should work correctly.")
 	auto gbn = read_gbn(f);
 	check_gbn_integrity(gbn);
 
-	auto p_m_before = evaluate_gbn(gbn);
+	auto p_m_before = evaluate(gbn);
 	auto& m_before = *p_m_before;
 
 	std::ofstream out_file("before.dot");
@@ -87,7 +87,7 @@ TEST_CASE("(F2) should work correctly.")
 	std::ofstream out_file2("after.dot");
 	draw_gbn_graph(out_file2, gbn);
 
-	auto p_m_after = evaluate_gbn(gbn);
+	auto p_m_after = evaluate(gbn);
 	auto& m_after = *p_m_after;
 
 	test_matrices_equal(m_before, m_after);
@@ -102,7 +102,7 @@ TEST_CASE("(F3) should work correctly (f3_simplification_1.gbn).")
 	std::ofstream f1("test_before.dot");
 	draw_gbn_graph(f1, gbn);
 
-	auto p_m_before = evaluate_gbn(gbn);
+	auto p_m_before = evaluate(gbn);
 	auto& m_before = *p_m_before;
 
 	check_and_apply_F3(gbn,5);
@@ -111,7 +111,7 @@ TEST_CASE("(F3) should work correctly (f3_simplification_1.gbn).")
 	std::ofstream f2("test_after.dot");
 	draw_gbn_graph(f2, gbn);
 
-	auto p_m_after = evaluate_gbn(gbn);
+	auto p_m_after = evaluate(gbn);
 	auto& m_after = *p_m_after;
 
 	test_matrices_equal(m_before, m_after);
@@ -126,7 +126,7 @@ TEST_CASE("(F3) should work correctly (f3_simplification_2.gbn).")
 	std::ofstream f1("test_before.dot");
 	draw_gbn_graph(f1, gbn);
 
-	auto p_m_before = evaluate_gbn(gbn);
+	auto p_m_before = evaluate(gbn);
 	auto& m_before = *p_m_before;
 
 	check_and_apply_F3(gbn,5);
@@ -135,7 +135,7 @@ TEST_CASE("(F3) should work correctly (f3_simplification_2.gbn).")
 	std::ofstream f2("test_after.dot");
 	draw_gbn_graph(f2, gbn);
 
-	auto p_m_after = evaluate_gbn(gbn);
+	auto p_m_after = evaluate(gbn);
 	auto& m_after = *p_m_after;
 
 	test_matrices_equal(m_before, m_after);
@@ -147,13 +147,13 @@ TEST_CASE("(F3) should work correctly (f3_simplification_3.gbn).")
 	auto gbn = read_gbn(f);
 	check_gbn_integrity(gbn);
 
-	auto p_m_before = evaluate_gbn(gbn);
+	auto p_m_before = evaluate(gbn);
 	auto& m_before = *p_m_before;
 
 	check_and_apply_F3(gbn,6);
 	check_gbn_integrity(gbn);
 
-	auto p_m_after = evaluate_gbn(gbn);
+	auto p_m_after = evaluate(gbn);
 	auto& m_after = *p_m_after;
 
 	test_matrices_equal(m_before, m_after);
@@ -165,14 +165,14 @@ TEST_CASE("(F3) should work correctly (f3_simplification_4.gbn).")
 	auto gbn = read_gbn(f);
 	check_gbn_integrity(gbn);
 
-	auto p_m_before = evaluate_gbn(gbn);
+	auto p_m_before = evaluate(gbn);
 	auto& m_before = *p_m_before;
 
 	check_and_apply_F3(gbn,2);
 
 	check_gbn_integrity(gbn);
 
-	auto p_m_after = evaluate_gbn(gbn);
+	auto p_m_after = evaluate(gbn);
 	auto& m_after = *p_m_after;
 
 	test_matrices_equal(m_before, m_after);
@@ -185,13 +185,13 @@ TEST_CASE("(F4) should work correctly (f4_simplification_1.gbn).")
 	auto gbn_before = gbn;
 	check_gbn_integrity(gbn);
 
-	auto p_m_before = evaluate_gbn(gbn);
+	auto p_m_before = evaluate(gbn);
 	auto& m_before = *p_m_before;
 
 	check_and_apply_F4(gbn,0);
 	check_gbn_integrity(gbn);
 
-	auto p_m_after = evaluate_gbn(gbn);
+	auto p_m_after = evaluate(gbn);
 	auto& m_after = *p_m_after;
 
 	if(!check_matrices_equal(m_before, m_after))
@@ -214,13 +214,13 @@ TEST_CASE("(F4) should work correctly (f4_simplification_2.gbn).")
 	auto gbn_before = gbn;
 	check_gbn_integrity(gbn);
 
-	auto p_m_before = evaluate_gbn(gbn);
+	auto p_m_before = evaluate(gbn);
 	auto& m_before = *p_m_before;
 
 	check_and_apply_F4(gbn,0);
 	check_gbn_integrity(gbn);
 
-	auto p_m_after = evaluate_gbn(gbn);
+	auto p_m_after = evaluate(gbn);
 	auto& m_after = *p_m_after;
 
 	if(!check_matrices_equal(m_before, m_after))
@@ -243,13 +243,13 @@ TEST_CASE("(F4) should work correctly (f4_simplification_3.gbn).")
 	auto gbn_before = gbn;
 	check_gbn_integrity(gbn);
 
-	auto p_m_before = evaluate_gbn(gbn);
+	auto p_m_before = evaluate(gbn);
 	auto& m_before = *p_m_before;
 
 	check_and_apply_F4(gbn,0);
 	check_gbn_integrity(gbn);
 
-	auto p_m_after = evaluate_gbn(gbn);
+	auto p_m_after = evaluate(gbn);
 	auto& m_after = *p_m_after;
 
 	if(!check_matrices_equal(m_before, m_after))
@@ -272,7 +272,7 @@ TEST_CASE("(F5) should work correctly (f5_simplification_1.gbn).")
 	auto gbn_before = gbn;
 	check_gbn_integrity(gbn);
 
-	auto p_m_before = evaluate_gbn(gbn);
+	auto p_m_before = evaluate(gbn);
 	auto& m_before = *p_m_before;
 
 		std::ofstream f1("test_before.dot");
@@ -280,7 +280,7 @@ TEST_CASE("(F5) should work correctly (f5_simplification_1.gbn).")
 
 	check_and_apply_F5(gbn,0);
 
-	auto p_m_after = evaluate_gbn(gbn);
+	auto p_m_after = evaluate(gbn);
 	auto& m_after = *p_m_after;
 
 		std::ofstream f2("test_after.dot");

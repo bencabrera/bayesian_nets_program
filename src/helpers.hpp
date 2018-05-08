@@ -6,6 +6,8 @@
 #include <sstream>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/trim.hpp>
+#include <set>
+#include <map>
 
 inline double read_double(std::string str)
 {
@@ -61,4 +63,20 @@ inline std::string to_string(const std::vector<bool>& vec)
 	std::stringstream ss;
 	print_bool_vector(ss, vec);
 	return ss.str();
+}
+
+template<typename T>
+inline bool is_in(const T& val, const std::set<T>& set)
+{
+	return set.count(val) != 0;
+}
+template<typename T1,typename T2>
+inline bool is_in(const T1& val, const std::map<T1,T2>& map)
+{
+	return map.count(val) != 0;
+}
+template<typename T>
+inline bool is_in(const T& val, const std::vector<T>& vec)
+{
+	return std::find(vec.cbegin(), vec.cend(), val) != vec.cend();
 }

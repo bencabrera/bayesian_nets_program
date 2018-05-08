@@ -21,9 +21,9 @@ TEST_CASE("seven_nodes.gbn: After replacing vertices 1,2 by matrix it should eva
 
 	std::vector<Vertex> vertices_to_replace { 1,2 };
 
-	auto m_before = evaluate_gbn(gbn);
+	auto m_before = evaluate(gbn);
 	merge_vertices(gbn, vertices_to_replace, "A");
-	auto m_after = evaluate_gbn(gbn);
+	auto m_after = evaluate(gbn);
 
 	// compare dimensions
 	REQUIRE(m_before->n == m_after->n);
@@ -47,9 +47,9 @@ TEST_CASE("seven_nodes.gbn: After replacing vertices 0,1,2 by matrix it should e
 
 	std::vector<Vertex> vertices_to_replace { 0,1,2 };
 
-	auto m_before = evaluate_gbn(gbn);
+	auto m_before = evaluate(gbn);
 	merge_vertices(gbn, vertices_to_replace, "A");
-	auto m_after = evaluate_gbn(gbn);
+	auto m_after = evaluate(gbn);
 
 	// compare dimensions
 	REQUIRE(m_before->n == m_after->n);
@@ -73,9 +73,9 @@ TEST_CASE("seven_nodes.gbn: After replacing vertices 0,1,3 by matrix it should e
 
 	std::vector<Vertex> vertices_to_replace { 0,1,3 };
 
-	auto m_before = evaluate_gbn(gbn);
+	auto m_before = evaluate(gbn);
 	merge_vertices(gbn, vertices_to_replace, "A");
-	auto m_after = evaluate_gbn(gbn);
+	auto m_after = evaluate(gbn);
 
 	// compare dimensions
 	REQUIRE(m_before->n == m_after->n);
@@ -99,9 +99,9 @@ TEST_CASE("seven_nodes.gbn: After replacing vertices 5,6 by matrix it should eva
 
 	std::vector<Vertex> vertices_to_replace { 5,6 };
 
-	auto m_before = evaluate_gbn(gbn);
+	auto m_before = evaluate(gbn);
 	merge_vertices(gbn, vertices_to_replace, "A");
-	auto m_after = evaluate_gbn(gbn);
+	auto m_after = evaluate(gbn);
 
 	// compare dimensions
 	REQUIRE(m_before->n == m_after->n);
