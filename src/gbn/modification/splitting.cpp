@@ -1,4 +1,3 @@
-#include "../general/evaluation.h"
 #include "vertex_add_remove.h"
 #include "../matrix/matrix_decomposition.h"
 #include "../matrix/matrix_io.h"

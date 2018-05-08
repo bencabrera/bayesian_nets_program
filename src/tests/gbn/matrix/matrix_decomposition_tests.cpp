@@ -1,7 +1,7 @@
-#include "../../../libs/catch/catch.hpp"
+#include "../../../../libs/catch/catch.hpp"
 
-#include "../../gbn/matrix/matrix_io.h"
-#include "../../gbn/matrix/matrix_decomposition.h"
+#include "../../../gbn/matrix/matrix_io.h"
+#include "../../../gbn/matrix/matrix_decomposition.h"
 #include <fstream>
 
 #ifdef FOO 

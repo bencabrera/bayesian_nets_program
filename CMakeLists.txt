@@ -42,10 +42,13 @@ set(GBN_FILES
 	src/gbn/general/gbn.cpp
 	src/gbn/general/gbn_io.cpp
 	src/gbn/general/check.cpp
-	src/gbn/general/evaluation.cpp
-	src/gbn/general/vertex_set_input_output.cpp
 	src/gbn/general/path_closing.cpp
 	src/gbn/general/randomized_generation.cpp
+
+	src/gbn/evaluation/evaluation.cpp
+	src/gbn/evaluation/vertex_set_input_output.cpp
+	src/gbn/evaluation/probability_bookkeeper.cpp
+	src/gbn/evaluation/wire_structure.cpp
 
 	src/gbn/modification/vertex_add_remove.cpp
 	src/gbn/modification/merging.cpp
@@ -56,15 +59,21 @@ set(GBN_FILES
 set(TEST_FILES
 	src/tests/cn/cn_io_tests.cpp
 
-	src/tests/gbn/matrix_io_tests.cpp
-	src/tests/gbn/matrix_decomposition_tests.cpp
-	src/tests/gbn/gbn_io_tests.cpp
-	src/tests/gbn/evaluation_tests.cpp
-	src/tests/gbn/splitting_tests.cpp
-	src/tests/gbn/simplification_tests.cpp
-	src/tests/gbn/automated_simplification_tests.cpp
-
 	src/tests/cnu/operations_on_joint_dist_tests.cpp
+
+	src/tests/gbn/matrix/matrix_io_tests.cpp
+	src/tests/gbn/matrix/matrix_decomposition_tests.cpp
+
+	src/tests/gbn/general/gbn_io_tests.cpp
+
+	src/tests/gbn/evaluation/evaluation_tests.cpp
+	src/tests/gbn/evaluation/wire_structure_tests.cpp
+	src/tests/gbn/evaluation/probability_bookkeeper_tests.cpp
+
+	src/tests/gbn/modification/splitting_tests.cpp
+	src/tests/gbn/modification/simplification_tests.cpp
+	src/tests/gbn/modification/automated_simplification_tests.cpp
+	src/tests/gbn/modification/merging_tests.cpp
 )
 
 add_library(core_lib STATIC ${GENERAL_FILES} ${CN_FILES} ${JOINT_DIST_FILES} ${CNU_FILES} ${GBN_FILES})

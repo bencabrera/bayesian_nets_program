@@ -4,7 +4,7 @@
 #include "gbn/general/gbn.h"
 #include "gbn/general/gbn_io.h"
 #include "gbn/general/randomized_generation.h"
-#include "gbn/general/evaluation.h"
+#include "gbn/evaluation/evaluation.h"
 #include "gbn/general/check.h"
 #include "gbn/matrix/matrix_io.h"
 

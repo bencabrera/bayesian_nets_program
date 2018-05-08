@@ -1,15 +1,15 @@
-#include "../../../libs/catch/catch.hpp"
+#include "../../../../libs/catch/catch.hpp"
 
-#include "../../gbn/general/gbn_io.h"
-#include "../../gbn/general/check.h"
-#include "../../gbn/modification/splitting.h"
-#include "../../gbn/modification/simplification.h"
-#include "../../gbn/modification/merging.h"
-#include "../../gbn/general/evaluation.h"
-#include "../../gbn/general/randomized_generation.h"
+#include "../../../gbn/general/gbn_io.h"
+#include "../../../gbn/general/check.h"
+#include "../../../gbn/modification/splitting.h"
+#include "../../../gbn/modification/simplification.h"
+#include "../../../gbn/modification/merging.h"
+#include "../../../gbn/evaluation/evaluation.h"
+#include "../../../gbn/general/randomized_generation.h"
 #include <fstream>
 #include <random>
-#include "../../gbn/matrix/matrix_io.h"
+#include "../../../gbn/matrix/matrix_io.h"
 
 #ifdef FOO 
 const std::string TEST_INSTANCE_FOLDER = FOO;

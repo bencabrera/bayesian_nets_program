@@ -3,7 +3,6 @@
 
 #include "gbn/general/gbn.h"
 #include "gbn/general/gbn_io.h"
-#include "gbn/general/evaluation.h"
 #include "gbn/general/check.h"
 #include "gbn/general/path_closing.h"
 #include "gbn/matrix/matrix_io.h"
