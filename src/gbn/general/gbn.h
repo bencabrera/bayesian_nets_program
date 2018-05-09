@@ -43,6 +43,11 @@ struct GBN {
 		friend const std::vector<Vertex>& input_vertices(const GBN& gbn);
 		friend const std::vector<Vertex>& output_vertices(const GBN& gbn);
 
+		friend Index input_idx(const Vertex& v, const GBN& gbn);
+		friend Index output_idx(const Vertex& v, const GBN& gbn);
+
+		friend const std::vector<Vertex>& output_vertices(const GBN& gbn);
+
 		friend Vertex add_vertex(GBN& gbn, MatrixPtr p_m, std::string vertex_label);
 		friend void remove_vertex(Vertex v, GBN& gbn);
 
@@ -52,6 +57,10 @@ struct GBN {
 
 		std::vector<Vertex> input_vertices;
 		std::vector<Vertex> output_vertices;
+
+		const std::size_t n_initial_inside_vertices;
+		const std::size_t n_initial_n; // TODO: make all this stuff non mutable again to that input_idx etc gets simpler, fix simplifications with F_k
+		const std::size_t n_initial_m;
 };
 
 // vertex / edge specific accessors
@@ -64,6 +73,9 @@ MatrixPtr matrix(const GBNGraph::vertex_descriptor& v, const GBNGraph& g);
 
 Index port_from(const GBNGraph::edge_descriptor& e, const GBNGraph& g);
 Index port_to(const GBNGraph::edge_descriptor& e, const GBNGraph& g);
+
+Index input_idx(const Vertex& v, const GBN& gbn);
+Index output_idx(const Vertex& v, const GBN& gbn);
 
 const std::string& name(const GBNGraph::vertex_descriptor& v, const GBNGraph& g);
 

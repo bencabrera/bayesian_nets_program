@@ -5,8 +5,8 @@
 #include "../../../gbn/modification/splitting.h"
 #include "../../../gbn/modification/merging.h"
 #include "../../../gbn/evaluation/evaluation.h"
-#include <fstream>
 #include "../../../gbn/matrix/matrix_io.h"
+#include <fstream>
 
 #ifdef FOO 
 const std::string TEST_INSTANCE_FOLDER = FOO;
@@ -38,7 +38,6 @@ TEST_CASE("Node splitting and merging again should yield the same for seven_node
 
 	auto p_m_before = evaluate(gbn);
 	auto& m_before = *p_m_before;
-
 
 	std::ofstream out_file1("before.dot");
 	draw_gbn_graph(out_file1, gbn);
@@ -182,7 +181,6 @@ TEST_CASE("Node splitting and merging again of third_v_of_seven_nodes.gbn")
 	std::ofstream out_file2("after.dot");
 	draw_gbn_graph(out_file2, gbn);
 
-	auto vertex_set_input_outputs = build_inputs_outputs_for_vertices(gbn, {v_front, v_back});
 	auto p_m_after = evaluate(gbn);
 	auto& m_after = *p_m_after;
 

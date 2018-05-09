@@ -20,6 +20,5 @@ struct WireStructure {
 	std::vector<Wire> wires;
 };
 
-WireStructure build_wire_structure_for_vertices(const GBN& gbn, std::vector<Vertex> inside_vertices);
-WireStructure build_wire_structure_for_gbn(const GBN& gbn);
+WireStructure build_wire_structure(const GBN& gbn);
 void print_wire_structure(std::ostream& ostr, const WireStructure& wire_structure, const GBN& gbn);

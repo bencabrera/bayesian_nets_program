@@ -47,7 +47,6 @@ set(GBN_FILES
 	src/gbn/general/randomized_generation.cpp
 
 	src/gbn/evaluation/evaluation.cpp
-	src/gbn/evaluation/vertex_set_input_output.cpp
 	src/gbn/evaluation/probability_bookkeeper.cpp
 	src/gbn/evaluation/wire_structure.cpp
 

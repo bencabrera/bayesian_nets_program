@@ -53,8 +53,6 @@ SubGBN SubGBN::make_from_vertices(const GBN& gbn, std::vector<Vertex> inside_ver
 			output_port_map[p] = i_port++;
 	}
 
-
-
 	GBN gbn_local(input_ports.size(), output_ports.size(), inside_vertices.size());
 	auto& g_local = gbn_local.graph;
 
@@ -114,7 +112,7 @@ SubGBN SubGBN::make_from_vertices(const GBN& gbn, std::vector<Vertex> inside_ver
 				auto e_local = boost::add_edge(input_vertices[i_input], v_local, g_local).first;
 				put(edge_position, g_local, e_local, std::make_pair(0, pos_global.second));
 			
-				subgbn_input_ports.at(i_input) = { v_global, port_to(e,g_global) };
+				subgbn_input_ports.at(i_input) = { u_global, port_from(e,g_global) };
 			}
 		}
 	}

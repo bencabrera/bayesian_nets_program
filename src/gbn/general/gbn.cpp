@@ -1,7 +1,7 @@
 #include "gbn.h"
 
 GBN::GBN(Index n, Index m, Index n_inside_vertices)
-	:n(n), m(m), n_vertices(n_inside_vertices + n + m), graph(n_vertices)
+	:n(n), m(m), n_vertices(n_inside_vertices + n + m), graph(n_vertices), n_initial_inside_vertices(n_inside_vertices), n_initial_n(n), n_initial_m(m)
 {
 	for(Index i = 0; i < n_vertices; i++)
 	{
@@ -45,6 +45,16 @@ Index port_from(const GBNGraph::edge_descriptor& e, const GBNGraph& g)
 Index port_to(const GBNGraph::edge_descriptor& e, const GBNGraph& g)
 {
 	return get(edge_position, g, e).second;
+}
+
+Index input_idx(const Vertex& v, const GBN& gbn)
+{
+	return v-gbn.n_initial_inside_vertices;
+}
+
+Index output_idx(const Vertex& v, const GBN& gbn)
+{
+	return v-gbn.n_initial_inside_vertices-gbn.n_initial_n;
 }
 
 const std::string& name(const GBNGraph::vertex_descriptor& v, const GBNGraph& g)
