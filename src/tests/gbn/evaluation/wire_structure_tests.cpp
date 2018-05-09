@@ -19,7 +19,7 @@ TEST_CASE("Wire structure should have correct number of wires. (four_nodes.gbn)"
 
 	std::vector<Vertex> vec = { 0,1,2 };
 	auto [input_ports, output_ports] =  build_inputs_outputs_for_vertices(gbn, vec);
-	auto wire_structure = build_wire_structure(gbn, vec);
+	auto wire_structure = build_wire_structure_for_vertices(gbn, vec);
 	REQUIRE(input_ports.size() == 2);
 	REQUIRE(output_ports.size() == 2);
 	REQUIRE(wire_structure.wires.size() == 6);
@@ -33,13 +33,13 @@ TEST_CASE("Every wire should always have at least one input port") {
 
 	std::vector<Vertex> vec = { 0 };
 	auto vertex_set_input_outputs = build_inputs_outputs_for_vertices(gbn, vec);
-	auto wire_structure = build_wire_structure(gbn, vec);
+	auto wire_structure = build_wire_structure_for_vertices(gbn, vec);
 	for(auto& w : wire_structure.wires)
 		REQUIRE(w.inside_ports.size() > 0);
 
 	vec = { 2, 3 };
 	vertex_set_input_outputs = build_inputs_outputs_for_vertices(gbn, vec);
-	wire_structure = build_wire_structure(gbn, vec);
+	wire_structure = build_wire_structure_for_vertices(gbn, vec);
 	for(auto& w : wire_structure.wires)
 		REQUIRE(w.inside_ports.size() > 0);
 }

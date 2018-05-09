@@ -1,5 +1,6 @@
 #include "vertex_set_input_output.h"
 #include "../../helpers.hpp"
+#include <iostream>
 
 std::pair<std::vector<Port>,std::vector<Port>> build_inputs_outputs_for_vertices(const GBN& gbn, std::vector<Vertex> inside_vertices)
 {
@@ -29,4 +30,15 @@ std::pair<std::vector<Port>,std::vector<Port>> build_inputs_outputs_for_vertices
 		std::vector<Port>(input_port_set.begin(), input_port_set.end()), 
 		std::vector<Port>(output_port_set.begin(), output_port_set.end())
 	};
+}
+
+std::pair<std::vector<Port>,std::vector<Port>> build_inputs_outputs_for_gbn(const GBN& gbn)
+{
+	std::vector<Port> input_ports, output_ports;
+	for(auto v : ::input_vertices(gbn))
+		input_ports.push_back({ v, 0 });
+	for(auto v : ::output_vertices(gbn))
+		output_ports.push_back({ v, 0 });
+
+	return { input_ports, output_ports };
 }

@@ -39,6 +39,7 @@ TEST_CASE("Node splitting and merging again should yield the same for seven_node
 	auto p_m_before = evaluate(gbn);
 	auto& m_before = *p_m_before;
 
+
 	std::ofstream out_file1("before.dot");
 	draw_gbn_graph(out_file1, gbn);
 

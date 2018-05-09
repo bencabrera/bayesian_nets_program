@@ -40,6 +40,7 @@ set(GBN_FILES
 	src/gbn/matrix/randomized_generation.cpp
 
 	src/gbn/general/gbn.cpp
+	src/gbn/general/subgbn.cpp
 	src/gbn/general/gbn_io.cpp
 	src/gbn/general/check.cpp
 	src/gbn/general/path_closing.cpp
@@ -121,6 +122,10 @@ target_link_libraries(random_cn Boost::regex)
 add_executable(random_gbn src/main_random_gbn.cpp)
 target_link_libraries(random_gbn core_lib)
 target_link_libraries(random_gbn Boost::regex)
+
+add_executable(sub_gbn src/main_sub_gbn.cpp)
+target_link_libraries(sub_gbn core_lib)
+target_link_libraries(sub_gbn Boost::regex)
 
 add_executable(tests src/main_tests.cpp ${TEST_FILES})
 target_link_libraries(tests core_lib)

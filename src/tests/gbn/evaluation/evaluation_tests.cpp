@@ -20,7 +20,7 @@ TEST_CASE("Flipping a wire should turn the right bits on in vertices") {
 
 	std::vector<Vertex> vec = { 0 };
 	auto vertex_set_input_outputs = build_inputs_outputs_for_vertices(gbn, vec);
-	auto wire_structure = build_wire_structure(gbn, vec);
+	auto wire_structure = build_wire_structure_for_vertices(gbn, vec);
 
 	std::vector<Wire> left_mosts;
 	std::copy_if(wire_structure.wires.begin(), wire_structure.wires.end(), std::back_inserter(left_mosts), [&wire_structure] (const Wire& w) {
@@ -49,7 +49,7 @@ TEST_CASE("Flipping a wire should turn the right bits on in vertices") {
 	REQUIRE(wire_structure.output_bitvec->test(0) == 1);
 }
 
-TEST_CASE("Flipping a wire should turn the right bits on in vertices 2 (split case)") {
+TEST_CASE("Flipping a wire should turn the right bits on in vertices 2 (split.gbn)") {
 
 	std::ifstream f(TEST_INSTANCE_FOLDER + "split.gbn");
 	auto gbn = read_gbn(f);
@@ -57,7 +57,8 @@ TEST_CASE("Flipping a wire should turn the right bits on in vertices 2 (split ca
 
 	std::vector<Vertex> vec = { 0,1,2 };
 	auto vertex_set_input_outputs = build_inputs_outputs_for_vertices(gbn, vec);
-	auto wire_structure = build_wire_structure(gbn, vec);
+	auto wire_structure = build_wire_structure_for_vertices(gbn, vec);
+	REQUIRE(wire_structure.wires.size() == 4);
 
 	std::vector<Wire> tmp;
 	std::copy_if(wire_structure.wires.begin(), wire_structure.wires.end(), std::back_inserter(tmp), [&wire_structure] (const Wire& w) {
@@ -80,7 +81,7 @@ TEST_CASE("Computing one product should work")
 
 	std::vector<Vertex> vec = { 0,1,2 };
 	auto vertex_set_input_outputs = build_inputs_outputs_for_vertices(gbn, vec);
-	auto wire_structure = build_wire_structure(gbn, vec);
+	auto wire_structure = build_wire_structure_for_vertices(gbn, vec);
 	std::vector<Wire> tmp;
 	std::copy_if(wire_structure.wires.begin(), wire_structure.wires.end(), std::back_inserter(tmp), [&wire_structure] (const Wire& w) {
 		return w.inside_ports.size() == 3;
@@ -127,7 +128,7 @@ TEST_CASE("Evaluation of single node should just give that matrix of node 2")
 	std::vector<Vertex> vec({ 0 });
 
 	auto [input_ports, output_ports] = build_inputs_outputs_for_vertices(gbn, vec);
-	auto wire_structure = build_wire_structure(gbn, vec);
+	auto wire_structure = build_wire_structure_for_vertices(gbn, vec);
 	REQUIRE(wire_structure.wires.size() == 4);
 	for(auto w : wire_structure.wires)
 	{
@@ -169,7 +170,7 @@ TEST_CASE("For a single node gbn every wire should have exactly one v_input bitv
 
 	std::vector<Vertex> vec = { 0 };
 	auto vertex_set_input_outputs = build_inputs_outputs_for_vertices(gbn, vec);
-	auto wire_structure = build_wire_structure(gbn, vec);
+	auto wire_structure = build_wire_structure_for_vertices(gbn, vec);
 
 	for(auto& w : wire_structure.wires)
 	{
@@ -237,8 +238,8 @@ TEST_CASE("Evaluation for seven_nodes.gbn should work.")
 	check_gbn_integrity(gbn);
 
 	std::vector<Vertex> vec({ 0, 1, 2, 3, 4, 5, 6 });
-	auto wire_structure = build_wire_structure(gbn, vec);
-	auto wire_structure2 = build_wire_structure(gbn);
+	auto wire_structure = build_wire_structure_for_vertices(gbn, vec);
+	auto wire_structure2 = build_wire_structure_for_gbn(gbn);
 	auto p_m = evaluate(gbn, vec);
 
 	REQUIRE(wire_structure.wires.size() == wire_structure2.wires.size());

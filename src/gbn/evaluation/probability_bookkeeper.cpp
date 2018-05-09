@@ -25,7 +25,7 @@ double ProbabilityBookkeeper::get_product()
 
 void ProbabilityBookkeeper::update_one_node(Vertex v, double p)
 {
-	auto& p_v = p_vec[lookup[v]];
+	auto& p_v = p_vec.at(lookup[v]);
 	bool is_p_zero = prob_is_zero(p);
 	if(n_zeros > 0)
 	{
