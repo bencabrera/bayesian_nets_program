@@ -1,12 +1,7 @@
 #include "../../../../libs/catch/catch.hpp"
 
 #include "../../../gbn/evaluation/probability_bookkeeper.h"
-
-#ifdef FOO 
-const std::string TEST_INSTANCE_FOLDER = FOO;
-#else
-const std::string TEST_INSTANCE_FOLDER = "";
-#endif
+#include "../../test_helpers.h"
 
 TEST_CASE("ProbabilityBookkeeper should work correctly") {
 	ProbabilityBookkeeper bk(10, {3, 7, 8});

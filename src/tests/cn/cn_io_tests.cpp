@@ -1,20 +1,16 @@
 #include "../../../libs/catch/catch.hpp"
 
+#include <fstream>
+
 #include "../../cn/cn.h"
 #include "../../cn/cn_io.h"
 #include "../../helpers.hpp"
-#include <fstream>
-
-#ifdef FOO 
-const std::string TEST_INSTANCE_FOLDER = FOO;
-#else
-const std::string TEST_INSTANCE_FOLDER = "";
-#endif
+#include "../test_helpers.h"
 
 TEST_CASE("Reading in CN should work properly") {
 	std::ifstream f1(TEST_INSTANCE_FOLDER + "read_in_test1.cnu");
-
 	auto cn = read_cn(f1);
+
 	REQUIRE(cn.n == 3);
 	REQUIRE(to_string(cn.m) == "011");
 	REQUIRE(cn.transitions.size() == 2);

@@ -3,12 +3,7 @@
 #include "../../../gbn/general/gbn_io.h"
 #include "../../../gbn/general/check.h"
 #include <fstream>
-
-#ifdef FOO 
-const std::string TEST_INSTANCE_FOLDER = FOO;
-#else
-const std::string TEST_INSTANCE_FOLDER = "";
-#endif
+#include "../../test_helpers.h"
 
 TEST_CASE("Reading in basic example should work 1") {
 	std::ifstream f(TEST_INSTANCE_FOLDER + "basic1.gbn");

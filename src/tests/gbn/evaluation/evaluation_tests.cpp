@@ -1,113 +1,18 @@
 #include "../../../../libs/catch/catch.hpp"
 
+#include <fstream>
+
 #include "../../../gbn/evaluation/evaluation.h"
 #include "../../../gbn/matrix/matrix_io.h"
 #include "../../../gbn/general/check.h"
 #include "../../../gbn/general/gbn_io.h"
 #include "../../../gbn/general/subgbn.h"
 #include "../../../gbn/modification/merging.h"
-#include <fstream>
-
-#ifdef FOO 
-const std::string TEST_INSTANCE_FOLDER = FOO;
-#else
-const std::string TEST_INSTANCE_FOLDER = "";
-#endif
-
-// TEST_CASE("Flipping a wire should turn the right bits on in vertices") {
-	// std::ifstream f(TEST_INSTANCE_FOLDER + "four_nodes.gbn");
-	// auto gbn = read_gbn(f);
-	// check_gbn_integrity(gbn);
-
-	// std::vector<Vertex> vec = { 0 };
-	// auto wire_structure = build_wire_structure_for_vertices(gbn, vec);
-
-	// std::vector<Wire> left_mosts;
-	// std::copy_if(wire_structure.wires.begin(), wire_structure.wires.end(), std::back_inserter(left_mosts), [&wire_structure] (const Wire& w) {
-		// return w.io_ports[0].first == wire_structure.input_bitvec;
-	// });
-	// auto& left_most_wire = left_mosts[0];
-	// REQUIRE(left_most_wire.inside_ports.size() == 1);
-	// REQUIRE(wire_structure.vertex_input_bitvecs[0]->test(0) == 0);
-	// auto changed_vertices = flip_wire(left_most_wire);
-	// REQUIRE(changed_vertices.size() == 1);
-	// REQUIRE(name(changed_vertices[0],gbn.graph) == "v_1");
-	// REQUIRE(wire_structure.vertex_input_bitvecs[0]->test(0) == 1);
-	// REQUIRE(wire_structure.input_bitvec->test(0) == 1);
-
-	// std::vector<Wire> right_mosts;
-	// std::copy_if(wire_structure.wires.begin(), wire_structure.wires.end(), std::back_inserter(right_mosts), [&wire_structure] (const Wire& w) {
-		// return w.io_ports[0].first == wire_structure.output_bitvec;
-	// });
-	// auto& right_most_wire = right_mosts[0];
-	// REQUIRE(right_most_wire.inside_ports.size() == 1);
-	// REQUIRE(wire_structure.vertex_output_bitvecs[0]->test(0) == 0);
-	// changed_vertices = flip_wire(right_most_wire);
-	// REQUIRE(changed_vertices.size() == 1);
-	// REQUIRE(name(changed_vertices[0],gbn.graph) == "v_1");
-	// REQUIRE(wire_structure.vertex_output_bitvecs[0]->test(0) == 1);
-	// REQUIRE(wire_structure.output_bitvec->test(0) == 1);
-// }
-
-// TEST_CASE("Flipping a wire should turn the right bits on in vertices 2 (split.gbn)") {
-
-	// std::ifstream f(TEST_INSTANCE_FOLDER + "split.gbn");
-	// auto gbn = read_gbn(f);
-	// check_gbn_integrity(gbn);
-
-	// std::vector<Vertex> vec = { 0,1,2 };
-	// auto vertex_set_input_outputs = build_inputs_outputs_for_vertices(gbn, vec);
-	// auto wire_structure = build_wire_structure_for_vertices(gbn, vec);
-	// REQUIRE(wire_structure.wires.size() == 4);
-
-	// std::vector<Wire> tmp;
-	// std::copy_if(wire_structure.wires.begin(), wire_structure.wires.end(), std::back_inserter(tmp), [&wire_structure] (const Wire& w) {
-		// return w.inside_ports.size() == 3;
-	// });
-	// REQUIRE(tmp.size() == 1);
-	// auto& w = tmp[0];
-	// REQUIRE(w.inside_ports.size() == 3);
-	// REQUIRE(w.io_ports.size() == 0);
-
-	// auto affected_vertices = flip_wire(w);
-	// REQUIRE(affected_vertices.size() == 3);
-// }
-
-// TEST_CASE("Computing one product should work") 
-// {
-	// std::ifstream f(TEST_INSTANCE_FOLDER + "split.gbn");
-	// auto gbn = read_gbn(f);
-	// check_gbn_integrity(gbn);
-
-	// std::vector<Vertex> vec = { 0,1,2 };
-	// auto vertex_set_input_outputs = build_inputs_outputs_for_vertices(gbn, vec);
-	// auto wire_structure = build_wire_structure_for_vertices(gbn, vec);
-	// std::vector<Wire> tmp;
-	// std::copy_if(wire_structure.wires.begin(), wire_structure.wires.end(), std::back_inserter(tmp), [&wire_structure] (const Wire& w) {
-		// return w.inside_ports.size() == 3;
-	// });
-	// REQUIRE(tmp.size() == 1);
-	// auto& w = tmp[0];
-	// auto affected_vertices = flip_wire(w);
-
-	// auto g = gbn.graph;
-
-	// double product = 1;
-	// for(auto v : vec)
-	// {
-		// const auto& m = *matrix(v,g);
-		
-		// product *= m.get(*wire_structure.vertex_output_bitvecs[v], *wire_structure.vertex_input_bitvecs[v]);
-	// }
-
-	// REQUIRE(product == Approx(0.666666666*0.5*0.5));
-// }
+#include "../../test_helpers.h"
 
 TEST_CASE("Evaluation of single node should just give that matrix of node 1") 
 {
-	std::ifstream f(TEST_INSTANCE_FOLDER + "one_node.gbn");
-	auto gbn = read_gbn(f);
-	check_gbn_integrity(gbn);
+	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "one_node.gbn");
 
 	auto sub_gbn = SubGBN::make_from_vertices(gbn, { 0 });
 	auto p_m = evaluate(sub_gbn.gbn);
@@ -120,9 +25,7 @@ TEST_CASE("Evaluation of single node should just give that matrix of node 1")
 
 TEST_CASE("Evaluation of single node should just give that matrix of node 2") 
 {
-	std::ifstream f(TEST_INSTANCE_FOLDER + "one_node_two_wires.gbn");
-	auto gbn = read_gbn(f);
-	check_gbn_integrity(gbn);
+	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "one_node_two_wires.gbn");
 
 	std::vector<Vertex> vec({ 0 });
 
@@ -163,9 +66,7 @@ TEST_CASE("Evaluation of single node should just give that matrix of node 2")
 
 TEST_CASE("For a single node gbn every wire should have exactly one v_input bitvec and one io bitvec") 
 {
-	std::ifstream f(TEST_INSTANCE_FOLDER + "one_node_two_wires.gbn");
-	auto gbn = read_gbn(f);
-	check_gbn_integrity(gbn);
+	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "one_node_two_wires.gbn");
 
 	auto sub_gbn = SubGBN::make_from_vertices(gbn, { 0 });
 	auto wire_structure = build_wire_structure(sub_gbn.gbn);
@@ -180,9 +81,7 @@ TEST_CASE("For a single node gbn every wire should have exactly one v_input bitv
 
 TEST_CASE("Evaluation for split.gbn should be correct") 
 {
-	std::ifstream f(TEST_INSTANCE_FOLDER + "split.gbn");
-	auto gbn = read_gbn(f);
-	check_gbn_integrity(gbn);
+	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "split.gbn");
 
 	auto sub_gbn = SubGBN::make_from_vertices(gbn, { 0, 1, 2 });
 	auto wire_structure = build_wire_structure(sub_gbn.gbn);
@@ -207,9 +106,7 @@ TEST_CASE("Evaluation for split.gbn should be correct")
 
 TEST_CASE("Evaluation for four_nodes.gbn should be correct") 
 {
-	std::ifstream f(TEST_INSTANCE_FOLDER + "four_nodes.gbn");
-	auto gbn = read_gbn(f);
-	check_gbn_integrity(gbn);
+	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "four_nodes.gbn");
 
 	auto sub_gbn = SubGBN::make_from_vertices(gbn, { 0, 1, 2, 3 });
 	auto wire_structure = build_wire_structure(sub_gbn.gbn);
@@ -233,9 +130,7 @@ TEST_CASE("Evaluation for four_nodes.gbn should be correct")
 
 TEST_CASE("Evaluation for seven_nodes.gbn should work.") 
 {
-	std::ifstream f(TEST_INSTANCE_FOLDER + "seven_nodes.gbn");
-	auto gbn = read_gbn(f);
-	check_gbn_integrity(gbn);
+	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "seven_nodes.gbn");
 
 	auto sub_gbn = SubGBN::make_from_vertices(gbn, { 0, 1, 2, 3, 4, 5, 6 });
 	auto wire_structure = build_wire_structure(sub_gbn.gbn);
@@ -251,9 +146,7 @@ TEST_CASE("Evaluation for seven_nodes.gbn should work.")
 }
 
 TEST_CASE("Evaluating id_1.gbn should yield identity 1 -> 1") {
-	std::ifstream f(TEST_INSTANCE_FOLDER + "id_1.gbn");
-	auto gbn = read_gbn(f);
-	check_gbn_integrity(gbn);
+	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "id_1.gbn");
 
 	auto m = evaluate(gbn);
 
@@ -273,9 +166,7 @@ TEST_CASE("Evaluating id_1.gbn should yield identity 1 -> 1") {
 }
 
 TEST_CASE("Evaluating id_1.gbn should yield identity 2 -> 2") {
-	std::ifstream f(TEST_INSTANCE_FOLDER + "id_2.gbn");
-	auto gbn = read_gbn(f);
-	check_gbn_integrity(gbn);
+	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "id_2.gbn");
 
 	auto m = evaluate(gbn);
 

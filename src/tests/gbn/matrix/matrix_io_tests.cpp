@@ -2,13 +2,6 @@
 
 #include "../../../gbn/matrix/matrix.h"
 #include "../../../gbn/matrix/matrix_io.h"
-#include <fstream>
-
-#ifdef FOO 
-const std::string TEST_INSTANCE_FOLDER = FOO;
-#else
-const std::string TEST_INSTANCE_FOLDER = "";
-#endif
 
 TEST_CASE("Reading the three types of matrices should work") {
 	read_matrix({ "dynamic 1 1 [1,1;0,0]" });

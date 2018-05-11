@@ -4,18 +4,10 @@
 #include "../../../gbn/general/gbn_io.h"
 #include "../../../gbn/general/check.h"
 #include "../../../gbn/general/subgbn.h"
-#include <fstream>
-
-#ifdef FOO 
-const std::string TEST_INSTANCE_FOLDER = FOO;
-#else
-const std::string TEST_INSTANCE_FOLDER = "";
-#endif
+#include "../../test_helpers.h"
 
 TEST_CASE("Wire structure should have correct number of wires. (four_nodes.gbn)") {
-	std::ifstream f(TEST_INSTANCE_FOLDER + "four_nodes.gbn");
-	auto gbn = read_gbn(f);
-	check_gbn_integrity(gbn);
+	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "four_nodes.gbn");
 
 	auto sub_gbn = SubGBN::make_from_vertices(gbn, { 0, 1, 2 });
 	auto wire_structure = build_wire_structure(sub_gbn.gbn);
@@ -25,10 +17,7 @@ TEST_CASE("Wire structure should have correct number of wires. (four_nodes.gbn)"
 }
 
 TEST_CASE("Every wire should always have at least one input port") {
-	std::ifstream f(TEST_INSTANCE_FOLDER + "four_nodes.gbn");
-	auto gbn = read_gbn(f);
-	check_gbn_integrity(gbn);
-
+	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "four_nodes.gbn");
 
 	auto sub_gbn = SubGBN::make_from_vertices(gbn, { 0 });
 	auto wire_structure = build_wire_structure(sub_gbn.gbn);

@@ -1,17 +1,13 @@
 #include "../../../libs/catch/catch.hpp"
 
+#include <fstream>
+
 #include "../../cn/cn.h"
 #include "../../cn/cn_io.h"
 #include "../../joint_dist/joint_dist.h"
 #include "../../joint_dist/joint_dist_io.h"
 #include "../../cnu/operations_on_joint_dist.h"
-#include <fstream>
-
-#ifdef FOO 
-const std::string TEST_INSTANCE_FOLDER = FOO;
-#else
-const std::string TEST_INSTANCE_FOLDER = "";
-#endif
+#include "../test_helpers.h"
 
 namespace {
 	void compare_dists(const JointDist& dist1, const JointDist& dist2)

@@ -2,13 +2,7 @@
 
 #include "../../../gbn/matrix/matrix_io.h"
 #include "../../../gbn/matrix/matrix_decomposition.h"
-#include <fstream>
-
-#ifdef FOO 
-const std::string TEST_INSTANCE_FOLDER = FOO;
-#else
-const std::string TEST_INSTANCE_FOLDER = "";
-#endif
+#include "../../test_helpers.h"
 
 TEST_CASE("Matrix decomposition should work for small 2 -> 2 example") {
 	auto p_m = read_matrix({"dynamic 2 2 [1/4,1/3,1/2,1;1/4,1/3,1/2,0;1/4,1/3,0,0;1/4,0,0,0]"});

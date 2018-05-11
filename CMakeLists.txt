@@ -70,10 +70,12 @@ set(TEST_FILES
 	src/tests/gbn/evaluation/wire_structure_tests.cpp
 	src/tests/gbn/evaluation/probability_bookkeeper_tests.cpp
 
+	src/tests/gbn/modification/merging_tests.cpp
 	src/tests/gbn/modification/splitting_tests.cpp
 	src/tests/gbn/modification/simplification_tests.cpp
 	src/tests/gbn/modification/automated_simplification_tests.cpp
-	src/tests/gbn/modification/merging_tests.cpp
+
+	src/tests/test_helpers.cpp
 )
 
 add_library(core_lib STATIC ${GENERAL_FILES} ${CN_FILES} ${JOINT_DIST_FILES} ${CNU_FILES} ${GBN_FILES})
