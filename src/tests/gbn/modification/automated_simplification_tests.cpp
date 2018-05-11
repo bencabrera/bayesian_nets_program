@@ -173,26 +173,10 @@ TEST_CASE("Automated: (CoUnit) & (F1) & (F2) simplifications together should not
 		auto gbn = generate_random_gbn(1,1,4,mt,params);
 		auto gbn_before = gbn;
 
-		// std::ofstream f1("test_before.dot");
-		// draw_gbn_graph(f1, gbn_before);
-
 		auto p_m_before = evaluate(gbn);
 		auto& m_before = *p_m_before;
 
-		// try {
-			// std::cout << "before" << std::endl;
-			apply_simplifications_for_each_vertex(gbn, check_and_apply_CoUnit, check_and_apply_F1, check_and_apply_F2);
-			// std::cout << "after" << std::endl;
-		// }
-		// catch(const std::exception& e)
-		// {
-			// std::cout << "caught" << std::endl;
-			// std::ofstream f1("test_before.dot");
-			// std::ofstream f2("test_after.dot");
-			// draw_gbn_graph(f1, gbn_before);
-			// draw_gbn_graph(f2, gbn);
-			// throw e;
-		// }
+		apply_simplifications_for_each_vertex(gbn, check_and_apply_CoUnit, check_and_apply_F1, check_and_apply_F2);
 
 		auto p_m_after = evaluate(gbn);
 		auto& m_after = *p_m_after;
@@ -211,18 +195,7 @@ TEST_CASE("Automated: (CoUnit) & (F1) & (F2) simplifications together should not
 			print_matrix(std::cout, m_after);
 		}
 
-			check_gbn_integrity(gbn);
-		// try{
-		// }
-		// catch(const std::exception& e)
-		// {
-			// std::cout << "caught" << std::endl;
-			// std::ofstream f1("test_before.dot");
-			// std::ofstream f2("test_after.dot");
-			// draw_gbn_graph(f1, gbn_before);
-			// draw_gbn_graph(f2, gbn);
-			// throw e;
-		// }
+		check_gbn_integrity(gbn);
 
 		test_matrices_equal(m_before, m_after);
 	}
@@ -380,22 +353,7 @@ TEST_CASE("Automated: (CoUnit) - (F5) simplifications together should not modify
 		auto p_m_before = evaluate(gbn);
 		auto& m_before = *p_m_before;
 
-		// try {
-			// std::cout << "before" << std::endl;
-			std::cout << "before" << std::endl;
-			apply_simplifications_for_each_vertex(gbn, check_and_apply_CoUnit, check_and_apply_F1, check_and_apply_F2, check_and_apply_F3, check_and_apply_F4, check_and_apply_F5);
-			// std::cout << "after" << std::endl;
-			std::cout << "after" << std::endl;
-		// }
-		// catch(const std::exception& e)
-		// {
-			// std::cout << "caught" << std::endl;
-			// std::ofstream f1("test_before.dot");
-			// std::ofstream f2("test_after.dot");
-			// draw_gbn_graph(f1, gbn_before);
-			// draw_gbn_graph(f2, gbn);
-			// throw e;
-		// }
+		apply_simplifications_for_each_vertex(gbn, check_and_apply_CoUnit, check_and_apply_F1, check_and_apply_F2, check_and_apply_F3, check_and_apply_F4, check_and_apply_F5);
 
 		auto p_m_after = evaluate(gbn);
 		auto& m_after = *p_m_after;
@@ -408,18 +366,7 @@ TEST_CASE("Automated: (CoUnit) - (F5) simplifications together should not modify
 			draw_gbn_graph(f2, gbn);
 		}
 
-		// try{
-			check_gbn_integrity(gbn);
-		// }
-		// catch(const std::exception& e)
-		// {
-			// std::cout << "caught" << std::endl;
-			// std::ofstream f1("test_before.dot");
-			// std::ofstream f2("test_after.dot");
-			// draw_gbn_graph(f1, gbn_before);
-			// draw_gbn_graph(f2, gbn);
-			// throw e;
-		// }
+		check_gbn_integrity(gbn);
 
 		test_matrices_equal(m_before, m_after);
 	}

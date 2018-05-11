@@ -14,41 +14,21 @@ std::pair<Vertex, Vertex> split_vertex(GBN& gbn, Vertex v)
 
 	// if matrix just has one output wire -> abort
 	if(m.m == 1)
-		return std::pair<Vertex,Vertex>();
+	return std::pair<Vertex,Vertex>();
 
 	// decompose matrix
 	auto [p_m_front, p_m_back] = matrix_decomposition(p_m);
 
 	// store input and output ports of vertex and sort them
-	auto input_comparison = [&gbn](const std::tuple<Vertex, std::size_t, std::size_t>& p1, const std::tuple<Vertex, std::size_t, std::size_t>& p2) -> bool {
-		auto& v1 = std::get<0>(p1);
-		auto& v2 = std::get<0>(p2);
-		auto& g = gbn.graph;
-		if(type(v1,g) != type(v2,g))
-			return type(v1,gbn.graph) < type(v2,gbn.graph);
-		if(name(v1,g) != name(v2,g))
-			return name(v1,g) < name(v2,g);
-		return std::get<1>(p1) < std::get<1>(p2);
-	};
-	auto output_comparison = [&gbn](const std::tuple<Vertex, std::size_t, std::size_t>& p1, const std::tuple<Vertex, std::size_t, std::size_t>& p2) -> bool {
-		auto& v1 = std::get<0>(p1);
-		auto& v2 = std::get<0>(p2);
-		auto& g = gbn.graph;
-		if(type(v1,g) != type(v2,g))
-			return type(v1,gbn.graph) < type(v2,gbn.graph);
-		if(name(v1,g) != name(v2,g))
-			return name(v1,g) < name(v2,g);
-		return std::get<2>(p1) < std::get<2>(p2);
-	};
 	std::vector<std::tuple<Vertex, std::size_t, std::size_t>> precessors;
 	for(auto e : boost::make_iterator_range(boost::in_edges(v,gbn.graph)))
 		precessors.push_back({ boost::source(e,gbn.graph), port_from(e, gbn.graph), port_to(e,gbn.graph) });
-	std::sort(precessors.begin(), precessors.end(), input_comparison);
+	std::sort(precessors.begin(), precessors.end());
 
 	std::vector<std::tuple<Vertex, std::size_t, std::size_t>> sucessors;
 	for(auto e : boost::make_iterator_range(boost::out_edges(v,gbn.graph)))
 		sucessors.push_back({ boost::target(e,gbn.graph), port_from(e, gbn.graph), port_to(e,gbn.graph) });
-	std::sort(sucessors.begin(), sucessors.end(), output_comparison);
+	std::sort(sucessors.begin(), sucessors.end());
 
 	// remove vertex
 	remove_vertex(v,gbn);

@@ -2,6 +2,7 @@
 
 #include "../../../gbn/general/gbn_io.h"
 #include "../../../gbn/general/check.h"
+#include "../../../gbn/general/subgbn.h"
 #include "../../../gbn/modification/splitting.h"
 #include "../../../gbn/modification/merging.h"
 #include "../../../gbn/evaluation/evaluation.h"
@@ -28,6 +29,65 @@ namespace {
 			for(Index from = 0; from < from_max; from++)
 				REQUIRE(m1.get(to, from) == Approx(m2.get(to, from)));
 	}
+}
+
+TEST_CASE("replace_split_2") 
+{
+	std::ifstream f(TEST_INSTANCE_FOLDER + "split_3_2_small2.gbn");
+	auto gbn = read_gbn(f);
+	check_gbn_integrity(gbn);
+
+	auto p_m_before = evaluate(gbn);
+	auto& m_before = *p_m_before;
+	std::cout << "before: " << std::endl;
+	print_matrix(std::cout, m_before);
+	std::cout << std::endl;
+	std::cout << std::endl;
+	std::cout << std::endl;
+
+	std::ofstream out_file("before.dot");
+	draw_gbn_graph(out_file, gbn);
+
+	auto v_new = merge_vertices(gbn, {1});
+	auto p_m_before2 = evaluate(gbn);
+	std::cout << "merge: " << std::endl;
+	print_matrix(std::cout, *p_m_before2);
+	std::cout << std::endl;
+	std::cout << std::endl;
+	std::cout << std::endl;
+	std::ofstream out_file3("merge.dot");
+	draw_gbn_graph(out_file3, gbn);
+
+	std::cout << "matrix(v_new): " << std::endl;
+	print_matrix(std::cout, *matrix(v_new, gbn.graph));
+
+
+	auto v_front = split_vertex(gbn, v_new).first;
+	std::ofstream out_file2("split.dot");
+	draw_gbn_graph(out_file2, gbn);
+
+	std::vector<Vertex> split_vertices;
+	std::copy_if(boost::vertices(gbn.graph).first, boost::vertices(gbn.graph).second, std::back_inserter(split_vertices), [&] (Vertex v) {
+		return name(v, gbn.graph).substr(0,3) == "new";
+	});
+	auto sub_gbn = SubGBN::make_from_vertices(gbn, split_vertices);
+	auto p_m_sub = evaluate(sub_gbn.gbn);
+	std::cout << "matrix(sub): " << std::endl;
+	print_matrix(std::cout, *p_m_sub);
+	std::ofstream out_file4("sub.dot");
+	draw_gbn_graph(out_file4, sub_gbn.gbn);
+
+	auto p_m_after = evaluate(gbn);
+	auto& m_after = *p_m_after;
+
+	std::cout << "split: " << std::endl;
+	print_matrix(std::cout, m_after);
+	std::cout << std::endl;
+	std::cout << std::endl;
+	std::cout << std::endl;
+	check_gbn_integrity(gbn);
+
+	test_matrices_equal(m_before, m_after);
 }
 
 TEST_CASE("Node splitting and merging again should yield the same for seven_nodes.gbn.")
@@ -195,20 +255,55 @@ TEST_CASE("Replace and split test.")
 
 	auto p_m_before = evaluate(gbn);
 	auto& m_before = *p_m_before;
+	std::cout << "before: " << std::endl;
+	print_matrix(std::cout, m_before);
+	std::cout << std::endl;
+	std::cout << std::endl;
+	std::cout << std::endl;
+
+	std::ofstream out_file("before.dot");
+	draw_gbn_graph(out_file, gbn);
 
 	auto v_new = merge_vertices(gbn, {1,2,3});
-	auto v_front = split_vertex(gbn, v_new).first;
-	split_vertex(gbn, v_front);
-	check_gbn_integrity(gbn);
+	auto p_m_before2 = evaluate(gbn);
+	std::cout << "merge: " << std::endl;
+	print_matrix(std::cout, *p_m_before2);
+	std::cout << std::endl;
+	std::cout << std::endl;
+	std::cout << std::endl;
+	std::ofstream out_file3("merge.dot");
+	draw_gbn_graph(out_file3, gbn);
 
-	std::ofstream out_file2("after.dot");
+	std::cout << "matrix(v_new): " << std::endl;
+	print_matrix(std::cout, *matrix(v_new, gbn.graph));
+
+
+	auto v_front = split_vertex(gbn, v_new).first;
+	std::ofstream out_file2("split.dot");
 	draw_gbn_graph(out_file2, gbn);
+
+	std::vector<Vertex> split_vertices;
+	std::copy_if(boost::vertices(gbn.graph).first, boost::vertices(gbn.graph).second, std::back_inserter(split_vertices), [&] (Vertex v) {
+		return name(v, gbn.graph).substr(0,3) == "new";
+	});
+	auto sub_gbn = SubGBN::make_from_vertices(gbn, split_vertices);
+	auto p_m_sub = evaluate(sub_gbn.gbn);
+	std::cout << "matrix(sub): " << std::endl;
+	print_matrix(std::cout, *p_m_sub);
 
 	auto p_m_after = evaluate(gbn);
 	auto& m_after = *p_m_after;
 
+	std::cout << "split: " << std::endl;
+	print_matrix(std::cout, m_after);
+	std::cout << std::endl;
+	std::cout << std::endl;
+	std::cout << std::endl;
+	check_gbn_integrity(gbn);
+
 	test_matrices_equal(m_before, m_after);
 }
+
 
 TEST_CASE("Merging full seven_nodes.gbn and recursively splitting it again should yield the same.")
 {
