@@ -170,7 +170,7 @@ TEST_CASE("Automated: (CoUnit) & (F1) & (F2) simplifications together should not
 
 	for(std::size_t i = 0; i < N_RUNS; i++)
 	{
-		auto gbn = generate_random_gbn(1,1,4,mt,params);
+		auto gbn = generate_random_gbn(5,5,10,mt,params);
 		auto gbn_before = gbn;
 
 		auto p_m_before = evaluate(gbn);
