@@ -94,6 +94,7 @@ void randomized_check_evaluates_equal_after_operation(std::function<GBN(GBN)> op
 
 	for(std::size_t i = 0; i < N_AUTOMATED_RUNS; i++)
 	{
+		std::cout << i << std::endl;
 		auto gbn = generate_random_gbn(5,5,10,mt,params);
 		check_gbn_integrity(gbn);
 

@@ -387,46 +387,41 @@ bool check_and_apply_F5(GBN& gbn, Vertex v)
 	return found_once;
 }
 
-bool gbn_eliminate_without_outputs(GBN& gbn)
+bool eliminate_stochastic_vertex_without_outputs(GBN& gbn, Vertex v)
 {
 	auto& g = gbn.graph;
 
-	bool found = false;
-	Vertex v_without;
-	auto vec = inside_vertices(gbn);
-	for(auto v : vec)	
+	if(matrix(v,g)->type == TERMINATOR || !matrix(v,g)->is_stochastic)
+		return false;
+
+	bool connected_to_output = false;
+	for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
 	{
-		bool connected_to_output = false;
-		for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
+		if(type(boost::target(e,g),g) == OUTPUT)
 		{
-			if(type(boost::target(e,g),g) == OUTPUT)
-			{
-				connected_to_output = true;
-				break;
-			}
-		}
-		if(!connected_to_output && matrix(v,g)->is_stochastic && matrix(v,g)->type != TERMINATOR)
-		{
-			v_without = v;
-			found = true;
+			connected_to_output = true;
 			break;
 		}
 	}
 
-	if(found) {
+	bool has_sucessors = false;
+	if(!connected_to_output) {
 		std::vector<Vertex> successors;
-		successors.push_back(v_without);
-		for(auto e : boost::make_iterator_range(boost::out_edges(v_without,g)))
+		successors.push_back(v);
+		for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
 			successors.push_back(boost::target(e,g));
 
-		successors = path_closing(gbn, successors);
+		has_sucessors = successors.size() > 1;
+		if(has_sucessors) {
+			successors = path_closing(gbn, successors);
 
-		auto v_new = merge_vertices(gbn, successors);
+			auto v_new = merge_vertices(gbn, successors);
 
-		recursively_split_vertex(gbn, v_new);
+			recursively_split_vertex(gbn, v_new);
+		}
 	}
 
-	return found;
+	return !connected_to_output && has_sucessors;
 }
 
 bool gbn_switch_substoch_to_front(GBN& gbn)

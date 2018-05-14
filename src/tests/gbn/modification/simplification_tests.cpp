@@ -78,3 +78,28 @@ TEST_CASE("(F5) should work correctly (f5_simplification_1.gbn).")
 		REQUIRE(boost::num_edges(gbn_after.graph) == 5);	
 	});
 }
+
+TEST_CASE("seven_nodes.gbn: (StochWithoutOutputs) v_4")
+{
+	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "seven_nodes.gbn");
+	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { eliminate_stochastic_vertex_without_outputs(gbn,3); return gbn; }, [](GBN gbn_before, GBN gbn_after) -> void {
+		std::ofstream f1("test_before.dot");
+		std::ofstream f2("test_after.dot");
+		draw_gbn_graph(f1, gbn_before);
+		draw_gbn_graph(f2, gbn_after);
+	});
+}
+
+TEST_CASE("seven_nodes.gbn: (StochWithoutOutputs) all vertices")
+{
+	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "seven_nodes.gbn");
+	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { 
+		apply_simplifications_for_each_vertex(gbn, eliminate_stochastic_vertex_without_outputs);
+		return gbn; 
+	}, [](GBN gbn_before, GBN gbn_after) -> void {
+		std::ofstream f1("test_before.dot");
+		std::ofstream f2("test_after.dot");
+		draw_gbn_graph(f1, gbn_before);
+		draw_gbn_graph(f2, gbn_after);
+	});
+}

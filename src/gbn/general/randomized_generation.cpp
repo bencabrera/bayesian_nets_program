@@ -234,7 +234,7 @@ GBN generate_random_gbn(std::size_t n, std::size_t m, std::size_t n_inside_verti
 {
 	params.n_inputs = n;
 	params.n_outputs = m;
-	params.n_outputs = n_inside_vertices;
+	params.n_inside_vertices = n_inside_vertices;
 
 	return generate_random_gbn(mt,params);
 }

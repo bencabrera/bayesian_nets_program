@@ -123,3 +123,18 @@ TEST_CASE("Automated: (CoUnit) - (F5) simplifications together should not modify
 	}, params);
 }
 
+TEST_CASE("Automated: (StochWithoutOutputs)")
+{
+    std::random_device rd;  
+    std::mt19937 mt(rd()); 
+
+	RandomGBNParams params;
+	params.vertex_window_size = 10;
+	params.matrix_params.F_matrix_prob = 0.5;
+	params.matrix_params.OneB_matrix_prob = 1.0;
+
+	randomized_check_evaluates_equal_after_operation([](GBN gbn) -> GBN { 
+		apply_simplifications_for_each_vertex(gbn, eliminate_stochastic_vertex_without_outputs);
+		return gbn;
+	}, params);
+}

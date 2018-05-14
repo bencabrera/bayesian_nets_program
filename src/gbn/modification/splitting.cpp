@@ -93,7 +93,7 @@ void recursively_split_vertex(GBN& gbn, Vertex v)
 {
 	auto& g = gbn.graph;
 
-	if(matrix(v,g)->m == 1)
+	if(matrix(v,g)->m < 2)
 		return;
 
 	auto [v_front, v_back] = split_vertex(gbn, v);

@@ -84,7 +84,7 @@ std::vector<Vertex> path_closing(GBN& gbn, const std::vector<Vertex> vertices)
 	// for(auto t : ordered_vertices)
 		// std::cout << name(t.first,g) << " " << t.second << std::endl;
 
-	std::cout << "topo_max: " << topo_max << std::endl;
+	// std::cout << "topo_max: " << topo_max << std::endl;
 
 	std::set<Vertex> vertices_still_to_reach(vertices.begin(), vertices.end());
 	std::set<Vertex> additional_vertices;
@@ -95,7 +95,7 @@ std::vector<Vertex> path_closing(GBN& gbn, const std::vector<Vertex> vertices)
 			return v_to_topo_pos[v1] < v_to_topo_pos[v2];
 		});
 		auto v = *it;
-		std::cout << "max_element: " << v << std::endl;
+		// std::cout << "max_element: " << v << std::endl;
 		Queue q{v};
 		recursive_traversal(q, gbn, v_to_topo_pos, topo_max, vertex_set, additional_vertices, vertices_still_to_reach);
 	}
