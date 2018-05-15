@@ -6,6 +6,10 @@
 #include "merging.h"
 #include "splitting.h"
 #include "../general/path_closing.h"
+#include "../general/gbn_io.h"
+#include "../general/check.h"
+
+#include <fstream>
 
 namespace {
 	using Port = std::pair<Vertex, std::size_t>;
@@ -424,39 +428,40 @@ bool eliminate_stochastic_vertex_without_outputs(GBN& gbn, Vertex v)
 	return !connected_to_output && has_sucessors;
 }
 
-bool gbn_switch_substoch_to_front(GBN& gbn)
+bool switch_substoch_to_front(GBN& gbn, Vertex v)
 {
 	auto& g = gbn.graph;
 
-	bool found = false;
-	Vertex v_substoch;
-	auto vec = inside_vertices(gbn);
-	for(auto v : vec)	
-	{
-		auto m = matrix(v,g);
-		if(!m->is_stochastic && boost::in_degree(v,g) > 0) {
-			v_substoch = v;
-			found = true;	
-		}
-	}
+	if(matrix(v,g)->is_stochastic)
+		return false;
 
-	std::cout << "found: " << found << std::endl;
-
-	if(found) {
-		std::vector<Vertex> precessors;
-		precessors.push_back(v_substoch);
-		for(auto e : boost::make_iterator_range(boost::in_edges(v_substoch,g)))
+	// check if is already in front
+	bool only_inputs_as_predecessors = true;
+	for(auto e : boost::make_iterator_range(boost::in_edges(v,g)))
+		if(type(boost::source(e,g), g) != INPUT)
 		{
-			precessors.push_back(boost::source(e,g));
+			only_inputs_as_predecessors = false;
+			break;
 		}
 
-		precessors = path_closing(gbn, precessors);
-		auto v_new = merge_vertices(gbn, precessors);
+	if(only_inputs_as_predecessors)
+		return false;
 
-		recursively_split_vertex(gbn, v_new);
+	std::vector<Vertex> precessors;
+	precessors.push_back(v);
+	for(auto e : boost::make_iterator_range(boost::in_edges(v,g)))
+	{
+		auto u = boost::source(e,g);
+		if(type(u,g) == NODE)
+			precessors.push_back(u);
 	}
 
-	return found;
+	precessors = path_closing(gbn, precessors);
+	auto v_new = merge_vertices(gbn, precessors);
+
+	recursively_split_vertex(gbn, v_new);
+
+	return true;
 }
 
 bool normalize_substoch_front_vertices(GBN& gbn)

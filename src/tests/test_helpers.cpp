@@ -87,12 +87,12 @@ GBN check_evaluates_equal_after_operation(GBN gbn_before, std::function<GBN(GBN)
 	return gbn_after;
 }
 
-void randomized_check_evaluates_equal_after_operation(std::function<GBN(GBN)> operation, RandomGBNParams params, std::function<void(GBN,GBN)> additional_check_after_operation)
+void randomized_check_evaluates_equal_after_operation(std::function<GBN(GBN)> operation, RandomGBNParams params, std::function<void(GBN,GBN)> additional_check_after_operation, std::size_t n)
 {
     std::random_device rd;  
     std::mt19937 mt(rd()); 
 
-	for(std::size_t i = 0; i < N_AUTOMATED_RUNS; i++)
+	for(std::size_t i = 0; i < n; i++)
 	{
 		std::cout << i << std::endl;
 		auto gbn = generate_random_gbn(5,5,10,mt,params);

@@ -14,7 +14,7 @@ bool check_and_apply_F4(GBN& gbn, Vertex v);
 bool check_and_apply_F5(GBN& gbn, Vertex v);
 
 bool eliminate_stochastic_vertex_without_outputs(GBN& gbn, Vertex v);
-bool gbn_switch_substoch_to_front(GBN& gbn);
+bool switch_substoch_to_front(GBN& gbn, Vertex v);
 bool normalize_substoch_front_vertices(GBN& gbn);
 
 template<typename ...Functions>
