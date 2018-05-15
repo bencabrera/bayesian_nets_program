@@ -8,7 +8,7 @@
 #include "gbn/matrix/matrix_io.h"
 #include "gbn/modification/merging.h"
 #include "gbn/modification/splitting.h"
-#include "gbn/modification/simplification.h"
+#include "gbn/simplification/simplification.h"
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/trim.hpp>
 
@@ -27,13 +27,11 @@ int main(int argc, char** argv)
 	std::ofstream out_file1("before.dot");
 	draw_gbn_graph(out_file1, gbn);
 
-	gbn_simplification(gbn);
+	simplification(gbn);
 	check_gbn_integrity(gbn);
 
 	std::ofstream out_file2("after.dot");
 	draw_gbn_graph(out_file2, gbn);
-
-
 
 	auto m_after = evaluate(gbn);
 	print_matrix(std::cout, *m_after);

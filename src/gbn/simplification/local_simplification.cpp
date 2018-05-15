@@ -2,18 +2,11 @@
 
 #include <iostream>
 #include "../matrix/matrix_io.h"
-#include "vertex_add_remove.h"
-#include "merging.h"
-#include "splitting.h"
+#include "../modification/vertex_add_remove.h"
+#include "../modification/merging.h"
+#include "../modification/splitting.h"
 #include "../general/path_closing.h"
 #include "../general/gbn_io.h"
-#include "../general/check.h"
-
-#include <fstream>
-
-namespace {
-	using Port = std::pair<Vertex, std::size_t>;
-}
 
 bool check_and_apply_F1(GBN& gbn, Vertex v)
 {
@@ -178,57 +171,6 @@ bool check_and_apply_F3(GBN& gbn, Vertex v)
 	return found_once;
 }
 
-// bool check_and_apply_F3(GBN& gbn, Vertex v)
-// {
-// auto& g = gbn.graph;
-
-// if(type(v,g) != NODE || matrix(v,g)->type != F)
-// return false;
-
-// auto& m = dynamic_cast<FMatrix&>(*matrix(v,g));
-// if(m.k < 2)
-// return false;
-
-// // check for all precessors of F if they split their signal to multiple ports
-// bool found_once = false;
-// bool found;
-// do {
-// found = false;
-// Vertex v_pre, v_post;
-// Index v_pre_port, v_post_port, F_port;
-
-// for(auto [it, end_it] = boost::in_edges(v,g); it != end_it && !found; it++)
-// {
-// auto e = *it;
-// v_pre = boost::source(e,g);
-// v_pre_port = port_from(e,g);
-// F_port = port_to(e,g);
-// for(auto e_pre_post : boost::make_iterator_range(boost::out_edges(v_pre,g)))
-// {
-// v_post = boost::target(e_pre_post,g);
-// if(port_from(e_pre_post,g) == v_pre_port && v_post != v)
-// {
-// found = true;
-// v_post_port = port_to(e_pre_post,g);
-// break;
-// }
-// }
-// }
-
-// if(found) {
-// found_once = true;
-// boost::remove_edge_if([&](const Edge& e) {
-// return boost::source(e,g) == v_pre && boost::target(e,g) == v_post && port_from(e,g) == v_pre_port && port_to(e,g) == v_post_port;	
-// }, g);
-// auto e_new = boost::add_edge(v,v_post,g).first;
-// put(edge_position, g, e_new, std::pair<std::size_t, std::size_t>{ F_port, v_post_port });
-// }
-// }
-// while(found);
-
-// return found_once;
-// }
-
 bool check_and_apply_F4(GBN& gbn, Vertex v_oneb)
 {
 	auto& g = gbn.graph;
@@ -389,128 +331,4 @@ bool check_and_apply_F5(GBN& gbn, Vertex v)
 	while(found);
 
 	return found_once;
-}
-
-bool eliminate_stochastic_vertex_without_outputs(GBN& gbn, Vertex v)
-{
-	auto& g = gbn.graph;
-
-	if(matrix(v,g)->type == TERMINATOR || !matrix(v,g)->is_stochastic)
-		return false;
-
-	bool connected_to_output = false;
-	for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
-	{
-		if(type(boost::target(e,g),g) == OUTPUT)
-		{
-			connected_to_output = true;
-			break;
-		}
-	}
-
-	bool has_sucessors = false;
-	if(!connected_to_output) {
-		std::vector<Vertex> successors;
-		successors.push_back(v);
-		for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
-			successors.push_back(boost::target(e,g));
-
-		has_sucessors = successors.size() > 1;
-		if(has_sucessors) {
-			successors = path_closing(gbn, successors);
-
-			auto v_new = merge_vertices(gbn, successors);
-
-			recursively_split_vertex(gbn, v_new);
-		}
-	}
-
-	return !connected_to_output && has_sucessors;
-}
-
-bool switch_substoch_to_front(GBN& gbn, Vertex v)
-{
-	auto& g = gbn.graph;
-
-	if(matrix(v,g)->is_stochastic)
-		return false;
-
-	// check if is already in front
-	bool only_inputs_as_predecessors = true;
-	for(auto e : boost::make_iterator_range(boost::in_edges(v,g)))
-		if(type(boost::source(e,g), g) != INPUT)
-		{
-			only_inputs_as_predecessors = false;
-			break;
-		}
-
-	if(only_inputs_as_predecessors)
-		return false;
-
-	std::vector<Vertex> precessors;
-	precessors.push_back(v);
-	for(auto e : boost::make_iterator_range(boost::in_edges(v,g)))
-	{
-		auto u = boost::source(e,g);
-		if(type(u,g) == NODE)
-			precessors.push_back(u);
-	}
-
-	precessors = path_closing(gbn, precessors);
-	auto v_new = merge_vertices(gbn, precessors);
-
-	recursively_split_vertex(gbn, v_new);
-
-	return true;
-}
-
-bool normalize_substoch_front_vertices_without_inputs(GBN& gbn, Vertex v)
-{
-	auto& g = gbn.graph;
-
-	if(matrix(v,g)->is_stochastic || boost::in_degree(v,g) > 0)
-		return false;
-
-	auto m = matrix(v,g);
-	double sum = m->get(BitVec(0),BitVec(0))+m->get(BitVec(1),BitVec(0));
-
-	m->set(BitVec(0),BitVec(0), m->get(BitVec(0),BitVec(0))/sum);
-	m->set(BitVec(1),BitVec(0), m->get(BitVec(1),BitVec(0))/sum);
-	m->is_stochastic = true;
-
-	return true;
-}
-
-
-void gbn_simplification(GBN& gbn)
-{
-	bool found_at_least_one = false;
-	// do {
-	for(auto v: inside_vertices(gbn))	
-	{
-		found_at_least_one = found_at_least_one || check_and_apply_F1(gbn, v);
-		found_at_least_one = found_at_least_one || check_and_apply_F2(gbn, v);
-		found_at_least_one = found_at_least_one || check_and_apply_CoUnit(gbn, v);
-		found_at_least_one = found_at_least_one || check_and_apply_F3(gbn, v);
-		found_at_least_one = found_at_least_one || check_and_apply_F4(gbn, v);
-		found_at_least_one = found_at_least_one || check_and_apply_F5(gbn, v);
-	}
-	// }
-	// while(found_at_least_one);
-
-	// bool found;
-	// do {
-	// found = gbn_eliminate_without_outputs(gbn);
-	// }
-	// while(found);
-
-	// do {
-	// found = gbn_switch_substoch_to_front(gbn);
-	// }
-	// while(found);
-
-	// do {
-	// found = normalize_substoch_front_vertices(gbn);
-	// }
-	// while(found);
 }

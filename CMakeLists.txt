@@ -53,7 +53,10 @@ set(GBN_FILES
 	src/gbn/modification/vertex_add_remove.cpp
 	src/gbn/modification/merging.cpp
 	src/gbn/modification/splitting.cpp
-	src/gbn/modification/simplification.cpp
+
+	src/gbn/simplification/simplification.cpp
+	src/gbn/simplification/local_simplification.cpp
+	src/gbn/simplification/global_simplification.cpp
 )
 
 set(TEST_FILES
@@ -72,8 +75,13 @@ set(TEST_FILES
 
 	src/tests/gbn/modification/merging_tests.cpp
 	src/tests/gbn/modification/splitting_tests.cpp
-	src/tests/gbn/modification/simplification_tests.cpp
-	src/tests/gbn/modification/automated_simplification_tests.cpp
+
+	src/tests/gbn/simplification/simplification_tests.cpp
+	src/tests/gbn/simplification/local_simplification_tests.cpp
+	src/tests/gbn/simplification/global_simplification_tests.cpp
+	src/tests/gbn/simplification/automated_simplification_tests.cpp
+	src/tests/gbn/simplification/automated_local_simplification_tests.cpp
+	src/tests/gbn/simplification/automated_global_simplification_tests.cpp
 
 	src/tests/test_helpers.cpp
 )
