@@ -205,16 +205,15 @@ bool check_and_apply_F4(GBN& gbn, Vertex v_oneb)
 		}
 
 		if(found) {
-			auto& m_F = dynamic_cast<FMatrix&>(*matrix(v_F, g));
+			auto p_m_F = matrix(v_F, g);
+			auto& m_F = dynamic_cast<FMatrix&>(*p_m_F);
+
+			auto p_m_F_new = std::make_shared<FMatrix>(m_F.k-1, m_F.b);
 
 			std::vector<Port> output_ports;
 			for(auto e : boost::make_iterator_range(boost::out_edges(v_F,g)))
-			{
 				if(port_from(e,g) == F_port)
-				{
 					output_ports.push_back({ boost::target(e,g), port_to(e,g) });
-				}	
-			}
 
 			boost::remove_edge_if([&](const Edge& e) {
 					if(boost::target(e,g) == v_F && port_to(e,g) == F_port)
@@ -232,11 +231,7 @@ bool check_and_apply_F4(GBN& gbn, Vertex v_oneb)
 				if(port_from(e,g) >= F_port)
 					put(edge_position, g, e, std::pair<std::size_t, std::size_t>{ port_from(e,g)-1, port_to(e,g) });
 
-			m_F.k--;
-			m_F.n--;
-			m_F.m--;
-			m_F.one_mask_n = m_F.init_one_mask(m_F.n);
-			m_F.one_mask_m = m_F.init_one_mask(m_F.m);
+			put(vertex_matrix, g, v_F, p_m_F_new);
 
 			for(auto p : output_ports)
 			{

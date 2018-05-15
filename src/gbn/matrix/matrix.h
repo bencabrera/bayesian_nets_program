@@ -38,8 +38,8 @@ class Matrix {
 		virtual ~Matrix();
 
 		// type of matrix n -> m
-		Index n;
-		Index m;
+		const Index n;
+		const Index m;
 
 		const MatrixType type;
 
@@ -63,9 +63,10 @@ class Matrix {
 
 using MatrixPtr = std::shared_ptr<Matrix>;
 
+bool is_stochastic(const Matrix& m);
+
 
 class DynamicMatrix : public Matrix {
-
 
 	std::unordered_map<std::pair<BitVec,BitVec>, double> data;
 
@@ -81,11 +82,8 @@ class DynamicMatrix : public Matrix {
 
 class FMatrix : public Matrix {
 	public:
-
-
-		Index k;
+		const Index k;
 		const bool b;
-
 
 		FMatrix(const Index k, const bool b);
 		virtual ~FMatrix();
@@ -97,8 +95,6 @@ class FMatrix : public Matrix {
 
 class OneBMatrix : public Matrix {
 	public:
-
-
 		const bool b;
 
 		OneBMatrix(const bool b);
@@ -118,4 +114,3 @@ class TerminatorMatrix : public Matrix {
 		void set(const BitVec& to, const BitVec& from, double val);
 		void add(const BitVec& to, const BitVec& from, double val);
 };
-bool is_stochastic(const Matrix& m);

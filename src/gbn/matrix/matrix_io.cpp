@@ -13,7 +13,7 @@ MatrixPtr read_matrix(std::vector<std::string> lines)
 	if(lines.empty())
 		throw std::logic_error("Reading in matrix failed because lines vector is empty.");
 
-	std::regex dynamic_regex("^dynamic ([0-9]+) ([0-9]+) ?\\[?([0-9,;\.\\/]*)\\]?", std::regex_constants::icase);
+	std::regex dynamic_regex("^dynamic ([0-9]+) ([0-9]+) ?\\[?([0-9,;\\.\\/]*)\\]?", std::regex_constants::icase);
 	std::regex f_regex("^F_\\{?([0-9]+),([0-9]+)\\}?", std::regex_constants::icase);
 	std::regex one_b_regex("^1_\\{?([0-9])\\}?", std::regex_constants::icase);
 	std::regex terminator_regex("^T", std::regex_constants::icase);
