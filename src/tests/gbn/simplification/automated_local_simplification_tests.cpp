@@ -125,3 +125,19 @@ TEST_CASE("Automated: (CoUnit) - (F5) simplifications together should not modify
 		return gbn;
 	}, params);
 }
+
+TEST_CASE("Automated: (CoUnit) - (F5) simplifications together should not modify distribution and duplicates input ports")
+{
+    std::random_device rd;  
+    std::mt19937 mt(rd()); 
+
+	RandomGBNParams params;
+	params.vertex_window_size = 10;
+	params.matrix_params.F_matrix_prob = 0.5;
+	params.matrix_params.OneB_matrix_prob = 1.0;
+
+	randomized_check_evaluates_equal_after_operation([](GBN gbn) -> GBN { 
+		apply_simplifications_for_each_vertex(gbn, check_and_apply_CoUnit, check_and_apply_F1, check_and_apply_F2, check_and_apply_F3, check_and_apply_F4, check_and_apply_F5, simplify_matrix_for_duplicate_inputs);
+		return gbn;
+	}, params);
+}

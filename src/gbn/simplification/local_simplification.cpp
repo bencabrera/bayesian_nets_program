@@ -1,6 +1,7 @@
 #include "simplification.h"
 
 #include <iostream>
+#include <map>
 #include "../matrix/matrix_io.h"
 #include "../modification/vertex_add_remove.h"
 #include "../modification/merging.h"
@@ -326,4 +327,93 @@ bool check_and_apply_F5(GBN& gbn, Vertex v)
 	while(found);
 
 	return found_once;
+}
+
+bool split_vertex_if_multiple_outputs(GBN& gbn, Vertex v)
+{
+	auto& g = gbn.graph;
+
+	auto& m = *matrix(v,g);
+
+	if(boost::out_degree(v,g) <= 1 || !m.is_stochastic)
+		return false;
+	
+	recursively_split_vertex(gbn, v);
+	return true;
+}
+
+bool simplify_matrix_for_duplicate_inputs(GBN& gbn, Vertex v)
+{
+	auto& g = gbn.graph;
+	auto& m = *matrix(v,g);
+
+	std::map<Port,std::vector<std::size_t>> external_input_to_input_port;
+	for(auto e : boost::make_iterator_range(boost::in_edges(v,g)))
+	{
+		auto ext_input = std::make_pair(boost::source(e,g), port_from(e,g));
+		external_input_to_input_port[ext_input].push_back(port_to(e,g));
+	}
+
+	std::vector<std::vector<std::size_t>> new_to_old_map;
+	for(std::size_t i = 0; i < m.n; i++)
+		new_to_old_map.push_back({ i });
+
+	// build old to new port map
+	for(auto t : external_input_to_input_port)
+	{
+		if(t.second.size() <= 1)
+			continue;
+
+		for(std::size_t i = 1; i < t.second.size(); i++)
+		{
+			std::size_t i_port = t.second[i];	
+			new_to_old_map[t.second[0]].push_back(i_port);
+			new_to_old_map[i_port].clear();
+		}
+	}
+	new_to_old_map.erase(std::remove_if(new_to_old_map.begin(), new_to_old_map.end(), [](const auto& vec) { return vec.empty(); }), new_to_old_map.end());
+
+	// build new matrix TODO: case of F matrix
+	MatrixPtr p_m_new;
+	if(m.type == F) {
+		auto& m2 = dynamic_cast<FMatrix&>(m);
+		p_m_new = std::make_shared<FMatrix>(new_to_old_map.size(), m2.b);
+	} else {
+		p_m_new = std::make_shared<DynamicMatrix>(new_to_old_map.size(), m.m);
+		auto& m_new = *p_m_new;
+
+		unsigned long long i_max_row = 1;
+		unsigned long long i_max_col = 1;
+		i_max_col = i_max_col << m_new.n;
+		i_max_row = i_max_row << m_new.m;
+		for(Index i_row = 0; i_row < i_max_row; i_row++)
+			for(Index i_col = 0; i_col < i_max_col; i_col++)
+			{
+				BitVec to(i_row);
+				BitVec from_new(i_col);
+				BitVec from_old;
+
+				for(std::size_t i = 0; i < new_to_old_map.size(); i++)
+					for(auto i_port : new_to_old_map[i])
+						if(from_new[i])
+							from_old.set(i_port);
+
+				m_new.set(to, from_new, m.get(to,from_old));
+			}
+
+		put(vertex_matrix, g, v, p_m_new);
+	}
+
+	// rewire vertex
+	boost::clear_in_edges(v,g);
+
+	std::size_t i_counter = 0;
+	for(const auto [port, i_ports] : external_input_to_input_port)
+	{
+		auto e = boost::add_edge(port.first, v, g).first;
+		put(edge_position, g, e, std::make_pair(port.second,i_counter));
+		i_counter++;
+	}
+
+	return false;
 }

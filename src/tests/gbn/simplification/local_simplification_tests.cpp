@@ -79,3 +79,14 @@ TEST_CASE("(F5) should work correctly (f5_simplification_1.gbn).")
 		REQUIRE(boost::num_edges(gbn_after.graph) == 5);	
 	});
 }
+
+TEST_CASE("duplicate_inputs.gbn: (simplify_matrix_for_duplicate_inputs)")
+{
+	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "duplicate_inputs.gbn");
+	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { simplify_matrix_for_duplicate_inputs(gbn,0); return gbn; }, [](GBN gbn_before, GBN gbn_after) -> void {
+		std::ofstream f1("test_before.dot");
+		std::ofstream f2("test_after.dot");
+		draw_gbn_graph(f1, gbn_before);
+		draw_gbn_graph(f2, gbn_after);
+	});
+}
