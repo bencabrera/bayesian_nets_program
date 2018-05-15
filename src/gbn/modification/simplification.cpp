@@ -464,48 +464,21 @@ bool switch_substoch_to_front(GBN& gbn, Vertex v)
 	return true;
 }
 
-bool normalize_substoch_front_vertices(GBN& gbn)
+bool normalize_substoch_front_vertices_without_inputs(GBN& gbn, Vertex v)
 {
-	std::cout << "NORMALIZATION" << std::endl;
 	auto& g = gbn.graph;
 
-	bool found = false;
-	Vertex v_substoch;
-	auto vec = inside_vertices(gbn);
-	for(auto v : vec)	
-	{
-		auto m = matrix(v,g);
-		if(!m->is_stochastic && boost::in_degree(v,g) == 0) {
-			v_substoch = v;
-			found = true;	
-		}
-	}
+	if(matrix(v,g)->is_stochastic || boost::in_degree(v,g) > 0)
+		return false;
 
-	std::cout << "found substoch: " << found << std::endl;
+	auto m = matrix(v,g);
+	double sum = m->get(BitVec(0),BitVec(0))+m->get(BitVec(1),BitVec(0));
 
-	if(found) {
-		std::cout << name(v_substoch,g) << std::endl;
-		for(auto v : vec)	
-		{
-			std::cout << name(v,g) << std::endl;
-			print_matrix(std::cout, *matrix(v,g));
-		}
-		auto m = matrix(v_substoch,g);
-		double sum = m->get(BitVec(0),BitVec(0))+m->get(BitVec(1),BitVec(0));
-		std::cout << "sum: " << sum << std::endl;
+	m->set(BitVec(0),BitVec(0), m->get(BitVec(0),BitVec(0))/sum);
+	m->set(BitVec(1),BitVec(0), m->get(BitVec(1),BitVec(0))/sum);
+	m->is_stochastic = true;
 
-		m->set(BitVec(0),BitVec(0), m->get(BitVec(0),BitVec(0))/sum);
-		m->set(BitVec(1),BitVec(0), m->get(BitVec(1),BitVec(0))/sum);
-		m->is_stochastic = true;
-
-		for(auto v : vec)	
-		{
-			std::cout << name(v,g) << std::endl;
-			print_matrix(std::cout, *matrix(v,g));
-		}
-	}
-
-	return found;
+	return true;
 }
 
 

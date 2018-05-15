@@ -15,7 +15,7 @@ bool check_and_apply_F5(GBN& gbn, Vertex v);
 
 bool eliminate_stochastic_vertex_without_outputs(GBN& gbn, Vertex v);
 bool switch_substoch_to_front(GBN& gbn, Vertex v);
-bool normalize_substoch_front_vertices(GBN& gbn);
+bool normalize_substoch_front_vertices_without_inputs(GBN& gbn, Vertex v);
 
 template<typename ...Functions>
 void apply_simplifications_for_each_vertex(GBN& gbn, const Functions& ...functions)
