@@ -9,6 +9,9 @@
 #include "../general/path_closing.h"
 #include "../general/gbn_io.h"
 
+#include <fstream>
+#include <unistd.h>
+
 bool check_and_apply_F1(GBN& gbn, Vertex v)
 {
 	auto& g = gbn.graph;
@@ -335,10 +338,11 @@ bool split_vertex_if_multiple_outputs(GBN& gbn, Vertex v)
 
 	auto& m = *matrix(v,g);
 
-	if(boost::out_degree(v,g) <= 1 || !m.is_stochastic)
+	if(m.m <= 1 || !m.is_stochastic)
 		return false;
-	
+
 	recursively_split_vertex(gbn, v);
+
 	return true;
 }
 
@@ -354,23 +358,19 @@ bool simplify_matrix_for_duplicate_inputs(GBN& gbn, Vertex v)
 		external_input_to_input_port[ext_input].push_back(port_to(e,g));
 	}
 
+	bool found_duplicate = false;
 	std::vector<std::vector<std::size_t>> new_to_old_map;
-	for(std::size_t i = 0; i < m.n; i++)
-		new_to_old_map.push_back({ i });
-
-	// build old to new port map
 	for(auto t : external_input_to_input_port)
 	{
-		if(t.second.size() <= 1)
-			continue;
+		if(t.second.size() > 1)
+			found_duplicate = true;
 
-		for(std::size_t i = 1; i < t.second.size(); i++)
-		{
-			std::size_t i_port = t.second[i];	
-			new_to_old_map[t.second[0]].push_back(i_port);
-			new_to_old_map[i_port].clear();
-		}
+		new_to_old_map.push_back(t.second);	
 	}
+
+	if(!found_duplicate)
+		return false;
+
 	new_to_old_map.erase(std::remove_if(new_to_old_map.begin(), new_to_old_map.end(), [](const auto& vec) { return vec.empty(); }), new_to_old_map.end());
 
 	// build new matrix TODO: case of F matrix
@@ -392,6 +392,7 @@ bool simplify_matrix_for_duplicate_inputs(GBN& gbn, Vertex v)
 				BitVec to(i_row);
 				BitVec from_new(i_col);
 				BitVec from_old;
+				from_old.reset();
 
 				for(std::size_t i = 0; i < new_to_old_map.size(); i++)
 					for(auto i_port : new_to_old_map[i])
@@ -415,5 +416,5 @@ bool simplify_matrix_for_duplicate_inputs(GBN& gbn, Vertex v)
 		i_counter++;
 	}
 
-	return false;
+	return true;
 }

@@ -3,6 +3,7 @@
 #include "../general/gbn.h"
 
 void simplification(GBN& gbn);
+void non_normalizing_simplification(GBN& gbn);
 
 template<typename ...Functions>
 void apply_simplifications_for_each_vertex(GBN& gbn, const Functions& ...functions)
