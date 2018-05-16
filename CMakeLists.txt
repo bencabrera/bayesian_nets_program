@@ -45,6 +45,7 @@ set(GBN_FILES
 	src/gbn/general/check.cpp
 	src/gbn/general/path_closing.cpp
 	src/gbn/general/randomized_generation.cpp
+	src/gbn/general/special_cases.cpp
 
 	src/gbn/evaluation/evaluation.cpp
 	src/gbn/evaluation/probability_bookkeeper.cpp
