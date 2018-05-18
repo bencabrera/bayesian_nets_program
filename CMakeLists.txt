@@ -140,6 +140,10 @@ add_executable(sub_gbn src/main_sub_gbn.cpp)
 target_link_libraries(sub_gbn core_lib)
 target_link_libraries(sub_gbn Boost::regex)
 
+add_executable(read_write_gbn src/main_read_write_gbn.cpp)
+target_link_libraries(read_write_gbn core_lib)
+target_link_libraries(read_write_gbn Boost::regex)
+
 add_executable(tests src/main_tests.cpp ${TEST_FILES})
 target_link_libraries(tests core_lib)
 target_link_libraries(tests Boost::regex)

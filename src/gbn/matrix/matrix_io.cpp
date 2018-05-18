@@ -8,6 +8,48 @@
 
 #include "../../helpers.hpp"
 
+void write_matrix(std::ostream& ostr, const Matrix& matrix)
+{
+	switch(matrix.type) {
+		case DYNAMIC: 
+			{
+				auto m = dynamic_cast<const DynamicMatrix&>(matrix);	
+				ostr << "dynamic " << m.n << " " << m.m << " [";
+				unsigned long long i_max_row = 1;
+				unsigned long long i_max_col = 1;
+				i_max_col = i_max_col << matrix.n;
+				i_max_row = i_max_row << matrix.m;
+
+				for(unsigned long long i_row = 0; i_row < i_max_row; i_row++)
+				{
+					ostr << ((i_row == 0) ? "" : ";");
+					for(unsigned long long i_col = 0; i_col < i_max_col; i_col++)
+						ostr << ((i_col == 0) ? "" : ",") << m.get(i_row, i_col);
+				}
+				ostr << "]";
+
+				break;
+			}
+		case F:
+			{
+				auto m = dynamic_cast<const FMatrix&>(matrix);	
+				ostr << "F_{" << m.k << "," << m.b << "}";
+				break;
+			}
+		case ONE_B:
+			{
+				auto m = dynamic_cast<const OneBMatrix&>(matrix);	
+				ostr << "1_" << m.b;
+				break;
+			}
+		case TERMINATOR:
+			{
+				ostr << "T";
+				break;
+			}
+	}
+}
+
 MatrixPtr read_matrix(std::vector<std::string> lines)
 {
 	if(lines.empty())

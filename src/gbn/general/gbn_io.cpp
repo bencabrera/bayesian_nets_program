@@ -7,7 +7,84 @@
 #include <boost/graph/graphviz.hpp>
 #include <cmath>
 #include <boost/graph/filtered_graph.hpp>
+#include "../../helpers.hpp"
 
+void write_gbn(std::ostream& ostr, const GBN& gbn)
+{
+	auto& g = gbn.graph;
+
+	auto inside_vertices = ::inside_vertices(gbn);
+	ostr << inside_vertices.size() << " " << gbn.n << " " << gbn.m << std::endl;
+	for(auto v : inside_vertices)
+	{
+		ostr << "v_" << v << " ";
+		write_matrix(ostr, *matrix(v,g));
+		ostr << std::endl;
+	}
+
+	auto input_vertices_vec = ::input_vertices(gbn);
+
+	for(auto v : inside_vertices)
+	{
+		if(boost::in_degree(v,g) == 0)
+			continue;
+
+		std::set<std::tuple<std::size_t, Vertex, std::size_t>> tmp; // helper to sort wrt. port_to
+		for(auto e : boost::make_iterator_range(boost::in_edges(v,g)))
+		{
+			auto u = boost::source(e,g);
+			auto p = port_from(e,g);
+
+			tmp.insert({ port_to(e,g), u, p });
+		}
+
+		ostr << "v_" << v << " ";
+		bool first = true;
+		for(auto [p_to, u, p_from] : tmp)
+		{
+			if(first)
+				first = false;
+			else
+				ostr << " ";
+
+			if(is_in(u, input_vertices_vec))
+				ostr << "i_" << input_idx(u,gbn);
+			else
+				ostr << "v_" << u << "(" << p_from << ")";
+		}
+		ostr << std::endl;
+	}
+	for(auto v : ::output_vertices(gbn))
+	{
+		if(boost::in_degree(v,g) == 0)
+			continue;
+
+		std::set<std::tuple<std::size_t, Vertex, std::size_t>> tmp; // helper to sort wrt. port_to
+		for(auto e : boost::make_iterator_range(boost::in_edges(v,g)))
+		{
+			auto u = boost::source(e,g);
+			auto p = port_from(e,g);
+
+			tmp.insert({ port_to(e,g), u, p });
+		}
+
+		ostr << "o_" << output_idx(v,gbn) << " ";
+		bool first = true;
+		for(auto [p_to, u, p_from] : tmp)
+		{
+			if(first)
+				first = false;
+			else
+				ostr << " ";
+
+			if(is_in(u, input_vertices_vec))
+				ostr << "i_" << input_idx(u,gbn);
+			else
+				ostr << "v_" << u << "(" << p_from << ")";
+		}
+		ostr << std::endl;
+	}
+}
 
 GBN read_gbn(std::istream& istr)
 {

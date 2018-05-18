@@ -10,8 +10,6 @@
 enum MatrixType {
 	DYNAMIC,
 	F,
-	IDENTITY,
-	ZEROS,
 	ONE_B,
 	TERMINATOR
 };
