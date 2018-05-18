@@ -101,3 +101,65 @@ void randomized_check_evaluates_equal_after_operation(std::function<GBN(GBN)> op
 		check_evaluates_equal_after_operation(gbn, operation, additional_check_after_operation);
 	}
 }
+
+namespace {
+	bool bool_vector_reverse_compare(const std::vector<bool>& v1, const std::vector<bool>& v2)
+	{
+		std::size_t min_size = std::min(v1.size(), v2.size());
+		for(long long i = min_size-1; i >= 0; i--)
+		{
+			if(v1[i] != v2[i])
+				return v1[i] < v2[i];
+		}
+
+		return v1.size() < v2.size();
+	}
+}
+
+void test_joint_dist_matrix_equal(const JointDist& joint_dist, const Matrix& m)
+{
+	if(m.n != 0)
+		throw std::logic_error("Cannot compare joint dist with matrix with n != 0");
+
+	std::vector<std::pair<std::vector<bool>, double>> joint_dist_ordered;
+	for(auto t : joint_dist)
+		joint_dist_ordered.push_back(t);
+
+	std::sort(joint_dist_ordered.begin(), joint_dist_ordered.end(), [](const auto& p1, const auto& p2) { return bool_vector_reverse_compare(p1.first, p2.first); });
+
+	unsigned long long to_max = 1;
+	to_max = to_max << m.m;
+	REQUIRE(to_max == joint_dist_ordered.size());
+
+	for(Index to = 0; to < to_max; to++)
+		REQUIRE(m.get(to, 0) == Approx(joint_dist_ordered[to].second));
+}
+
+bool check_joint_dist_matrix_equal(const JointDist& joint_dist, const Matrix& m)
+{
+	if(m.n != 0)
+		throw std::logic_error("Cannot compare joint dist with matrix with n != 0");
+
+	std::vector<std::pair<std::vector<bool>, double>> joint_dist_ordered;
+	for(auto t : joint_dist)
+		joint_dist_ordered.push_back(t);
+
+	std::sort(joint_dist_ordered.begin(), joint_dist_ordered.end(), [](const auto& p1, const auto& p2) { return bool_vector_reverse_compare(p1.first, p2.first); });
+
+	unsigned long long to_max = 1;
+	to_max = to_max << m.m;
+	if(to_max != joint_dist_ordered.size())
+		return false;
+
+	for(Index to = 0; to < to_max; to++)
+		if(m.get(to, 0) != Approx(joint_dist_ordered[to].second))
+			return false;
+
+	return true;
+}
+
+void compare_joint_dists(const JointDist& dist1, const JointDist& dist2)
+{
+	for(const auto& [m, p] : dist1)
+		REQUIRE(p == Approx(dist2.at(m)));
+}

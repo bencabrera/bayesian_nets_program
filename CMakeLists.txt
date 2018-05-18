@@ -26,11 +26,13 @@ set(CN_FILES
 set(JOINT_DIST_FILES
 	src/joint_dist/joint_dist_check.cpp
 	src/joint_dist/joint_dist_io.cpp
+	src/joint_dist/special_cases.cpp
 )
 
 set(CNU_FILES
 	src/cnu/operations_on_gbn.cpp
 	src/cnu/operations_on_joint_dist.cpp
+	src/cnu/fire_transition.cpp
 )
 
 set(GBN_FILES
@@ -64,6 +66,7 @@ set(TEST_FILES
 	src/tests/cn/cn_io_tests.cpp
 
 	src/tests/cnu/operations_on_joint_dist_tests.cpp
+	src/tests/cnu/gbn_and_joint_dist_tests.cpp
 
 	src/tests/gbn/matrix/matrix_io_tests.cpp
 	src/tests/gbn/matrix/matrix_decomposition_tests.cpp

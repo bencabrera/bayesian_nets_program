@@ -1,6 +1,7 @@
 #include "randomized_generation.h"
 
 #include <algorithm>
+#include <iostream>
 
 CN randomize_cn(
 	std::size_t n_places, 
@@ -14,6 +15,11 @@ CN randomize_cn(
 	std::mt19937& mt
 )
 {
+	if(n_max_pre_places + n_max_post_places > n_places)
+		throw std::logic_error("randomize_cn: n_max_pre_places + n_max_post_places > n_places");
+	if(n_max_tokens > n_places)
+		throw std::logic_error("randomize_cn: n_max_tokens > n_places");
+
 	CN cn;
 	cn.n = n_places;
 
@@ -31,6 +37,7 @@ CN randomize_cn(
 		std::shuffle(places.begin(), places.end(),mt);
 		auto n_pre_places = rand_pre_places(mt);
 		auto n_post_places = rand_pre_places(mt);
+
 		t.pre = std::vector<std::size_t>(places.begin(), places.begin()+n_pre_places);
 		t.post = std::vector<std::size_t>(places.begin()+n_pre_places, places.begin()+n_pre_places+n_post_places);
 
@@ -40,8 +47,8 @@ CN randomize_cn(
 	std::shuffle(places.begin(), places.end(),mt);
 	auto n_tokens = rand_tokens(mt);
 	cn.m = Marking(n_places, false);
-	for(std::size_t i = 0; i < n_tokens; i++)
-		cn.m[places[i]] = true;
+	for(std::size_t i = 0; i < std::min(n_tokens, n_places); i++)
+		cn.m.at(places.at(i)) = true;
 
 	return cn;
 }

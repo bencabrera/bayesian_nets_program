@@ -16,6 +16,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include <functional>
 #include "../libs/cxxopts/include/cxxopts.hpp"
+#include "cnu/fire_transition.h"
 
 // globals (naughty, naughty, ...)
 bool is_step_wise_output = false;
@@ -44,66 +45,14 @@ void do_command(std::string command_line, CN& cn, GBN& gbn, std::function<void(U
 		std::vector<std::string> split_command_line;
 		boost::split(split_command_line,command_line,boost::is_any_of(" "));
 
-		bool show_details = false;
-		if(split_command_line.size() > 1)
-		{
-			boost::trim(split_command_line[1]);
-			if(split_command_line[1] == "details")
-				show_details = true;
-		}
-
 		auto i_transition = std::stoi(split_command_line[0].substr(1));
-		const auto& transition = cn.transitions[i_transition];
-		const auto& pre_places = transition.pre;
-		const auto& post_places = transition.post;
 
-		// fail_pre case
-		if(!check_pre_condition(transition,cn.m))
-		{
-			nassert_op(transition.pre, 1, gbn);
-			check_gbn_integrity(gbn);
-
-			if(status_callback)
-				status_callback(UpdateMetaData{n_operations++, std::string("fail-pre_{t")+std::to_string(i_transition)+"}", std::string("nassert") });
-			return;
-		}
-
-		// fail_post case
-		if(!check_post_condition(transition,cn.m))
-		{
-			nassert_op(transition.post, 0, gbn);
-			check_gbn_integrity(gbn);
-
-			if(status_callback)
-				status_callback(UpdateMetaData{n_operations++, std::string("fail-post_{t")+std::to_string(i_transition)+"}", std::string("nassert") });
-			return;
-		}
-
-		assert_op(pre_places,1, gbn);
-		check_gbn_integrity(gbn);
 		if(status_callback)
-			status_callback(UpdateMetaData{n_operations++, std::string("success_{t")+std::to_string(i_transition)+"}", std::string("assert_pre") });
-
-		assert_op(post_places,0, gbn);
-		check_gbn_integrity(gbn);
-		if(status_callback)
-			status_callback(UpdateMetaData{n_operations++, std::string("success_{t")+std::to_string(i_transition)+"}", std::string("assert_post") });
-
-		set_op(pre_places,0,gbn);
-		check_gbn_integrity(gbn);
-		if(status_callback)
-			status_callback(UpdateMetaData{n_operations++, std::string("success_{t")+std::to_string(i_transition)+"}", std::string("set_pre") });
-
-		set_op(post_places,1,gbn);
-		check_gbn_integrity(gbn);
-		if(status_callback)
-			status_callback(UpdateMetaData{n_operations++, std::string("success_{t")+std::to_string(i_transition)+"}", std::string("set_post") });
-
-		// update marking in CNU
-		for(const auto& p : transition.pre)
-			cn.m[p] = 0;
-		for(const auto& p : transition.post)
-			cn.m[p] = 1;
+			fire_transition_on_gbn(cn, gbn, i_transition, [&status_callback](std::string high_level_op_string, std::string low_level_op_string) { 
+				status_callback(UpdateMetaData{ n_operations++, high_level_op_string, low_level_op_string });
+			});
+		else
+			fire_transition_on_gbn(cn, gbn, i_transition);
 
 		return;
 	}

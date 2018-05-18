@@ -1,6 +1,9 @@
 #include "operations_on_gbn.h"
 #include "../gbn/modification/vertex_add_remove.h"
 #include <iostream>
+#include "../gbn/general/check.h"
+#include "../gbn/general/gbn_io.h"
+#include <fstream>
 
 void set_op(const std::vector<std::size_t> places, bool b, GBN& gbn)
 {
@@ -79,5 +82,7 @@ void nassert_op(const std::vector<std::size_t> places, bool b, GBN& gbn)
 		auto e_from_nassert = boost::add_edge(v_nassert, output_vertices[p], g).first;
 		put(edge_position, g, e_from_nassert, std::pair<std::size_t, std::size_t>{ i_place, 0 });
 		boost::remove_edge(v_pre, output_vertices[p], g);
+
+		i_place++;
 	}
 }
