@@ -9,8 +9,9 @@
 #include "../general/gbn_io.h"
 #include "../general/check.h"
 
-bool eliminate_stochastic_vertex_without_outputs(GBN& gbn, Vertex v)
+bool eliminate_stochastic_vertex_without_outputs(GBN& gbn, Vertex v, std::string& op)
 {
+	op = "eliminate_stochastic_vertex_without_outputs";
 	auto& g = gbn.graph;
 
 	if(matrix(v,g)->type == TERMINATOR || !matrix(v,g)->is_stochastic)
@@ -46,8 +47,9 @@ bool eliminate_stochastic_vertex_without_outputs(GBN& gbn, Vertex v)
 	return !connected_to_output && has_sucessors;
 }
 
-bool switch_substoch_to_front(GBN& gbn, Vertex v)
+bool switch_substoch_to_front(GBN& gbn, Vertex v, std::string& op)
 {
+	op = "switch_substoch_to_front";
 	auto& g = gbn.graph;
 
 	if(matrix(v,g)->is_stochastic)
@@ -82,11 +84,12 @@ bool switch_substoch_to_front(GBN& gbn, Vertex v)
 	return true;
 }
 
-bool normalize_substoch_front_vertices_without_inputs(GBN& gbn, Vertex v)
+bool normalize_substoch_front_vertices_without_inputs(GBN& gbn, Vertex v, std::string& op)
 {
+	op = "normalize_substoch_front_vertices_without_inputs";
 	auto& g = gbn.graph;
 
-	if(matrix(v,g)->is_stochastic || boost::in_degree(v,g) > 0)
+	if(matrix(v,g)->is_stochastic || boost::in_degree(v,g) > 0 || matrix(v,g)->type == ZERO)
 		return false;
 
 	auto m = matrix(v,g);

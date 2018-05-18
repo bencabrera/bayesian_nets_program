@@ -80,26 +80,35 @@ TEST_CASE("CNU ops on joint dist and GBN should lead to same dist")
 	std::mt19937 mt(rd()); 
 	std::uniform_int_distribution<std::size_t> rand_transition(0,n_transitions-1);
 
-	auto cn = randomize_cn(n_places, n_transitions, n_min_tokens, n_max_tokens, n_min_pre_places, n_max_pre_places, n_min_post_places, n_max_post_places, mt);
-	auto cn_copy = cn;
-
-	auto gbn = build_uniform_independent_obn(n_places);
-	auto joint_dist = build_uniform_joint_dist(n_places);
-
-	for(std::size_t i_simplification_step = 0; i_simplification_step < n_simplification_steps; i_simplification_step++)
+	for(int i = 0; i < 100; i++)
 	{
-		for(std::size_t i_rand_transition = 0; i_rand_transition < n_random_transitions_per_simplify; i_rand_transition++)
+		auto cn = randomize_cn(n_places, n_transitions, n_min_tokens, n_max_tokens, n_min_pre_places, n_max_pre_places, n_min_post_places, n_max_post_places, mt);
+		auto cn_copy = cn;
+
+		auto gbn = build_uniform_independent_obn(n_places);
+		auto joint_dist = build_uniform_joint_dist(n_places);
+
+		for(std::size_t i_simplification_step = 0; i_simplification_step < n_simplification_steps; i_simplification_step++)
 		{
-			auto i_transition = rand_transition(mt);
-			std::cout << i_transition << std::endl;
-			fire_transition_on_gbn(cn, gbn, i_transition);
-			fire_transition_on_joint_dist(cn_copy, joint_dist, i_transition);
+			for(std::size_t i_rand_transition = 0; i_rand_transition < n_random_transitions_per_simplify; i_rand_transition++)
+			{
+				auto i_transition = rand_transition(mt);
+				std::cout << i_transition << std::endl;
+				fire_transition_on_gbn(cn, gbn, i_transition);
+				fire_transition_on_joint_dist(cn_copy, joint_dist, i_transition);
+			}
+			std::cout << "before:" << std::endl;
+			std::ofstream f("run.dot");
+			draw_gbn_graph(f, gbn, "", true);
+			std::ofstream f2("run.gbn");
+			write_gbn(f2, gbn);
+			check_gbn_integrity(gbn);
+			simplification(gbn);
+			std::cout << "after:" << std::endl;
+			check_gbn_integrity(gbn);
+			auto p_m = evaluate(gbn);
+			test_joint_dist_matrix_equal(joint_dist, *p_m);
+			std::cout << "final:" << std::endl;
 		}
-		check_gbn_integrity(gbn);
-		std::ofstream f("run.dot");
-		draw_gbn_graph(f, gbn);
-		simplification(gbn);
-		auto p_m = evaluate(gbn);
-		test_joint_dist_matrix_equal(joint_dist, *p_m);
 	}
 }

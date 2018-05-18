@@ -8,6 +8,40 @@
 
 #include "../../helpers.hpp"
 
+void print_matrix_label(std::ostream& ostr, const Matrix& matrix)
+{
+	switch(matrix.type) {
+		case DYNAMIC: 
+			{
+				ostr << "dynamic";
+
+				break;
+			}
+		case F:
+			{
+				auto m = dynamic_cast<const FMatrix&>(matrix);	
+				ostr << "F_{" << m.k << "," << m.b << "}";
+				break;
+			}
+		case ONE_B:
+			{
+				auto m = dynamic_cast<const OneBMatrix&>(matrix);	
+				ostr << "1_" << m.b;
+				break;
+			}
+		case TERMINATOR:
+			{
+				ostr << "T";
+				break;
+			}
+		case ZERO:
+			{
+				ostr << "0";
+				break;
+			}
+	}
+}
+
 void write_matrix(std::ostream& ostr, const Matrix& matrix)
 {
 	switch(matrix.type) {
@@ -47,6 +81,12 @@ void write_matrix(std::ostream& ostr, const Matrix& matrix)
 				ostr << "T";
 				break;
 			}
+		case ZERO:
+			{
+				auto m = dynamic_cast<const ZeroMatrix&>(matrix);	
+				ostr << "0_{" << m.n << "," << m.m << "}";
+				break;
+			}
 	}
 }
 
@@ -59,6 +99,7 @@ MatrixPtr read_matrix(std::vector<std::string> lines)
 	std::regex f_regex("^F_\\{?([0-9]+),([0-9]+)\\}?", std::regex_constants::icase);
 	std::regex one_b_regex("^1_\\{?([0-9])\\}?", std::regex_constants::icase);
 	std::regex terminator_regex("^T", std::regex_constants::icase);
+	std::regex zero_regex("^0_\\{?([0-9]+),([0-9]+)\\}", std::regex_constants::icase);
 
 	// dynamic matrix
 	std::smatch matches;
@@ -131,6 +172,15 @@ MatrixPtr read_matrix(std::vector<std::string> lines)
 	if(std::regex_match(lines[0], matches, terminator_regex))
 	{
 		return std::make_shared<TerminatorMatrix>();
+	}
+
+	// F matrix
+	if(std::regex_match(lines[0], matches, zero_regex))
+	{
+		int n = std::stoi(matches[1].str());
+		int m = std::stoi(matches[2].str());
+
+		return std::make_shared<ZeroMatrix>(n,m);
 	}
 
 	throw std::logic_error(std::string("Matrix could not be read. Not able to parse line")+ "'" + lines[0] + "'.");

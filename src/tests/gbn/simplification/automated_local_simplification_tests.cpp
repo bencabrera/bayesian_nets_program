@@ -21,8 +21,9 @@ TEST_CASE("Automated: (CoUnit) simplification")
 	params.matrix_params.OneB_matrix_prob = 0.0;
 
 	randomized_check_evaluates_equal_after_operation([](GBN gbn) -> GBN { 
+		std::string s;
 		for(auto v : inside_vertices(gbn))
-			check_and_apply_CoUnit(gbn, v);
+			check_and_apply_CoUnit(gbn, v, s);
 		return gbn;
 	}, params);
 }
@@ -35,8 +36,9 @@ TEST_CASE("Automated: (F1) simplification")
 	params.matrix_params.OneB_matrix_prob = 1.0;
 
 	randomized_check_evaluates_equal_after_operation([](GBN gbn) -> GBN { 
+		std::string s;
 		for(auto v : inside_vertices(gbn))
-			check_and_apply_F1(gbn, v);
+			check_and_apply_F1(gbn, v, s);
 		return gbn;
 	}, params);
 }
@@ -49,8 +51,9 @@ TEST_CASE("Automated: (F2) simplification should not modify distribution")
 	params.matrix_params.OneB_matrix_prob = 1.0;
 
 	randomized_check_evaluates_equal_after_operation([](GBN gbn) -> GBN { 
+		std::string s;
 		for(auto v : inside_vertices(gbn))
-			check_and_apply_F2(gbn, v);
+			check_and_apply_F2(gbn, v, s);
 		return gbn;
 	}, params);
 }
@@ -63,7 +66,7 @@ TEST_CASE("Automated: (CoUnit) & (F1) & (F2) simplifications together should not
 	params.matrix_params.OneB_matrix_prob = 1.0;
 
 	randomized_check_evaluates_equal_after_operation([](GBN gbn) -> GBN { 
-		apply_simplifications_for_each_vertex(gbn, check_and_apply_CoUnit, check_and_apply_F1, check_and_apply_F2);
+		apply_simplifications_for_each_vertex(gbn, std::function<void(const GBN&, std::string)>(), check_and_apply_CoUnit, check_and_apply_F1, check_and_apply_F2);
 		return gbn;
 	}, params);
 }
@@ -76,8 +79,9 @@ TEST_CASE("Automated: (F3) simplification should not modify distribution")
 	params.matrix_params.OneB_matrix_prob = 1.0;
 
 	randomized_check_evaluates_equal_after_operation([](GBN gbn) -> GBN { 
+		std::string s;
 		for(auto v : inside_vertices(gbn))
-			check_and_apply_F3(gbn, v);
+			check_and_apply_F3(gbn, v, s);
 		return gbn;
 	}, params);
 }
@@ -90,8 +94,9 @@ TEST_CASE("Automated: (F4) simplification should not modify distribution")
 	params.matrix_params.OneB_matrix_prob = 1.0;
 
 	randomized_check_evaluates_equal_after_operation([](GBN gbn) -> GBN { 
+		std::string s;
 		for(auto v : inside_vertices(gbn))
-			check_and_apply_F4(gbn, v);
+			check_and_apply_F4(gbn, v, s);
 		return gbn;
 	}, params);
 }
@@ -104,8 +109,9 @@ TEST_CASE("Automated: (F5) simplification should not modify distribution")
 	params.matrix_params.OneB_matrix_prob = 1.0;
 
 	randomized_check_evaluates_equal_after_operation([](GBN gbn) -> GBN { 
+		std::string s;
 		for(auto v : inside_vertices(gbn))
-			check_and_apply_F5(gbn, v);
+			check_and_apply_F5(gbn, v, s);
 		return gbn;
 	}, params);
 }
@@ -121,7 +127,7 @@ TEST_CASE("Automated: (CoUnit) - (F5) simplifications together should not modify
 	params.matrix_params.OneB_matrix_prob = 1.0;
 
 	randomized_check_evaluates_equal_after_operation([](GBN gbn) -> GBN { 
-		apply_simplifications_for_each_vertex(gbn, check_and_apply_CoUnit, check_and_apply_F1, check_and_apply_F2, check_and_apply_F3, check_and_apply_F4, check_and_apply_F5);
+		apply_simplifications_for_each_vertex(gbn, std::function<void(const GBN&, std::string)>(), check_and_apply_CoUnit, check_and_apply_F1, check_and_apply_F2, check_and_apply_F3, check_and_apply_F4, check_and_apply_F5);
 		return gbn;
 	}, params);
 }
@@ -137,7 +143,7 @@ TEST_CASE("Automated: (CoUnit) - (F5) simplifications together should not modify
 	params.matrix_params.OneB_matrix_prob = 1.0;
 
 	randomized_check_evaluates_equal_after_operation([](GBN gbn) -> GBN { 
-		apply_simplifications_for_each_vertex(gbn, check_and_apply_CoUnit, check_and_apply_F1, check_and_apply_F2, check_and_apply_F3, check_and_apply_F4, check_and_apply_F5, simplify_matrix_for_duplicate_inputs);
+		apply_simplifications_for_each_vertex(gbn, std::function<void(const GBN&, std::string)>(), check_and_apply_CoUnit, check_and_apply_F1, check_and_apply_F2, check_and_apply_F3, check_and_apply_F4, check_and_apply_F5, simplify_matrix_for_duplicate_inputs);
 		return gbn;
 	}, params);
 }
@@ -153,7 +159,7 @@ TEST_CASE("Automated: (simplify_matrix_for_duplicate_inputs)")
 	params.matrix_params.OneB_matrix_prob = 1.0;
 
 	randomized_check_evaluates_equal_after_operation([](GBN gbn) -> GBN { 
-		apply_simplifications_for_each_vertex(gbn, simplify_matrix_for_duplicate_inputs);
+		apply_simplifications_for_each_vertex(gbn, std::function<void(const GBN&, std::string)>(), simplify_matrix_for_duplicate_inputs);
 		return gbn;
 	}, params
 	// ,[](GBN gbn_before, GBN gbn_after) -> void {

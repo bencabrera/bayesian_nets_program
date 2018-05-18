@@ -26,31 +26,31 @@ TEST_CASE("(F2) should work correctly.")
 TEST_CASE("(F3) should work correctly (f3_simplification_1.gbn).")
 {
 	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "f3_simplification_1.gbn");
-	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { check_and_apply_F3(gbn,5); return gbn; });
+	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { std::string s; check_and_apply_F3(gbn,5,s); return gbn; });
 }
 
 TEST_CASE("(F3) should work correctly (f3_simplification_2.gbn).")
 {
 	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "f3_simplification_2.gbn");
-	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { check_and_apply_F3(gbn,5); return gbn; });
+	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { std::string s; check_and_apply_F3(gbn,5,s); return gbn; });
 }
 
 TEST_CASE("(F3) should work correctly (f3_simplification_3.gbn).")
 {
 	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "f3_simplification_3.gbn");
-	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { check_and_apply_F3(gbn,6); return gbn; });
+	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { std::string s; check_and_apply_F3(gbn,6,s); return gbn; });
 }
 
 TEST_CASE("(F3) should work correctly (f3_simplification_4.gbn).")
 {
 	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "f3_simplification_4.gbn");
-	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { check_and_apply_F3(gbn,2); return gbn; });
+	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { std::string s; check_and_apply_F3(gbn,2,s); return gbn; });
 }
 
 TEST_CASE("(F4) should work correctly (f4_simplification_1.gbn).")
 {
 	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "f4_simplification_1.gbn");
-	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { check_and_apply_F4(gbn,0); return gbn; }, [](GBN gbn_before, GBN gbn_after) -> void {
+	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { std::string s; check_and_apply_F4(gbn,0,s); return gbn; }, [](GBN gbn_before, GBN gbn_after) -> void {
 		REQUIRE(boost::num_edges(gbn_after.graph) == boost::num_edges(gbn_before.graph)-1);	
 	});
 }
@@ -58,7 +58,7 @@ TEST_CASE("(F4) should work correctly (f4_simplification_1.gbn).")
 TEST_CASE("(F4) should work correctly (f4_simplification_2.gbn).")
 {
 	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "f4_simplification_2.gbn");
-	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { check_and_apply_F4(gbn,0); return gbn; }, [](GBN gbn_before, GBN gbn_after) -> void {
+	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { std::string s; check_and_apply_F4(gbn,0,s); return gbn; }, [](GBN gbn_before, GBN gbn_after) -> void {
 		REQUIRE(boost::num_edges(gbn_after.graph) == boost::num_edges(gbn_before.graph)-1);	
 	});
 }
@@ -66,7 +66,7 @@ TEST_CASE("(F4) should work correctly (f4_simplification_2.gbn).")
 TEST_CASE("(F4) should work correctly (f4_simplification_3.gbn).")
 {
 	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "f4_simplification_3.gbn");
-	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { check_and_apply_F4(gbn,0); return gbn; }, [](GBN gbn_before, GBN gbn_after) -> void {
+	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { std::string s; check_and_apply_F4(gbn,0,s); return gbn; }, [](GBN gbn_before, GBN gbn_after) -> void {
 		REQUIRE(boost::num_edges(gbn_after.graph) == boost::num_edges(gbn_before.graph)-1);	
 	});
 }
@@ -74,7 +74,7 @@ TEST_CASE("(F4) should work correctly (f4_simplification_3.gbn).")
 TEST_CASE("(F5) should work correctly (f5_simplification_1.gbn).")
 {
 	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "f5_simplification_1.gbn");
-	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { check_and_apply_F5(gbn,0); return gbn; }, [](GBN gbn_before, GBN gbn_after) -> void {
+	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { std::string s; check_and_apply_F5(gbn,0,s); return gbn; }, [](GBN gbn_before, GBN gbn_after) -> void {
 		REQUIRE(boost::num_edges(gbn_before.graph) == 8);	
 		REQUIRE(boost::num_edges(gbn_after.graph) == 5);	
 	});
@@ -83,7 +83,7 @@ TEST_CASE("(F5) should work correctly (f5_simplification_1.gbn).")
 TEST_CASE("duplicate_inputs.gbn: (simplify_matrix_for_duplicate_inputs)")
 {
 	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "duplicate_inputs.gbn");
-	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { simplify_matrix_for_duplicate_inputs(gbn,0); return gbn; }
+	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { std::string s; simplify_matrix_for_duplicate_inputs(gbn,0,s); return gbn; }
 	// , [](GBN gbn_before, GBN gbn_after) -> void {
 		// std::ofstream f1("test_before.dot");
 		// std::ofstream f2("test_after.dot");
@@ -96,5 +96,5 @@ TEST_CASE("duplicate_inputs.gbn: (simplify_matrix_for_duplicate_inputs)")
 TEST_CASE("duplicate_inputs2.gbn: (simplify_matrix_for_duplicate_inputs)")
 {
 	auto gbn = read_and_check_gbn(TEST_INSTANCE_FOLDER + "duplicate_inputs2.gbn");
-	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { simplify_matrix_for_duplicate_inputs(gbn,0); return gbn; });
+	check_evaluates_equal_after_operation(gbn, [](GBN gbn) -> GBN { std::string s; simplify_matrix_for_duplicate_inputs(gbn,0,s); return gbn; });
 }

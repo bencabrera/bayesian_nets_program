@@ -16,7 +16,7 @@ int main(int argc, char** argv)
 	check_gbn_integrity(gbn);
 
 	std::ofstream out_file(argv[2]);
-	draw_gbn_graph(out_file, gbn);
+	draw_gbn_graph(out_file, gbn, "", true);
 
 	return 0;
 }

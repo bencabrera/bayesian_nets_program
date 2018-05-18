@@ -24,7 +24,7 @@ TEST_CASE("Automated: (StochWithoutOutputs)")
 	params.matrix_params.OneB_matrix_prob = 1.0;
 
 	randomized_check_evaluates_equal_after_operation([](GBN gbn) -> GBN { 
-		apply_simplifications_for_each_vertex(gbn, eliminate_stochastic_vertex_without_outputs);
+		apply_simplifications_for_each_vertex(gbn, std::function<void(const GBN&, std::string)>(), eliminate_stochastic_vertex_without_outputs);
 		return gbn;
 	}, params);
 }
@@ -40,7 +40,7 @@ TEST_CASE("Automated: (SwitchSubstochToFront)")
 	params.matrix_params.OneB_matrix_prob = 0.5;
 
 	randomized_check_evaluates_equal_after_operation([](GBN gbn) -> GBN { 
-		apply_simplifications_for_each_vertex(gbn, switch_substoch_to_front);
+		apply_simplifications_for_each_vertex(gbn, std::function<void(const GBN&, std::string)>(), switch_substoch_to_front);
 		return gbn;
 	}, 
 	params, 

@@ -31,6 +31,7 @@ using Port = std::pair<Vertex, std::size_t>;
 struct GBN {
 	public:
 		GBN(Index n, Index m, Index n_inside_vertices);
+		GBN(const GBN& gbn) = default;
 
 		Index n;
 		Index m;
@@ -58,9 +59,9 @@ struct GBN {
 		std::vector<Vertex> input_vertices;
 		std::vector<Vertex> output_vertices;
 
-		const std::size_t n_initial_inside_vertices;
-		const std::size_t n_initial_n; // TODO: make all this stuff non mutable again to that input_idx etc gets simpler, fix simplifications with F_k
-		const std::size_t n_initial_m;
+		std::size_t n_initial_inside_vertices;
+		std::size_t n_initial_n; // TODO: make all this stuff non mutable again to that input_idx etc gets simpler, fix simplifications with F_k
+		std::size_t n_initial_m;
 };
 
 // vertex / edge specific accessors

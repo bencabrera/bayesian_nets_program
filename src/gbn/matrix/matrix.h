@@ -11,7 +11,8 @@ enum MatrixType {
 	DYNAMIC,
 	F,
 	ONE_B,
-	TERMINATOR
+	TERMINATOR,
+	ZERO
 };
 
 namespace std {
@@ -107,6 +108,16 @@ class TerminatorMatrix : public Matrix {
 	public:
 		TerminatorMatrix();
 		virtual ~TerminatorMatrix();
+
+		double get(const BitVec& to, const BitVec& from) const;
+		void set(const BitVec& to, const BitVec& from, double val);
+		void add(const BitVec& to, const BitVec& from, double val);
+};
+
+class ZeroMatrix : public Matrix {
+	public:
+		ZeroMatrix(const Index n, const Index m);
+		virtual ~ZeroMatrix();
 
 		double get(const BitVec& to, const BitVec& from) const;
 		void set(const BitVec& to, const BitVec& from, double val);

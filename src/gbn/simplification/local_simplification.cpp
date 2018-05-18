@@ -12,8 +12,9 @@
 #include <fstream>
 #include <unistd.h>
 
-bool check_and_apply_F1(GBN& gbn, Vertex v)
+bool check_and_apply_F1(GBN& gbn, Vertex v, std::string& op)
 {
+	op = "check_and_apply_F1";
 	auto& g = gbn.graph;
 
 	if(type(v,g) != NODE)
@@ -45,8 +46,9 @@ bool check_and_apply_F1(GBN& gbn, Vertex v)
 	return false;
 }
 
-bool check_and_apply_F2(GBN& gbn, Vertex v)
+bool check_and_apply_F2(GBN& gbn, Vertex v, std::string& op)
 {
+	op = "check_and_apply_F2";
 	auto& g = gbn.graph;
 
 	if(type(v,g) != NODE)
@@ -91,8 +93,9 @@ bool check_and_apply_F2(GBN& gbn, Vertex v)
 }
 
 // TODO: implement the more general version for n -> m
-bool check_and_apply_CoUnit(GBN& gbn, Vertex v)
+bool check_and_apply_CoUnit(GBN& gbn, Vertex v, std::string& op)
 {
+	op = "check_and_apply_CoUnit";
 	auto& g = gbn.graph;
 
 	if(type(v,g) != NODE || matrix(v,g)->type != TERMINATOR)
@@ -117,8 +120,9 @@ bool check_and_apply_CoUnit(GBN& gbn, Vertex v)
 	return true;
 }
 
-bool check_and_apply_F3(GBN& gbn, Vertex v)
+bool check_and_apply_F3(GBN& gbn, Vertex v, std::string& op)
 {
+	op = "check_and_apply_F3";
 	auto& g = gbn.graph;
 
 	if(type(v,g) != NODE || matrix(v,g)->type != F)
@@ -175,8 +179,9 @@ bool check_and_apply_F3(GBN& gbn, Vertex v)
 	return found_once;
 }
 
-bool check_and_apply_F4(GBN& gbn, Vertex v_oneb)
+bool check_and_apply_F4(GBN& gbn, Vertex v_oneb, std::string& op)
 {
+	op = "check_and_apply_F4";
 	auto& g = gbn.graph;
 
 	if(type(v_oneb,g) != NODE || matrix(v_oneb,g)->type != ONE_B)
@@ -185,155 +190,159 @@ bool check_and_apply_F4(GBN& gbn, Vertex v_oneb)
 	auto& m = dynamic_cast<OneBMatrix&>(*matrix(v_oneb,g));
 	auto b = m.b;
 
-	bool found_once = false;
-	bool found;
-	do {
-		found = false;
-		Vertex v_F;
-		Index F_port;
-		for(auto e : boost::make_iterator_range(boost::out_edges(v_oneb,g)))
+	bool found = false;
+	Vertex v_F;
+	Index F_port;
+	for(auto e : boost::make_iterator_range(boost::out_edges(v_oneb,g)))
+	{
+		auto v_to = boost::target(e,g);
+		if(type(v_to,g) == NODE && matrix(v_to, g)->type == F)
 		{
-			auto v_to = boost::target(e,g);
-			if(type(v_to,g) == NODE && matrix(v_to, g)->type == F)
+			auto& m_F = dynamic_cast<FMatrix&>(*matrix(v_to, g));
+			if(m_F.b == b)
 			{
-				auto& m_F = dynamic_cast<FMatrix&>(*matrix(v_to, g));
-				if(m_F.b == b)
-				{
-					v_F = v_to;
-					F_port = port_to(e,g);
-					found = true;
-					found_once = true;
-					break;
-				}
+				v_F = v_to;
+				F_port = port_to(e,g);
+				found = true;
+				break;
 			}
 		}
-
-		if(found) {
-			auto p_m_F = matrix(v_F, g);
-			auto& m_F = dynamic_cast<FMatrix&>(*p_m_F);
-
-			auto p_m_F_new = std::make_shared<FMatrix>(m_F.k-1, m_F.b);
-
-			std::vector<Port> output_ports;
-			for(auto e : boost::make_iterator_range(boost::out_edges(v_F,g)))
-				if(port_from(e,g) == F_port)
-					output_ports.push_back({ boost::target(e,g), port_to(e,g) });
-
-			boost::remove_edge_if([&](const Edge& e) {
-					if(boost::target(e,g) == v_F && port_to(e,g) == F_port)
-					return true;
-					if(boost::source(e,g) == v_F && port_from(e,g) == F_port)
-					return true;
-
-					return false;
-					},g);
-
-			for(auto e : boost::make_iterator_range(boost::in_edges(v_F,g)))
-				if(port_to(e,g) >= F_port)
-					put(edge_position, g, e, std::pair<std::size_t, std::size_t>{ port_from(e,g), port_to(e,g)-1 });
-			for(auto e : boost::make_iterator_range(boost::out_edges(v_F,g)))
-				if(port_from(e,g) >= F_port)
-					put(edge_position, g, e, std::pair<std::size_t, std::size_t>{ port_from(e,g)-1, port_to(e,g) });
-
-			put(vertex_matrix, g, v_F, p_m_F_new);
-
-			for(auto p : output_ports)
-			{
-				auto e = boost::add_edge(v_oneb,p.first,g).first;
-				put(edge_position,g,e,std::pair<std::size_t,std::size_t>{ 0, p.second });
-			}
-		}
-
 	}
-	while(found);
 
-	return found_once;
-}
-
-bool check_and_apply_F5(GBN& gbn, Vertex v)
-{
-	auto& g = gbn.graph;
-
-	if(type(v,g) != NODE || matrix(v,g)->type != ONE_B)
+	if(!found) 
 		return false;
 
-	auto& m = dynamic_cast<OneBMatrix&>(*matrix(v,g));
-	auto b = m.b;
+	auto p_m_F = matrix(v_F, g);
+	auto& m_F = dynamic_cast<FMatrix&>(*p_m_F);
 
-	bool found_once = false;
-	bool found;
-	do {
-		found = false;
-		Vertex v_F;
-		Index F_port;
-		for(auto e : boost::make_iterator_range(boost::out_edges(v,g)))
+	std::vector<Port> output_ports;
+	for(auto e : boost::make_iterator_range(boost::out_edges(v_F,g)))
+		if(port_from(e,g) == F_port)
+			output_ports.push_back({ boost::target(e,g), port_to(e,g) });
+
+	if(m_F.k == 1) 
+	{
+		remove_vertex(v_oneb,gbn);
+		remove_vertex(v_F,gbn);
+		auto p_m_new = std::make_shared<ZeroMatrix>(0,1);
+		auto v = add_vertex(gbn, p_m_new, "0");
+		for(auto p : output_ports)
 		{
-			auto v_to = boost::target(e,g);
-			if(type(v_to,g) == NODE && matrix(v_to, g)->type == F)
-			{
-				auto& m_F = dynamic_cast<FMatrix&>(*matrix(v_to, g));
-				if(m_F.k < 2)
-					continue;
-				if(m_F.b == !b)
-				{
-					v_F = v_to;
-					F_port = port_to(e,g);
-					found = true;
-					found_once = true;
-					break;
-				}
-			}
-		}
-
-		if(found) {
-			auto& m_F = dynamic_cast<FMatrix&>(*matrix(v_F, g));
-			auto k = m_F.k;
-
-			for(std::size_t i_port = 0; i_port < k; i_port++)
-			{
-				if(i_port == F_port)
-					continue;
-
-				Vertex v_pre;
-				Index port_pre;
-				for(auto e : boost::make_iterator_range(boost::in_edges(v_F,g)))
-				{
-					if(port_to(e,g) == i_port)
-					{
-						v_pre = boost::source(e,g);
-						port_pre = port_from(e,g);
-						break;
-					}
-				}
-
-				for(auto e : boost::make_iterator_range(boost::out_edges(v_F,g)))
-				{
-					if(port_from(e,g) == i_port)
-					{
-						auto e_new = boost::add_edge(v_pre, boost::target(e,g), g).first;
-						put(edge_position, g, e_new, std::pair<std::size_t, std::size_t>{ port_pre, port_to(e_new,g) });
-					}
-				}
-			}
-			for(auto e : boost::make_iterator_range(boost::out_edges(v_F,g)))
-			{
-				if(port_from(e,g) == F_port)
-				{
-					auto e_new = boost::add_edge(v, boost::target(e,g), g).first;	
-					put(edge_position, g, e_new, std::pair<std::size_t, std::size_t>{ 0, port_to(e_new,g) });
-				}
-			}
-
-			remove_vertex(v_F,gbn);
+			auto e = boost::add_edge(v,p.first,g).first;
+			put(edge_position,g,e,std::pair<std::size_t,std::size_t>{ 0, p.second });
 		}
 	}
-	while(found);
+	else
+	{
+		auto p_m_F_new = std::make_shared<FMatrix>(m_F.k-1, m_F.b);
 
-	return found_once;
+		boost::remove_edge_if([&](const Edge& e) {
+				if(boost::target(e,g) == v_F && port_to(e,g) == F_port)
+				return true;
+				if(boost::source(e,g) == v_F && port_from(e,g) == F_port)
+				return true;
+
+				return false;
+				},g);
+
+		for(auto e : boost::make_iterator_range(boost::in_edges(v_F,g)))
+			if(port_to(e,g) >= F_port)
+				put(edge_position, g, e, std::pair<std::size_t, std::size_t>{ port_from(e,g), port_to(e,g)-1 });
+		for(auto e : boost::make_iterator_range(boost::out_edges(v_F,g)))
+			if(port_from(e,g) >= F_port)
+				put(edge_position, g, e, std::pair<std::size_t, std::size_t>{ port_from(e,g)-1, port_to(e,g) });
+
+		put(vertex_matrix, g, v_F, p_m_F_new);
+
+		for(auto p : output_ports)
+		{
+			auto e = boost::add_edge(v_oneb,p.first,g).first;
+			put(edge_position,g,e,std::pair<std::size_t,std::size_t>{ 0, p.second });
+		}
+	}
+
+	return true;
 }
 
-bool split_vertex_if_multiple_outputs(GBN& gbn, Vertex v)
+bool check_and_apply_F5(GBN& gbn, Vertex v_oneb, std::string& op)
 {
+	op = "check_and_apply_F5";
+	auto& g = gbn.graph;
+
+	if(type(v_oneb,g) != NODE || matrix(v_oneb,g)->type != ONE_B)
+		return false;
+
+	auto& m_oneb = dynamic_cast<OneBMatrix&>(*matrix(v_oneb,g));
+
+	bool found = false;
+	Vertex v_F;
+	Index F_port;
+	for(auto e : boost::make_iterator_range(boost::out_edges(v_oneb,g)))
+	{
+		auto v_to = boost::target(e,g);
+		if(type(v_to,g) == NODE && matrix(v_to, g)->type == F)
+		{
+			auto& m_F = dynamic_cast<FMatrix&>(*matrix(v_to, g));
+			if(m_F.k < 2)
+				continue;
+			if(m_F.b == !m_oneb.b)
+			{
+				v_F = v_to;
+				F_port = port_to(e,g);
+				found = true;
+				break;
+			}
+		}
+	}
+
+	if(!found) 
+		return false;
+
+	auto& m_F = dynamic_cast<FMatrix&>(*matrix(v_F, g));
+
+	for(std::size_t i_port = 0; i_port < m_F.k; i_port++)
+	{
+		if(i_port == F_port)
+			continue;
+
+		Vertex v_pre;
+		Index port_pre;
+		for(auto e : boost::make_iterator_range(boost::in_edges(v_F,g)))
+		{
+			if(port_to(e,g) == i_port)
+			{
+				v_pre = boost::source(e,g);
+				port_pre = port_from(e,g);
+				break;
+			}
+		}
+
+		for(auto e : boost::make_iterator_range(boost::out_edges(v_F,g)))
+		{
+			if(port_from(e,g) == i_port)
+			{
+				auto e_new = boost::add_edge(v_pre, boost::target(e,g), g).first;
+				put(edge_position, g, e_new, std::pair<std::size_t, std::size_t>{ port_pre, port_to(e,g) });
+			}
+		}
+	}
+	for(auto e : boost::make_iterator_range(boost::out_edges(v_F,g)))
+	{
+		if(port_from(e,g) == F_port)
+		{
+			auto e_new = boost::add_edge(v_oneb, boost::target(e,g), g).first;	
+			put(edge_position, g, e_new, std::pair<std::size_t, std::size_t>{ 0, port_to(e,g) });
+		}
+	}
+
+	remove_vertex(v_F,gbn);
+
+	return true;
+}
+
+bool split_vertex_if_multiple_outputs(GBN& gbn, Vertex v, std::string& op)
+{
+	op = "split_vertex_if_multiple_outputs";
 	auto& g = gbn.graph;
 
 	auto& m = *matrix(v,g);
@@ -346,8 +355,9 @@ bool split_vertex_if_multiple_outputs(GBN& gbn, Vertex v)
 	return true;
 }
 
-bool simplify_matrix_for_duplicate_inputs(GBN& gbn, Vertex v)
+bool simplify_matrix_for_duplicate_inputs(GBN& gbn, Vertex v, std::string& op)
 {
+	op = "simplify_matrix_for_duplicate_inputs";
 	auto& g = gbn.graph;
 	auto& m = *matrix(v,g);
 

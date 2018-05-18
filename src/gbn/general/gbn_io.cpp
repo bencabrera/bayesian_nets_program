@@ -196,11 +196,27 @@ GBN read_gbn(std::istream& istr)
 namespace {
 	class VertexWriter {
 		public:
-			VertexWriter(const GBNGraph& g) : g(g) {}
+			VertexWriter(const GBNGraph& g, const bool vertex_name_is_matrix_type) : g(g), vertex_name_is_matrix_type(vertex_name_is_matrix_type) {}
 
 			void operator()(std::ostream& out, const GBNGraph::vertex_descriptor& v) const {
 				if(type(v,g) == NODE)
-					out << "[label=\"" << name(v,g) << "\", shape=\"box\"]";
+				{
+					if(vertex_name_is_matrix_type)
+					{
+						if(matrix(v,g)->type == DYNAMIC)
+							out << "[label=\"v_" << v << "\", shape=\"box\"]";
+						else
+						{
+							out << "[label=\""; 
+							print_matrix_label(out, *matrix(v,g));
+							out << "\", shape=\"box\"]";
+						}
+					}
+					else
+					{
+						out << "[label=\"" << name(v,g) << "\", shape=\"box\"]";
+					}
+				}
 				if(type(v,g) == INPUT)
 					out << "[xlabel=\"" << name(v,g) << "\", shape=\"point\"]";
 				if(type(v,g) == OUTPUT)
@@ -208,6 +224,7 @@ namespace {
 			}
 		private:
 			const GBNGraph& g;
+			const bool vertex_name_is_matrix_type;
 	};
 	class EdgeWriter {
 		public:
@@ -223,7 +240,7 @@ namespace {
 		GraphWriter(const GBN& gbn, std::string title = "")
 			:gbn(gbn),
 			title(title)
-		{}
+			{}
 
 		void operator()(std::ostream& out) const {
 			if(!title.empty())
@@ -263,8 +280,8 @@ namespace {
 		std::set<Vertex> visible_vertices;
 	};
 }
-void draw_gbn_graph(std::ostream& ostr, const GBN& gbn, std::string title)
+void draw_gbn_graph(std::ostream& ostr, const GBN& gbn, std::string title, bool vertex_name_is_matrix_type)
 {
 	boost::filtered_graph<GBNGraph, AllEdgesTruePredicate, VisibleVerticesPredicate> fg(gbn.graph,AllEdgesTruePredicate(), VisibleVerticesPredicate(all_vertices(gbn)));
-	boost::write_graphviz(ostr, fg, VertexWriter(gbn.graph), EdgeWriter(gbn.graph), GraphWriter(gbn, title));
+	boost::write_graphviz(ostr, fg, VertexWriter(gbn.graph, vertex_name_is_matrix_type), EdgeWriter(gbn.graph), GraphWriter(gbn, title));
 }

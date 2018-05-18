@@ -154,3 +154,28 @@ void TerminatorMatrix::add(const BitVec& /*to*/, const BitVec& /*from*/, double 
 {
 	throw std::logic_error("Tried to set entry of TerminatorMatrix.");
 }
+
+
+
+
+// ZeroMatrix
+ZeroMatrix::ZeroMatrix(const Index n, const Index m)
+	:Matrix(n,m,ZERO,false)
+{}
+
+ZeroMatrix::~ZeroMatrix()
+{}
+
+double ZeroMatrix::get(const BitVec& /*to*/, const BitVec& /*from*/) const
+{
+	return 0;
+}
+
+void ZeroMatrix::set(const BitVec& /*to*/, const BitVec& /*from*/, double /*val*/)
+{
+	throw std::logic_error("Tried to set entry of ZeroMatrix.");
+}
+void ZeroMatrix::add(const BitVec& /*to*/, const BitVec& /*from*/, double /*val*/)
+{
+	throw std::logic_error("Tried to set entry of ZeroMatrix.");
+}
