@@ -184,7 +184,7 @@ bool check_and_apply_F4(GBN& gbn, Vertex v_oneb, std::string& op)
 	op = "check_and_apply_F4";
 	auto& g = gbn.graph;
 
-	if(type(v_oneb,g) != NODE || matrix(v_oneb,g)->type != ONE_B)
+	if(type(v_oneb,g) != NODE || matrix(v_oneb,g)->type != ONE_B || boost::out_degree(v_oneb, g) != 1)
 		return false;
 
 	auto& m = dynamic_cast<OneBMatrix&>(*matrix(v_oneb,g));
@@ -269,7 +269,7 @@ bool check_and_apply_F5(GBN& gbn, Vertex v_oneb, std::string& op)
 	op = "check_and_apply_F5";
 	auto& g = gbn.graph;
 
-	if(type(v_oneb,g) != NODE || matrix(v_oneb,g)->type != ONE_B)
+	if(type(v_oneb,g) != NODE || matrix(v_oneb,g)->type != ONE_B || boost::out_degree(v_oneb, g) != 1)
 		return false;
 
 	auto& m_oneb = dynamic_cast<OneBMatrix&>(*matrix(v_oneb,g));

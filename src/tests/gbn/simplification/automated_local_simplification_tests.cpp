@@ -98,7 +98,9 @@ TEST_CASE("Automated: (F4) simplification should not modify distribution")
 		for(auto v : inside_vertices(gbn))
 			check_and_apply_F4(gbn, v, s);
 		return gbn;
-	}, params);
+	}, 
+	params
+	);
 }
 
 TEST_CASE("Automated: (F5) simplification should not modify distribution")
