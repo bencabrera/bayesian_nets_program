@@ -20,7 +20,11 @@ Vertices visualized as small dots and labelled with `i_...` or `o_...` symbolize
 ### CNU Operations modelled by a GBN
 
 ### Runtime Results
-
-![Comparison CNU with Joint Distribution or GBN](images/joint_dist_gbn_comparison.png) ![GBN Behaviour with increasing number of places](images/bin_gbn_comparison.png)
+<p align="center">
+  <img alt="Comparison CNU with Joint Distribution or GBN" src="images/joint_dist_gbn_comparison.png" width="600">
+</p>
+<p align="center">
+  <img alt="GBN Behaviour with increasing number of places" src="images/big_gbn_comparison.png" width="600"> 
+</p>
 
 ## Installation
