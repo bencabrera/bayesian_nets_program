@@ -21,6 +21,6 @@ Vertices visualized as small dots and labelled with `i_...` or `o_...` symbolize
 
 ### Runtime Results
 
-![Comparison CNU with Joint Distribution or GBN](images/joint_dist_gbn_comparison.png)
+![Comparison CNU with Joint Distribution or GBN](images/joint_dist_gbn_comparison.png) ![GBN Behaviour with increasing number of places](images/bin_gbn_comparison.png)
 
 ## Installation

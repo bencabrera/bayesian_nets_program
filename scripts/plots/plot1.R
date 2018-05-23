@@ -18,8 +18,9 @@ ggplot(data_final,aes(x = n_places, y = milliseconds, color=type)) +
   geom_point() +
   geom_smooth() +
   theme_classic() +
-  xlab("Number of Places in CNU") +
+  xlab("#Places in CNU") +
   ylab("Milliseconds") + 
-  labs(color="CNU Type")
+  labs(color="CNU Type") +
+  ggtitle("Averaged runtimes for performing 100 CNU Operations using joint distributions or GBNs \n(random CNUs, differing number of places, at least 1/3 successful transitions)")
 
 ggsave("joint_dist_gbn_comparison.png",width=general_width,height=general_height)
