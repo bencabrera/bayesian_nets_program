@@ -10,7 +10,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic -Werror=r
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # look for boost library (required)
-find_package(Boost REQUIRED regex)
+find_package(Boost REQUIRED regex system filesystem)
 include_directories(${Boost_INCLUDE_DIRS})
 
 set(GENERAL_FILES
@@ -62,6 +62,11 @@ set(GBN_FILES
 	src/gbn/simplification/global_simplification.cpp
 )
 
+set(RUNTIME_TEST_FILES
+	src/runtime_tests/helpers/cn_parameters.cpp
+	src/runtime_tests/helpers/random_transition_helper.cpp
+)
+
 set(TEST_FILES
 	src/tests/cn/cn_io_tests.cpp
 
@@ -90,61 +95,77 @@ set(TEST_FILES
 	src/tests/test_helpers.cpp
 )
 
-add_library(core_lib STATIC ${GENERAL_FILES} ${CN_FILES} ${JOINT_DIST_FILES} ${CNU_FILES} ${GBN_FILES})
+add_library(core_lib STATIC ${GENERAL_FILES} ${CN_FILES} ${JOINT_DIST_FILES} ${CNU_FILES} ${GBN_FILES} ${RUNTIME_TEST_FILES})
 
 add_executable(joint_dist_runner src/main_joint_dist_runner.cpp)
 target_link_libraries(joint_dist_runner core_lib)
-target_link_libraries(joint_dist_runner Boost::regex)
+target_link_libraries(joint_dist_runner Boost::regex Boost::filesystem)
 
 add_executable(gbn_runner src/main_gbn_runner.cpp)
 target_link_libraries(gbn_runner core_lib)
-target_link_libraries(gbn_runner Boost::regex)
+target_link_libraries(gbn_runner Boost::regex Boost::filesystem)
 
 add_executable(draw_gbn src/main_draw_gbn.cpp)
 target_link_libraries(draw_gbn core_lib)
-target_link_libraries(draw_gbn Boost::regex)
+target_link_libraries(draw_gbn Boost::regex Boost::filesystem)
 
 add_executable(draw_cn src/main_draw_cn.cpp)
 target_link_libraries(draw_cn core_lib)
-target_link_libraries(draw_cn Boost::regex)
+target_link_libraries(draw_cn Boost::regex Boost::filesystem)
 
 add_executable(evaluate_gbn src/main_evaluate_gbn.cpp)
 target_link_libraries(evaluate_gbn core_lib)
-target_link_libraries(evaluate_gbn Boost::regex)
+target_link_libraries(evaluate_gbn Boost::regex Boost::filesystem)
 
 add_executable(merging src/main_merging.cpp)
 target_link_libraries(merging core_lib)
-target_link_libraries(merging Boost::regex)
+target_link_libraries(merging Boost::regex Boost::filesystem)
 
 add_executable(splitting src/main_splitting.cpp)
 target_link_libraries(splitting core_lib)
-target_link_libraries(splitting Boost::regex)
+target_link_libraries(splitting Boost::regex Boost::filesystem)
 
 add_executable(simplification src/main_simplification.cpp)
 target_link_libraries(simplification core_lib)
-target_link_libraries(simplification Boost::regex)
+target_link_libraries(simplification Boost::regex Boost::filesystem)
 
 add_executable(path_closing src/main_path_closing.cpp)
 target_link_libraries(path_closing core_lib)
-target_link_libraries(path_closing Boost::regex)
+target_link_libraries(path_closing Boost::regex Boost::filesystem)
 
 add_executable(random_cn src/main_random_cn.cpp)
 target_link_libraries(random_cn core_lib)
-target_link_libraries(random_cn Boost::regex)
+target_link_libraries(random_cn Boost::regex Boost::filesystem)
 
 add_executable(random_gbn src/main_random_gbn.cpp)
 target_link_libraries(random_gbn core_lib)
-target_link_libraries(random_gbn Boost::regex)
+target_link_libraries(random_gbn Boost::regex Boost::filesystem)
 
 add_executable(sub_gbn src/main_sub_gbn.cpp)
 target_link_libraries(sub_gbn core_lib)
-target_link_libraries(sub_gbn Boost::regex)
+target_link_libraries(sub_gbn Boost::regex Boost::filesystem)
 
 add_executable(read_write_gbn src/main_read_write_gbn.cpp)
 target_link_libraries(read_write_gbn core_lib)
-target_link_libraries(read_write_gbn Boost::regex)
+target_link_libraries(read_write_gbn Boost::regex Boost::filesystem)
+
+
+add_executable(rt_joint_dist_uniform src/runtime_tests/main_joint_dist_uniform_random_cnu.cpp)
+target_link_libraries(rt_joint_dist_uniform core_lib)
+target_link_libraries(rt_joint_dist_uniform Boost::regex Boost::filesystem)
+
+add_executable(rt_gbn_uniform src/runtime_tests/main_gbn_uniform_random_cnu.cpp)
+target_link_libraries(rt_gbn_uniform core_lib)
+target_link_libraries(rt_gbn_uniform Boost::regex Boost::filesystem)
+
+add_executable(rt_demo_simplification src/runtime_tests/main_demo_simplifications.cpp)
+target_link_libraries(rt_demo_simplification core_lib)
+target_link_libraries(rt_demo_simplification Boost::regex Boost::filesystem)
+
+
+
 
 add_executable(tests src/main_tests.cpp ${TEST_FILES})
 target_link_libraries(tests core_lib)
-target_link_libraries(tests Boost::regex)
+target_link_libraries(tests Boost::regex Boost::filesystem)
 target_compile_definitions(tests PRIVATE FOO="${CMAKE_CURRENT_SOURCE_DIR}/src/tests/instances/")

@@ -244,7 +244,7 @@ namespace {
 
 		void operator()(std::ostream& out) const {
 			if(!title.empty())
-				out << "graph[label=\"" << title << "\"," << "labelloc=top," << "labeljust=left];" << std::endl;
+				out << "graph[label=\"" << title << "\"," << "labelloc=top," << "labeljust=c];" << std::endl;
 			out << "rankdir=LR;" << std::endl;
 
 			out << "{ rank=same; ";
