@@ -8,6 +8,7 @@
 #include "../general/path_closing.h"
 #include "../general/gbn_io.h"
 #include "../general/check.h"
+#include "../../helpers.hpp"
 
 bool eliminate_stochastic_vertex_without_outputs(GBN& gbn, Vertex v, std::string& op)
 {
@@ -93,6 +94,22 @@ bool normalize_substoch_front_vertices_without_inputs(GBN& gbn, Vertex v, std::s
 		return false;
 
 	auto m = matrix(v,g);
+
+	// special cases: if only one entry not equal zero, renormalize to 1_0 resp. 1_1
+	if(prob_is_zero(m->get(BitVec(0),BitVec(0))) && !prob_is_zero(m->get(BitVec(1),BitVec(0))))
+	{
+		auto p_m_new = std::make_shared<OneBMatrix>(true);
+		put(vertex_matrix, g, v, p_m_new);
+		return true;
+	}
+
+	if(!prob_is_zero(m->get(BitVec(0),BitVec(0))) && prob_is_zero(m->get(BitVec(1),BitVec(0))))
+	{
+		auto p_m_new = std::make_shared<OneBMatrix>(false);
+		put(vertex_matrix, g, v, p_m_new);
+		return true;
+	}
+
 	double sum = m->get(BitVec(0),BitVec(0))+m->get(BitVec(1),BitVec(0));
 
 	m->set(BitVec(0),BitVec(0), m->get(BitVec(0),BitVec(0))/sum);

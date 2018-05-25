@@ -79,6 +79,7 @@ void do_command(std::string command_line, CN& cn, GBN& gbn, std::function<void(U
 	if(command_line.substr(0,8) == "simplify" || command_line.substr(0,14) == "simplification")
 	{
 		simplification(gbn);
+		status_callback(UpdateMetaData{ n_operations++, "simplification", "" });
 		return;
 	}
 
@@ -175,7 +176,10 @@ int main(int argc, const char** argv)
 			std::cout << meta_data.high_level_op_string << " " << meta_data.low_level_op_string << std::endl;
 
 			std::ofstream f(detailed_output_folder + std::to_string(n_operations) + ".dot");
-			draw_gbn_graph(f, gbn, meta_data.low_level_op_string);
+			draw_gbn_graph(f, gbn, meta_data.high_level_op_string + " " + meta_data.low_level_op_string , true);
+
+			std::ofstream f2(step_wise_path);
+			draw_gbn_graph(f2, gbn, meta_data.high_level_op_string + " " + meta_data.low_level_op_string, true);
 		};
 	} else {
 		callback = [&gbn] (const UpdateMetaData& meta_data) {
