@@ -15,7 +15,9 @@ Vertices visualized as small dots and labelled with `i_...` or `o_...` symbolize
 ### CNU Operations modelled by a GBN
 The following GIF shows the transformation of the GBN during the running CNU example of the paper. We start with the initial GBN and add vertices according to the successful firing of transition t4 (t3 in the program, since numbering starts at 0) and the failure of firing t1 (t0 in the program). Finally we once call the simplification command to reduce the complexity of the GBN by applying the local and global simplifications described in the paper.
 
-![Simplification GIF](images/cnu_paper_example.gif)
+<p align="center">
+  <img src="images/cnu_paper_example.gif">
+</p>
 
 ### Simplification of GBNs
 The next GIF is meant to give an impression of how the simplification of an arbitrary GBN works. To this end we start with a randomly generated GBN with 8 input, 8 outputs and 15 inside vertices to start with. 
